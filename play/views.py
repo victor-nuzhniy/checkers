@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
-from django.views.generic import FormView
+from django.views.generic import FormView, TemplateView
 
 
 class RegisterView(FormView):
@@ -22,3 +22,9 @@ class RegisterView(FormView):
         return super().form_valid(
             form
         )
+
+
+class MainView(TemplateView):
+    """Class for main view."""
+
+    template_name = "play/index.html"

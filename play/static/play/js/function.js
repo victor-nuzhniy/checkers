@@ -1,3 +1,32 @@
+
+      const playerPk = JSON.parse(document.getElementById('player_pk').textContent);
+      const rivalPk = JSON.parse(document.getElementById('rival_pk').textContent);
+      const currentUser = JSON.parse(document.getElementById('current_user').textContent);
+      const receiver = JSON.parse(document.getElementById('receiver').textContent);
+
+
+      const socket = new WebSocket(
+        "ws://" + window.location.host + "/ws/"
+        );
+      socket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        console.log("hello")
+        console.log(data.message)
+        };
+      socket.onclose = function(e) {
+        console.log('Socket closed unexpectedly');
+        };
+      socket.onopen = function(){
+                    socket.send(JSON.stringify({
+                'message': {1: playerPk, 2: rivalPk}
+            }));
+      }
+
+
+
+
+
+
 function movePiece(e) {
   let piece = e.target;
   const row = parseInt(piece.getAttribute("row"));
@@ -177,6 +206,26 @@ function buildBoard() {
 
   if (black === 0 || white === 0) {
     modalOpen(black);
+  }
+  console.log("builder", currentPlayer, currentUser, typeof currentPlayer, typeof currentUser)
+  if (currentPlayer == currentUser){
+        console.log(3333333)
+      const socket = new WebSocket(
+        "ws://" + window.location.host + "/ws/"
+        );
+      socket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        console.log("hello")
+        console.log(data.message)
+        };
+      socket.onclose = function(e) {
+        console.log('Socket closed unexpectedly');
+        };
+        socket.onopen = function(){
+          socket.send(JSON.stringify({
+                'message': {"receiver": receiver, "board": board}
+            }));
+      }
   }
 }
 

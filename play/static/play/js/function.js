@@ -11,7 +11,6 @@ function movePiece(e) {
       enableToMove(p);
     }
   }
-
   if (currentPlayer === board[row][column]) {
     player = reverse(currentPlayer);
     if (!findPieceCaptured(p, player)) {
@@ -45,11 +44,11 @@ function enableToCapture(p) {
     capturedPosition = [];
     posNewPosition = [];
     displayCurrentPlayer();
-    builBoard();
+    buildBoard();
     // check if there are possibility to capture other piece
     currentPlayer = reverse(currentPlayer);
   } else {
-    builBoard();
+    buildBoard();
   }
 }
 
@@ -66,7 +65,7 @@ function enableToMove(p) {
   });
 
   if (find) moveThePiece(newPosition);
-  else builBoard();
+  else buildBoard();
 }
 
 function moveThePiece(newPosition) {
@@ -82,7 +81,7 @@ function moveThePiece(newPosition) {
   currentPlayer = reverse(currentPlayer);
 
   displayCurrentPlayer();
-  builBoard();
+  buildBoard();
 }
 
 function findPossibleNewPosition(piece, player) {
@@ -108,7 +107,7 @@ function markPossiblePosition(p, player = 0, direction = 0) {
   }
 }
 
-function builBoard() {
+function buildBoard() {
   game.innerHTML = "";
   let black = 0;
   let white = 0;
@@ -193,6 +192,8 @@ function displayCurrentPlayer() {
 function findPieceCaptured(p, player) {
   let found = false;
   if (
+    p.row > 2 &&
+    p.column > 2 &&
     board[p.row - 1][p.column - 1] === player &&
     board[p.row - 2][p.column - 2] === 0
   ) {
@@ -208,6 +209,8 @@ function findPieceCaptured(p, player) {
   }
 
   if (
+    p.column < 8 &&
+    p.row > 2 &&
     board[p.row - 1][p.column + 1] === player &&
     board[p.row - 2][p.column + 2] === 0
   ) {
@@ -223,6 +226,8 @@ function findPieceCaptured(p, player) {
   }
 
   if (
+    p.row < 8 &&
+    p.column > 2 &&
     board[p.row + 1][p.column - 1] === player &&
     board[p.row + 2][p.column - 2] === 0
   ) {
@@ -238,6 +243,8 @@ function findPieceCaptured(p, player) {
   }
 
   if (
+    p.row < 8 &&
+    p.column < 8 &&
     board[p.row + 1][p.column + 1] === player &&
     board[p.row + 2][p.column + 2] === 0
   ) {

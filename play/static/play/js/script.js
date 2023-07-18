@@ -26,4 +26,4 @@ let board = [
   [1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
 ];
 
-builBoard();
+buildBoard();

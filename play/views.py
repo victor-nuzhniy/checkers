@@ -1,4 +1,6 @@
 """Module for class and function views 'play' app."""
+import json
+
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -28,3 +30,18 @@ class MainView(TemplateView):
     """Class for main view."""
 
     template_name = "play/index.html"
+
+    def get_context_data(self, **kwargs):
+        if self.request.user.id == self.kwargs.get("player_pk"):
+            current_user = 1
+            receiver = self.kwargs.get("rival_pk")
+        else:
+            current_user = -1
+            receiver = self.kwargs.get("player_pk")
+        context = super().get_context_data(**kwargs)
+        context["player_pk"] = json.dumps(self.kwargs.get("player_pk"))
+        context["rival_pk"] = json.dumps(self.kwargs.get("rival_pk"))
+        context["current_user"] = current_user
+        context["receiver"] = receiver
+        print(context)
+        return context

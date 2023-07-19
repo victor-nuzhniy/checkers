@@ -1,5 +1,6 @@
 """Module for class and function views 'play' app."""
 import json
+from typing import Dict
 
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
@@ -7,6 +8,8 @@ from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import FormView, TemplateView
+
+from play.utils import get_all_logged_in_users
 
 
 class RegisterView(FormView):
@@ -31,7 +34,8 @@ class MainView(TemplateView):
 
     template_name = "play/index.html"
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> Dict:
+        """Get context data for the view."""
         if self.request.user.id == self.kwargs.get("player_pk"):
             current_user = 1
             receiver = self.kwargs.get("rival_pk")
@@ -43,4 +47,17 @@ class MainView(TemplateView):
         context["rival_pk"] = json.dumps(self.kwargs.get("rival_pk"))
         context["current_user"] = current_user
         context["receiver"] = receiver
+        return context
+
+
+class StartView(TemplateView):
+    """Class for start page view."""
+
+    template_name = 'play/start.html'
+
+    def get_context_data(self, **kwargs) -> Dict:
+        """Get context data for the view."""
+        context = super().get_context_data(**kwargs)
+        context["logged_players"] = get_all_logged_in_users()
+        print(context)
         return context

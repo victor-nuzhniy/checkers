@@ -1,3 +1,4 @@
+const currentUserId = JSON.parse(document.getElementById('currentUserId').textContent);
 
       const socket = new WebSocket(
         "ws://"

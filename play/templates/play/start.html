@@ -13,4 +13,5 @@
         <div>is playing: <span id="{{ player.id }}">No</span></div>
     {% endfor %}
     <script src="{% static 'play/js/start.js' %}"></script>
+    {{ user.id|json_script:"currentUserId" }}
 {% endblock content %}

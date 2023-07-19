@@ -309,7 +309,7 @@ function buildBoard() {
     startSocket.onopen = function(){
          startSocket.send(JSON.stringify({
         'message': {
-        "type": "end_playing",
+        "type": "game_over",
         "winner": white ? playerPk : rivalPk,
         "loser": black ? rivalPk : playerPk,
         }

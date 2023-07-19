@@ -52,7 +52,11 @@ const currentUserName = JSON.parse(document.getElementById('current_username').t
     startSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
         console.log(data.message, "outside")
-        if (data.message["type"] == "propose_to_play" && data.message["player_id"] != currentUserId) {
+        if (
+            data.message["type"] == "propose_to_play"
+            && data.message["player_id"] != currentUserId
+            && data.message["rival_id"] == currentUserId
+        ) {
             let message = document.getElementById("proposal_" + data.message["player_id"])
             message.innerHTML =
             '<a href="http://'
@@ -65,7 +69,12 @@ const currentUserName = JSON.parse(document.getElementById('current_username').t
             + data.message["player_username"]
             + " wants to play with you!</a>"
             let board = document.getElementById("board")
-            board.innerHTML = '<div>' + message.innerHTML + '</div>' + board.innerHTML
+            board.innerHTML =
+                '<div>'
+                + data.message["player_username"]
+                + ' wants to play with you!'
+                + '</div>'
+                + board.innerHTML
             message.addEventListener("click", (event) => {
                 const answerSocket = new WebSocket(
                     "ws://"
@@ -75,7 +84,7 @@ const currentUserName = JSON.parse(document.getElementById('current_username').t
                       + "/"
                     );
                 answerSocket.onclose = function(e) {
-                    console.log('Socket closed unexpectedly');
+                    console.log('Socket closed unexpectedly 777777777777');
                     };
                 answerSocket.addEventListener("close", (event) => {
                         console.log("Socket was closed, start")
@@ -113,7 +122,7 @@ for(let i=0; i<statuses.length; i++){
                 console.log('Socket closed unexpectedly');
                 };
             proposeSocket.addEventListener("close", (event) => {
-                    console.log("Socket was closed, start")
+                    console.log("Socket was closed, start 4444444444")
                 })
             proposeSocket.onopen = function(){
                  proposeSocket.send(JSON.stringify({
@@ -121,13 +130,17 @@ for(let i=0; i<statuses.length; i++){
                 "type": "propose_to_play",
                 "player_id": currentUserId,
                 "player_username": currentUserName,
+                "rival_id": statuses[i].id,
                 }
               }));
             };
         proposeSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
             console.log(data.message, "outside")
-            if (data.message["type"] == "agre_to_play" || data.message["player_id"] == statuses[i].id) {
+            if (
+                data.message["type"] == "agree_to_play"
+                && data.message["player_id"] == statuses[i].id
+            ) {
                 let returnMessage = document.getElementById("proposal_" + data.message["player_id"])
                 returnMessage.innerHTML =
                 '<a href="http://'
@@ -138,7 +151,7 @@ for(let i=0; i<statuses.length; i++){
                 + data.message["player_id"]
                 + '/">'
                 + data.message["player_username"]
-                + ' agre to play with you! Click me to join the game!</a>'
+                + ' agree to play with you! Click me to join the game!</a>'
                 let board = document.getElementById("board")
                 board.innerHTML = '<div>' + returnMessage.innerHTML + '</div>' + board.innerHTML
             };

@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block content %}
+
     {% for player in logged_players %}
         <h4>{{ player.username }}</h4>
         <div>Plays number: {{ player.plays_number }}</div>
@@ -9,5 +10,7 @@
         <div>Draws: {{ player.draws }}</div>
         <div>Wins: {{ player.wins }}</div>
         <div>Points: {{ player.points }}</div>
+        <div>is playing: <span id="{{ player.id }}">No</span></div>
     {% endfor %}
+    <script src="{% static 'play/js/start.js' %}"></script>
 {% endblock content %}

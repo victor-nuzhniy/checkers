@@ -3,10 +3,16 @@
       const rivalPk = JSON.parse(document.getElementById('rival_pk').textContent);
       const currentUser = JSON.parse(document.getElementById('current_user').textContent);
       const receiver = JSON.parse(document.getElementById('receiver').textContent);
-
+      const userId = JSON.parse(document.getElementById('user_id').textContent);
 
       const socket = new WebSocket(
-        "ws://" + window.location.host + "/ws/"
+        "ws://"
+         + window.location.host
+          + "/ws/"
+          + playerPk
+          + "/"
+          + rivalPk
+          + "/"
         );
       socket.onmessage = function(e) {
         const data = JSON.parse(e.data);
@@ -49,6 +55,7 @@ function movePiece(e) {
 }
 
 function enableToCapture(p) {
+    if (currentPlayer == currentUser){
   let find = false;
   let pos = null;
   capturedPosition.forEach((element) => {
@@ -73,12 +80,23 @@ function enableToCapture(p) {
     capturedPosition = [];
     posNewPosition = [];
     displayCurrentPlayer();
+
+      console.log("builder", currentPlayer, currentUser, typeof currentPlayer, typeof currentUser)
+        console.log(3333333)
+      socket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        console.log("hello")
+        console.log(data.message)
+        };
+
+
     buildBoard();
     // check if there are possibility to capture other piece
     currentPlayer = reverse(currentPlayer);
   } else {
     buildBoard();
   }
+    }
 }
 
 function enableToMove(p) {
@@ -98,6 +116,8 @@ function enableToMove(p) {
 }
 
 function moveThePiece(newPosition) {
+  console.log("builder", currentPlayer, currentUser, typeof currentPlayer, typeof currentUser)
+  if (currentPlayer == currentUser){
   // if the current piece can move on, edit the board and rebuild
   board[newPosition.row][newPosition.column] = currentPlayer;
   board[readyToMove.row][readyToMove.column] = 0;
@@ -107,10 +127,19 @@ function moveThePiece(newPosition) {
   posNewPosition = [];
   capturedPosition = [];
 
+        console.log(3333333)
+      socket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        console.log(data.message)
+        };
+
+      console.log(socket, "socket")
+
   currentPlayer = reverse(currentPlayer);
 
   displayCurrentPlayer();
   buildBoard();
+    }
 }
 
 function findPossibleNewPosition(piece, player) {
@@ -207,26 +236,16 @@ function buildBoard() {
   if (black === 0 || white === 0) {
     modalOpen(black);
   }
-  console.log("builder", currentPlayer, currentUser, typeof currentPlayer, typeof currentUser)
-  if (currentPlayer == currentUser){
-        console.log(3333333)
-      const socket = new WebSocket(
-        "ws://" + window.location.host + "/ws/"
-        );
       socket.onmessage = function(e) {
         const data = JSON.parse(e.data);
-        console.log("hello")
+        console.log("How are you!!!!!!!!!!!!!1")
         console.log(data.message)
+        console.log(data.message["receiver"], typeof data.message["receiver"])
+        if (data.message["receiver"] == userId){
+            board = data.message["board"];
+            buildBoard();
+        }
         };
-      socket.onclose = function(e) {
-        console.log('Socket closed unexpectedly');
-        };
-        socket.onopen = function(){
-          socket.send(JSON.stringify({
-                'message': {"receiver": receiver, "board": board}
-            }));
-      }
-  }
 }
 
 function displayCurrentPlayer() {

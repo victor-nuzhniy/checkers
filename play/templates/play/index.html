@@ -51,30 +51,7 @@
     {{ rival_pk|json_script:"rival_pk" }}
     {{ current_user|json_script:"current_user" }}
     {{ receiver|json_script:"receiver" }}
-<!--    <script>-->
-<!--      const playerPk = JSON.parse(document.getElementById('player_pk').textContent);-->
-<!--      const rivalPk = JSON.parse(document.getElementById('rival_pk').textContent);-->
-
-<!--      const socket = new WebSocket(-->
-<!--        "ws://" + window.location.host + "/ws/"-->
-<!--        );-->
-<!--        console.log("ws://" + window.location.host)-->
-<!--      socket.onmessage = function(e) {-->
-<!--        const data = JSON.parse(e.data);-->
-<!--        console.log("hello")-->
-<!--        console.log(data.message)-->
-<!--        };-->
-<!--      socket.onclose = function(e) {-->
-<!--        console.log('Socket closed unexpectedly');-->
-<!--        };-->
-<!--      socket.onopen = function(){-->
-<!--                    socket.send(JSON.stringify({-->
-<!--                'message': {1: playerPk, 2: rivalPk}-->
-<!--            }));-->
-<!--      }-->
-
-
-<!--    </script>-->
+    {{ user.id|json_script:"user_id" }}
     <script src="{% static 'play/js/function.js' %}"></script>
     <script src="{% static 'play/js/script.js' %}"></script>
   </body>

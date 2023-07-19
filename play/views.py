@@ -7,11 +7,11 @@ from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpRequest
 from django.urls import reverse_lazy
 from django.views.generic import FormView, TemplateView
 
-from play.forms import UserProfileForm
+from play.forms import UserProfileForm, ResultDeleteForm
 from play.models import Result
 from play.utils import get_all_logged_in_users
 
@@ -97,7 +97,7 @@ class AccountUpdateView(UserPassesTestMixin, FormView, ABC):
     success_url = reverse_lazy("play:start")
 
     def test_func(self, **kwargs: Any) -> bool:
-        """Test whether kwargs pk is equal user.zoho_id."""
+        """Test whether kwargs pk is equal user.id."""
         if self.request.user.is_anonymous:
             return False
         return self.request.user.id == self.kwargs.get("pk")
@@ -116,4 +116,37 @@ class AccountUpdateView(UserPassesTestMixin, FormView, ABC):
 
         return context
 
+
+class ResultDeleteView(UserPassesTestMixin, FormView, ABC):
+    """Class view for deleting result by user."""
+
+    form_class = ResultDeleteForm
+    template_name = "play/profile.html"
+    success_url = "play:profile"
+
+    def test_func(self, **kwargs: Any) -> bool:
+        """Test whether kwargs pk is equal user.id."""
+        if self.request.user.is_anonymous:
+            return False
+        return self.request.user.id == self.kwargs.get("pk")
+
+    def get_success_url(self) -> HttpResponseRedirect:
+        """Get success url for redirect."""
+        url = super().get_success_url()
+        return reverse_lazy(url, kwargs={"pk": self.request.user.id})
+
+    def form_valid(self, form: ResultDeleteForm) -> HttpResponseRedirect:
+        """
+        Redirect to the success url if the form is valid.
+
+        Perform deleting Result record.
+        """
+        Result.objects.get(id=form.cleaned_data.get("id")).delete()
+        return super().form_valid(form)
+
+    def get(
+        self, request: HttpRequest, *args: Any, **kwargs: Any
+    ) -> HttpResponseRedirect:
+        """Rewrite class get method to return get_success_url redirection."""
+        return HttpResponseRedirect(self.get_success_url())
 

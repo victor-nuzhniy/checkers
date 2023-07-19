@@ -43,5 +43,4 @@ class MainView(TemplateView):
         context["rival_pk"] = json.dumps(self.kwargs.get("rival_pk"))
         context["current_user"] = current_user
         context["receiver"] = receiver
-        print(context)
         return context

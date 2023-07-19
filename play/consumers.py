@@ -26,7 +26,6 @@ class PlayConsumer(WebsocketConsumer):
     def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
-        print(message, "message")
         async_to_sync(self.channel_layer.group_send)(
             self.play_group_name, {"type": "play_message", "message": message}
         )

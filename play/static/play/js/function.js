@@ -14,20 +14,12 @@
           + rivalPk
           + "/"
         );
-      socket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        console.log("hello")
-        console.log(data.message)
-        };
       socket.onclose = function(e) {
-        console.log('Socket closed unexpectedly');
+        console.log('Socket closed unexpectedly 1');
         };
-      socket.onopen = function(){
-                    socket.send(JSON.stringify({
-                'message': {1: playerPk, 2: rivalPk}
-            }));
-      }
-
+        socket.addEventListener("close", (event) => {
+            console.log("Socket was closed, SSSSSSSSSSS")
+        })
 
 
 
@@ -46,12 +38,16 @@ function movePiece(e) {
       enableToMove(p);
     }
   }
+    posNewPosition = [];
+    capturedPosition = [];
   if (currentPlayer === board[row][column]) {
     player = reverse(currentPlayer);
     if (!findPieceCaptured(p, player)) {
       findPossibleNewPosition(p, player);
     }
   }
+  console.log(posNewPosition, "posNewPosition")
+  console.log(capturedPosition, "capturedPosition")
 }
 
 function enableToCapture(p) {
@@ -81,13 +77,23 @@ function enableToCapture(p) {
     posNewPosition = [];
     displayCurrentPlayer();
 
-      console.log("builder", currentPlayer, currentUser, typeof currentPlayer, typeof currentUser)
-        console.log(3333333)
-      socket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        console.log("hello")
-        console.log(data.message)
+     const socket = new WebSocket(
+        "ws://"
+         + window.location.host
+          + "/ws/"
+          + playerPk
+          + "/"
+          + rivalPk
+          + "/"
+        );
+      socket.onclose = function(e) {
+        console.log('Socket closed unexpectedly 2');
         };
+          socket.onopen = function(){
+        socket.send(JSON.stringify({
+            'message': {"receiver": receiver, "board": board}
+        }));
+        }
 
 
     buildBoard();
@@ -127,13 +133,23 @@ function moveThePiece(newPosition) {
   posNewPosition = [];
   capturedPosition = [];
 
-        console.log(3333333)
-      socket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        console.log(data.message)
+       const socket = new WebSocket(
+        "ws://"
+         + window.location.host
+          + "/ws/"
+          + playerPk
+          + "/"
+          + rivalPk
+          + "/"
+        );
+      socket.onclose = function(e) {
+        console.log('Socket closed unexpectedly 3');
         };
-
-      console.log(socket, "socket")
+      socket.onopen = function(){
+         socket.send(JSON.stringify({
+        'message': {"receiver": receiver, "board": board}
+      }));
+      }
 
   currentPlayer = reverse(currentPlayer);
 
@@ -238,12 +254,14 @@ function buildBoard() {
   }
       socket.onmessage = function(e) {
         const data = JSON.parse(e.data);
-        console.log("How are you!!!!!!!!!!!!!1")
         console.log(data.message)
         console.log(data.message["receiver"], typeof data.message["receiver"])
         if (data.message["receiver"] == userId){
             board = data.message["board"];
             buildBoard();
+              currentPlayer = reverse(currentPlayer);
+
+              displayCurrentPlayer();
         }
         };
 }
@@ -260,8 +278,8 @@ function displayCurrentPlayer() {
 function findPieceCaptured(p, player) {
   let found = false;
   if (
-    p.row > 2 &&
-    p.column > 2 &&
+    p.row >= 2 &&
+    p.column >= 2 &&
     board[p.row - 1][p.column - 1] === player &&
     board[p.row - 2][p.column - 2] === 0
   ) {
@@ -278,7 +296,7 @@ function findPieceCaptured(p, player) {
 
   if (
     p.column < 8 &&
-    p.row > 2 &&
+    p.row >= 2 &&
     board[p.row - 1][p.column + 1] === player &&
     board[p.row - 2][p.column + 2] === 0
   ) {
@@ -295,7 +313,7 @@ function findPieceCaptured(p, player) {
 
   if (
     p.row < 8 &&
-    p.column > 2 &&
+    p.column >= 2 &&
     board[p.row + 1][p.column - 1] === player &&
     board[p.row + 2][p.column - 2] === 0
   ) {

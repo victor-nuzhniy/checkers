@@ -12,6 +12,11 @@
         <div>Rival  count  date</div>
         {% for result in results %}
             <div>{{ result.rival }}  {{ result.count }}  {{ result.created_at }}</div>
+            <form method="post" action="{% url 'play:delete_result' user.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{ result.id }}"/>
+                <input type="submit" value="Delete result"/>
+            </form>
         {% endfor %}
 
 {% endblock content %}

@@ -12,3 +12,9 @@ class UserProfileForm(forms.ModelForm):
         """Class Meta for UserProfileForm."""
         model = User
         fields = ("username", "email")
+
+
+class ResultDeleteForm(forms.Form):
+    """Form class for delete result instance."""
+
+    id = forms.IntegerField(widget=forms.HiddenInput())

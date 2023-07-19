@@ -20,9 +20,63 @@
         socket.addEventListener("close", (event) => {
             console.log("Socket was closed, SSSSSSSSSSS")
         })
+          socket.onopen = function(){
+         socket.send(JSON.stringify({
+        'message': {
+        "type": "start_playing",
+        "player_pk": playerPk,
+        "rival_pk": rivalPk,
+        }
+      }));
+    }
 
-
-
+    const startSocket = new WebSocket(
+        "ws://"
+         + window.location.host
+          + "/ws/start/1/"
+        );
+    startSocket.onclose = function(e) {
+        console.log('Socket closed unexpectedly 1');
+        };
+    startSocket.addEventListener("close", (event) => {
+            console.log("Socket was closed, start")
+        })
+    startSocket.onopen = function(){
+         startSocket.send(JSON.stringify({
+        'message': {
+        "type": "start_playing",
+        "player_pk": playerPk,
+        "rival_pk": rivalPk,
+        }
+      }));
+    }
+    startSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        console.log(data.message, "outside")
+        if (data.message["type"] == "start_refresh"){
+            const startSocket = new WebSocket(
+            "ws://"
+             + window.location.host
+              + "/ws/start/1/"
+            );
+            startSocket.onclose = function(e) {
+                console.log('Socket closed unexpectedly 1');
+                };
+            startSocket.addEventListener("close", (event) => {
+                    console.log("Socket was closed, start")
+                })
+            startSocket.onopen = function(){
+                console.log("inside")
+                 startSocket.send(JSON.stringify({
+                'message': {
+                "type": "start_playing",
+                "player_pk": playerPk,
+                "rival_pk": rivalPk,
+                }
+              }));
+            }
+        };
+    };
 
 
 function movePiece(e) {
@@ -251,11 +305,21 @@ function buildBoard() {
 
   if (black === 0 || white === 0) {
     modalOpen(black);
+
+    startSocket.onopen = function(){
+         startSocket.send(JSON.stringify({
+        'message': {
+        "type": "end_playing",
+        "winner": white ? playerPk : rivalPk,
+        "loser": black ? rivalPk : playerPk,
+        }
+      }));
+    }
+
   }
       socket.onmessage = function(e) {
         const data = JSON.parse(e.data);
         console.log(data.message)
-        console.log(data.message["receiver"], typeof data.message["receiver"])
         if (data.message["receiver"] == userId){
             board = data.message["board"];
             buildBoard();

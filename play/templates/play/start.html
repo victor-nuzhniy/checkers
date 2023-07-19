@@ -10,8 +10,11 @@
         <div>Draws: {{ player.draws }}</div>
         <div>Wins: {{ player.wins }}</div>
         <div>Points: {{ player.points }}</div>
-        <div>is playing: <span id="{{ player.id }}">No</span></div>
+        <div>ready to play: <span id="{{ player.id }}" class="ready-to-play">Yes</span></div>
+        <div id="proposal_{{ player.id }}"></div>
     {% endfor %}
+    <div id="board"></div>
+    {{ user.id|json_script:"current_user_id" }}
+    {{ user.username|json_script:"current_username" }}
     <script src="{% static 'play/js/start.js' %}"></script>
-    {{ user.id|json_script:"currentUserId" }}
 {% endblock content %}

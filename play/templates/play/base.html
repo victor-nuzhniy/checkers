@@ -24,9 +24,12 @@
             crossorigin="anonymous"
     ></script>
 </head>
-<body>
+<body class="bg-light">
     {% include 'play/samples/navbar.html' %}
-    {% block content %}
-    {% endblock content %}
+    <div class="w-100 p-3">
+        {% block content %}
+        {% endblock content %}
+    </div>
+    {% include 'play/samples/footer.html' %}
 </body>
 </html>

@@ -59,5 +59,4 @@ class StartView(TemplateView):
         """Get context data for the view."""
         context = super().get_context_data(**kwargs)
         context["logged_players"] = get_all_logged_in_users()
-        print(context)
         return context

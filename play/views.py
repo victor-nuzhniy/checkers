@@ -37,6 +37,7 @@ class MainView(TemplateView):
     """Class for main view."""
 
     template_name = "play/index.html"
+    extra_context = {"title": "Checkers"}
 
     def get_context_data(self, **kwargs: Any) -> Dict:
         """Get context data for the view."""
@@ -58,6 +59,7 @@ class StartView(TemplateView):
     """Class view for start page."""
 
     template_name = 'play/start.html'
+    extra_context = {"title": "Board"}
 
     def get_context_data(self, **kwargs: Any) -> Dict:
         """Get context data for the view."""
@@ -70,6 +72,7 @@ class ProfileView(UserPassesTestMixin, TemplateView):
     """Class view for user account."""
 
     template_name = "play/profile.html"
+    extra_context = {"title": "Player profile"}
 
     def test_func(self, **kwargs: Any) -> bool:
         """Test whether kwargs pk is equal user.zoho_id."""
@@ -95,6 +98,7 @@ class AccountUpdateView(UserPassesTestMixin, FormView, ABC):
     form_class = UserProfileForm
     template_name = "play/account.html"
     success_url = reverse_lazy("play:start")
+    extra_context = {"title": "Player account"}
 
     def test_func(self, **kwargs: Any) -> bool:
         """Test whether kwargs pk is equal user.id."""
@@ -149,4 +153,3 @@ class ResultDeleteView(UserPassesTestMixin, FormView, ABC):
     ) -> HttpResponseRedirect:
         """Rewrite class get method to return get_success_url redirection."""
         return HttpResponseRedirect(self.get_success_url())
-

@@ -1,0 +1,17 @@
+{% extends 'play/base.html' %}
+{% load static %}
+
+{% block content %}
+    <h4>Player {{ statistics.username }}</h4>
+        <div>Plays number: {{ statistics.plays_number }}</div>
+        <div>Loses: {{ statistics.loses }}</div>
+        <div>Draws: {{ statistics.draws }}</div>
+        <div>Wins: {{ statistics.wins }}</div>
+        <div>Points: {{ statistics.points }}</div>
+        <h5>Results</h5>
+        <div>Rival  count  date</div>
+        {% for result in results %}
+            <div>{{ result.rival }}  {{ result.count }}  {{ result.created_at }}</div>
+        {% endfor %}
+
+{% endblock content %}

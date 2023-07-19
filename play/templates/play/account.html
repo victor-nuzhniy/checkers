@@ -1,0 +1,12 @@
+{% extends 'play/base.html' %}
+{% load static %}
+
+{% block content %}
+    <h3>{{ user.username }}</h3>
+    <form action="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Save"/>
+    </form>
+
+{% endblock content %}

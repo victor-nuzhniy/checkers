@@ -95,6 +95,7 @@ function movePiece(e) {
   }
     posNewPosition = [];
     capturedPosition = [];
+    capturedMap = new Map();
   if (currentPlayer * value > 0) {
     player = reverse(currentPlayer);
     if (currentPlayer * value > 1){
@@ -134,6 +135,7 @@ function enableToCapture(p) {
     readyToMove = null;
     capturedPosition = [];
     posNewPosition = [];
+    capturedMap = new Map();
     displayCurrentPlayer();
 
      const socket = new WebSocket(
@@ -190,6 +192,7 @@ function moveThePiece(newPosition) {
   readyToMove = null;
   posNewPosition = [];
   capturedPosition = [];
+  capturedMap = new Map();
 
        const socket = new WebSocket(
         "ws://"
@@ -502,7 +505,7 @@ function findKingNewPositionDirection(y, x, p, player, first){
         } else {
             if (i + y != row_limit && j + x != column_limit) {
                 if (board[i][j] * player > 0 && board[i + y][j + x] === 0) {
-                    let pieceCapturedArr = pieceInCapturedPosition(p)
+                    let pieceCapturedArr = [...pieceInCapturedPosition(p)]
                     pieceCapturedArr.push(new Piece(i, j))
                     if (first){
                         readyToMove = p
@@ -512,7 +515,8 @@ function findKingNewPositionDirection(y, x, p, player, first){
                     while (i != row_limit && j != column_limit) {
                         if (board[i][j] === 0){
                             let newPosition = new Piece(i, j, p.val)
-                            if (!pieceInCapturedPosition(newPosition).length){
+                            if (!capturedMap.has(i.toString() + j.toString())){
+                                capturedMap.set(i.toString() + j.toString(), [-y, -x])
                                 markPossiblePosition(newPosition);
                                 localCapturedPosition.push({
                                     newPosition: newPosition,
@@ -535,19 +539,28 @@ function findKingNewPositionDirection(y, x, p, player, first){
     return localCapturedPosition
 }
 
+function isDifferent(arrA, arrB) {
+    for (let i = 0; i < arrA.length; i++){
+        if (arrA[i] !== arrB[i]) {
+            return true
+        }
+    }
+    return false
+}
+
 function findKingNewPosition(p, player, first=true){
     let localCapturedPosition = []
-    findKingNewPositionDirection(-1, -1, p, player, first).forEach((element) => {
-        localCapturedPosition.push(element)
-    })
-    findKingNewPositionDirection(-1, 1, p, player, first).forEach((element) => {
-        localCapturedPosition.push(element)
-    })
-    findKingNewPositionDirection(1, -1, p, player, first).forEach((element) => {
-        localCapturedPosition.push(element)
-    })
-    findKingNewPositionDirection(1, 1, p, player, first).forEach((element) => {
-        localCapturedPosition.push(element)
+    let directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]]
+    let forbiddenDirection = capturedMap.get(p.row.toString() + p.column.toString())
+    if (!forbiddenDirection){
+        forbiddenDirection = [0, 0]
+    }
+    directions.forEach((elem) => {
+        if (isDifferent(elem, forbiddenDirection)) {
+            findKingNewPositionDirection(elem[0], elem[1], p, player, first).forEach((element) => {
+                localCapturedPosition.push(element)
+            })
+        }
     })
     localCapturedPosition.forEach((element) => {
         capturedPosition.push(element)
@@ -555,8 +568,4 @@ function findKingNewPosition(p, player, first=true){
     localCapturedPosition.forEach((element) => {
         findKingNewPosition(element.newPosition, player, false)
     })
-    console.log(capturedPosition, p, 11111111111)
-    if (first) {
-        console.log(capturedPosition, 9999999999)
-    }
 }

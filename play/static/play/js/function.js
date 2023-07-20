@@ -1,36 +1,60 @@
 
-      const playerPk = JSON.parse(document.getElementById('player_pk').textContent);
-      const rivalPk = JSON.parse(document.getElementById('rival_pk').textContent);
-      const currentUser = JSON.parse(document.getElementById('current_user').textContent);
-      const receiver = JSON.parse(document.getElementById('receiver').textContent);
-      const userId = JSON.parse(document.getElementById('user_id').textContent);
+const playerPk = JSON.parse(document.getElementById('player_pk').textContent);
+const rivalPk = JSON.parse(document.getElementById('rival_pk').textContent);
+const currentUser = JSON.parse(document.getElementById('current_user').textContent);
+const receiver = JSON.parse(document.getElementById('receiver').textContent);
+const userId = JSON.parse(document.getElementById('user_id').textContent);
 
-      const socket = new WebSocket(
-        "ws://"
-         + window.location.host
-          + "/ws/"
-          + playerPk
-          + "/"
-          + rivalPk
-          + "/"
-        );
-      socket.onclose = function(e) {
-        console.log('Socket closed unexpectedly 1');
-        };
-        socket.addEventListener("close", (event) => {
-            console.log("Socket was closed, SSSSSSSSSSS")
-        })
-          socket.onopen = function(){
-         socket.send(JSON.stringify({
+const socket = new WebSocket(
+    "ws://"
+     + window.location.host
+      + "/ws/"
+      + playerPk
+      + "/"
+      + rivalPk
+      + "/"
+);
+socket.onclose = function(e) {
+    console.log('Socket closed unexpectedly 1');
+};
+socket.addEventListener("close", (event) => {
+    console.log("Socket was closed, SSSSSSSSSSS")
+});
+socket.onopen = function(){
+     socket.send(JSON.stringify({
         'message': {
         "type": "start_playing",
         "player_pk": playerPk,
         "rival_pk": rivalPk,
         }
-      }));
-    }
+    }));
+};
 
-    const startSocket = new WebSocket(
+const startSocket = new WebSocket(
+    "ws://"
+     + window.location.host
+      + "/ws/start/1/"
+    );
+startSocket.onclose = function(e) {
+    console.log('Socket closed unexpectedly 1');
+    };
+startSocket.addEventListener("close", (event) => {
+        console.log("Socket was closed, start")
+    })
+startSocket.onopen = function(){
+     startSocket.send(JSON.stringify({
+        'message': {
+        "type": "start_playing",
+        "player_pk": playerPk,
+        "rival_pk": rivalPk,
+        }
+    }));
+}
+startSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    console.log(data.message, "outside")
+    if (data.message["type"] == "start_refresh"){
+        const startSocket = new WebSocket(
         "ws://"
          + window.location.host
           + "/ws/start/1/"
@@ -41,42 +65,18 @@
     startSocket.addEventListener("close", (event) => {
             console.log("Socket was closed, start")
         })
-    startSocket.onopen = function(){
-         startSocket.send(JSON.stringify({
-        'message': {
-        "type": "start_playing",
-        "player_pk": playerPk,
-        "rival_pk": rivalPk,
-        }
-      }));
-    }
-    startSocket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        console.log(data.message, "outside")
-        if (data.message["type"] == "start_refresh"){
-            const startSocket = new WebSocket(
-            "ws://"
-             + window.location.host
-              + "/ws/start/1/"
-            );
-            startSocket.onclose = function(e) {
-                console.log('Socket closed unexpectedly 1');
-                };
-            startSocket.addEventListener("close", (event) => {
-                    console.log("Socket was closed, start")
-                })
-            startSocket.onopen = function(){
-                console.log("inside")
-                 startSocket.send(JSON.stringify({
-                'message': {
-                "type": "start_playing",
-                "player_pk": playerPk,
-                "rival_pk": rivalPk,
-                }
-              }));
+        startSocket.onopen = function(){
+            console.log("inside")
+             startSocket.send(JSON.stringify({
+            'message': {
+            "type": "start_playing",
+            "player_pk": playerPk,
+            "rival_pk": rivalPk,
             }
-        };
+          }));
+        }
     };
+};
 
 
 function movePiece(e) {
@@ -342,8 +342,8 @@ function displayCurrentPlayer() {
 function findPieceCaptured(p, player) {
   let found = false;
   if (
-    p.row >= 2 &&
-    p.column >= 2 &&
+    p.row > 1 &&
+    p.column > 1 &&
     board[p.row - 1][p.column - 1] === player &&
     board[p.row - 2][p.column - 2] === 0
   ) {
@@ -360,7 +360,7 @@ function findPieceCaptured(p, player) {
 
   if (
     p.column < 8 &&
-    p.row >= 2 &&
+    p.row > 1 &&
     board[p.row - 1][p.column + 1] === player &&
     board[p.row - 2][p.column + 2] === 0
   ) {
@@ -377,7 +377,7 @@ function findPieceCaptured(p, player) {
 
   if (
     p.row < 8 &&
-    p.column >= 2 &&
+    p.column > 1 &&
     board[p.row + 1][p.column - 1] === player &&
     board[p.row + 2][p.column - 2] === 0
   ) {

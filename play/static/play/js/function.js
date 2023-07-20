@@ -124,6 +124,13 @@ function enableToCapture(p) {
   if (find) {
     // if the current piece can move on, edit the board and rebuild
     board[pos.row][pos.column] = pos.val; // move the piece
+    if (pos.row === 0 && pos.val === 1) {
+        board[pos.row][pos.column] = 2
+    } else if (pos.row === 9 && pos.val === -1) {
+        board[pos.row][pos.column] = -2
+    } else {
+        board[pos.row][pos.column] = pos.val;
+    }
     board[readyToMove.row][readyToMove.column] = 0; // delete the old position
     // delete the piece that had been captured
     old.forEach((element) => {
@@ -185,7 +192,13 @@ function enableToMove(p) {
 function moveThePiece(newPosition) {
   if (currentPlayer == currentUser){
   // if the current piece can move on, edit the board and rebuild
-  board[newPosition.row][newPosition.column] = newPosition.val;
+  if (newPosition.row === 0 && newPosition.val === 1) {
+    board[newPosition.row][newPosition.column] = 2;
+  } else if (newPosition.row === 9 && newPosition.val === -1) {
+    board[newPosition.row][newPosition.column] = -2;
+  } else {
+    board[newPosition.row][newPosition.column] = newPosition.val;
+  }
   board[readyToMove.row][readyToMove.column] = 0;
 
   // init value

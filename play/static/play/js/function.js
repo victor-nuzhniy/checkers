@@ -97,12 +97,14 @@ function movePiece(e) {
     capturedPosition = [];
   if (currentPlayer * value > 0) {
     player = reverse(currentPlayer);
-    if (!findPieceCaptured(p, player)) {
-      findPossibleNewPosition(p, player);
+    if (currentPlayer * value > 1){
+        findKingNewPosition(p, player)
+    } else{
+        if (!findPieceCaptured(p, player)) {
+          findPossibleNewPosition(p, player);
+        }
     }
   }
-  console.log(posNewPosition, "posNewPosition")
-  console.log(capturedPosition, "capturedPosition")
 }
 
 function enableToCapture(p) {
@@ -480,4 +482,81 @@ function modalClose() {
 
 function reverse(player) {
   return player === -1 ? 1 : -1;
+}
+
+function findKingNewPositionDirection(y, x, p, player, first){
+    console.log()
+    let localCapturedPosition = []
+    let i = p.row + y
+    let j = p.column + x
+    row_limit = y > 0 ? 10 : -1
+    column_limit = x > 0 ? 10 : -1
+    while (i != row_limit && j != column_limit){
+        if (board[i][j] === 0){
+            if (first){
+                let piece = new Piece(i, j, p.val)
+                markPossiblePosition(piece)
+                posNewPosition.push(piece)
+                readyToMove = p
+            }
+        } else {
+            if (i + y != row_limit && j + x != column_limit) {
+                if (board[i][j] * player > 0 && board[i + y][j + x] === 0) {
+                    let pieceCapturedArr = pieceInCapturedPosition(p)
+                    pieceCapturedArr.push(new Piece(i, j))
+                    if (first){
+                        readyToMove = p
+                    }
+                    i += y
+                    j += x
+                    while (i != row_limit && j != column_limit) {
+                        if (board[i][j] === 0){
+                            let newPosition = new Piece(i, j, p.val)
+                            if (!pieceInCapturedPosition(newPosition).length){
+                                markPossiblePosition(newPosition);
+                                localCapturedPosition.push({
+                                    newPosition: newPosition,
+                                    pieceCaptured: pieceCapturedArr,
+                                });
+                            }
+                        } else {
+                            break;
+                        }
+                        i += y
+                        j += x
+                    }
+                };
+            };
+            return localCapturedPosition
+        };
+        i += y
+        j += x
+    };
+    return localCapturedPosition
+}
+
+function findKingNewPosition(p, player, first=true){
+    let localCapturedPosition = []
+    findKingNewPositionDirection(-1, -1, p, player, first).forEach((element) => {
+        localCapturedPosition.push(element)
+    })
+    findKingNewPositionDirection(-1, 1, p, player, first).forEach((element) => {
+        localCapturedPosition.push(element)
+    })
+    findKingNewPositionDirection(1, -1, p, player, first).forEach((element) => {
+        localCapturedPosition.push(element)
+    })
+    findKingNewPositionDirection(1, 1, p, player, first).forEach((element) => {
+        localCapturedPosition.push(element)
+    })
+    localCapturedPosition.forEach((element) => {
+        capturedPosition.push(element)
+    })
+    localCapturedPosition.forEach((element) => {
+        findKingNewPosition(element.newPosition, player, false)
+    })
+    console.log(capturedPosition, p, 11111111111)
+    if (first) {
+        console.log(capturedPosition, 9999999999)
+    }
 }

@@ -26,13 +26,16 @@ const currentUserName = JSON.parse(document.getElementById('current_username').t
              rivalStatus = document.getElementById(data.message["rival_pk"])
             playerStatus.innerHTML = "No"
             rivalStatus.innerHTML = "No"
-
+            playerStatus.removeAttribute("style")
+            rivalStatus.removeAttribute("style")
         };
         if (data.message["type"] == "end_playing"){
              playerStatus = document.getElementById(data.message["winner"])
              rivalStatus = document.getElementById(data.message["loser"])
             playerStatus.innerHTML = "Yes"
             rivalStatus.innerHTML = "Yes"
+            playerStatus.setAttribute("style", "cursor:pointer; color:blue")
+            rivalStatus.setAttribute("style", "cursor:pointer; color:blue")
         };
         };
 
@@ -51,7 +54,7 @@ const currentUserName = JSON.parse(document.getElementById('current_username').t
         })
     startSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
-        console.log(data.message, "outside")
+        console.log(data.message, "outside", 9999999999999)
         if (
             data.message["type"] == "propose_to_play"
             && data.message["player_id"] != currentUserId
@@ -67,12 +70,12 @@ const currentUserName = JSON.parse(document.getElementById('current_username').t
             + currentUserId
             + '/">'
             + data.message["player_username"]
-            + " wants to play with you!</a>"
+            + " invite!</a>"
             let board = document.getElementById("board")
             board.innerHTML =
                 '<div>'
                 + data.message["player_username"]
-                + ' wants to play with you!'
+                + ' invite!'
                 + '</div>'
                 + board.innerHTML
             message.addEventListener("click", (event) => {
@@ -149,9 +152,9 @@ for(let i=0; i<statuses.length; i++){
                 + currentUserId
                 + '/'
                 + data.message["player_id"]
-                + '/">'
+                + '/">Join '
                 + data.message["player_username"]
-                + ' agree to play with you! Click me to join the game!</a>'
+                + '!</a>'
                 let board = document.getElementById("board")
                 board.innerHTML = '<div>' + returnMessage.innerHTML + '</div>' + board.innerHTML
             };

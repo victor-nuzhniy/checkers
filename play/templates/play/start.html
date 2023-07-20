@@ -2,18 +2,46 @@
 {% load static %}
 
 {% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-xl-6 text-center">Messages</div>
+            <div class="col-12 col-xl-6 text-center"></div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-xl-6 text-centered" style="max-height: 800px;" id="board"></div>
+            <div class="col-12 col-xl-6 bg-light">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Player</th>
+                            <th scope="col">Plays</th>
+                            <th scope="col">Loses</th>
+                            <th scope="col">Draw</th>
+                            <th scope="col">Wins</th>
+                            <th scope="col">Points</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Info</th>
+                        </tr>
+                    </thead>
+                    {% for player in logged_players %}
+                        <tbody>
+                            <tr>
+                                <th scope="row">{{ player.username}}</th>
+                                <th>{{ player.plays_number }}</th>
+                                <th>{{ player.loses }}</th>
+                                <th>{{ player.draws }}</th>
+                                <th>{{ player.wins }}</th>
+                                <th>{{ player.points }}</th>
+                                <th id="{{ player.id }}" class="ready-to-play" style="cursor:pointer; color:blue">Yes</th>
+                                <th id="proposal_{{ player.id }}" style="font-size:12px"></th>
+                            </tr>
+                        </tbody>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
 
-    {% for player in logged_players %}
-        <h4>{{ player.username }}</h4>
-        <div>Plays number: {{ player.plays_number }}</div>
-        <div>Loses: {{ player.loses }}</div>
-        <div>Draws: {{ player.draws }}</div>
-        <div>Wins: {{ player.wins }}</div>
-        <div>Points: {{ player.points }}</div>
-        <div>ready to play: <span id="{{ player.id }}" class="ready-to-play">Yes</span></div>
-        <div id="proposal_{{ player.id }}"></div>
-    {% endfor %}
-    <div id="board"></div>
     {{ user.id|json_script:"current_user_id" }}
     {{ user.username|json_script:"current_username" }}
     <script src="{% static 'play/js/start.js' %}"></script>

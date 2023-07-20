@@ -4,16 +4,12 @@ body {
   padding: 0;
 }
 
-.container {
+.custom-container {
   position: fixed;
   width: 100%;
   height: 100%;
   padding: 0;
   margin: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
   gap: 30px;
 }
 
@@ -59,13 +55,13 @@ body {
   flex-direction: column;
 }
 
-.game .row {
+.game .r {
   width: 100%;
   height: 10%;
   display: flex;
 }
 
-.game .row .column {
+.game .r .column {
   width: 10%;
   height: 100%;
   display: flex;
@@ -73,25 +69,25 @@ body {
   justify-content: center;
 }
 
-.game .row .column .occupied {
+.game .r .column .occupied {
   width: 80%;
   height: 80%;
   border-radius: 50%;
 }
 
-.game .row .column .occupied.blackPiece {
+.game .r .column .occupied.blackPiece {
   background-color: black;
 }
 
-.game .row .column .occupied.whitePiece {
+.game .r .column .occupied.whitePiece {
   background-color: white;
 }
 
-.game .row .column.whiteCase {
+.game .r .column.whiteCase {
   background-color: #4c382e;
 }
 
-.game .row .column.blackCase {
+.game .r .column.blackCase {
   background-color: #ecc59a;
 }
 

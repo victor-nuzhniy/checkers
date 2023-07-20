@@ -14,22 +14,36 @@
       integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm"
       crossorigin="anonymous"
     />
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+            crossorigin="anonymous"
+    >
+    <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"
+    ></script>
   </head>
-  <body>
-    <div class="container">
-      <div class="next-player counter">
-        <div class="occupied whitePiece" id="next-player"></div>
-        Player
-      </div>
-      <div class="game" id="game"></div>
-      <div class="counter">
-        <div>
-          <div class="occupied whitePiece"></div>
-          <span id="white-player-count-pieces">10</span>
+  <body class="bg-light">
+    {% include 'play/samples/navbar.html' %}
+    <div class="custom-container d-flex flex-row justify-content-center align-items-start">
+      <div class="d-flex flex-column">
+        <div class="next-player counter my-2">
+          <div class="occupied whitePiece" id="next-player"></div>
+          Player
         </div>
-        <div>
-          <div class="occupied blackPiece"></div>
-          <span id="black-player-count-pieces">10</span>
+        <div class="game" id="game"></div>
+        <div class="counter mt-2">
+          <div>
+            <div class="occupied whitePiece"></div>
+            <span id="white-player-count-pieces">10</span>
+          </div>
+          <div>
+            <div class="occupied blackPiece"></div>
+            <span id="black-player-count-pieces">10</span>
+          </div>
         </div>
       </div>
     </div>
@@ -47,6 +61,7 @@
           </div>
       </div>
     </div>
+    {% include 'play/samples/footer.html' %}
     {{ player_pk|json_script:"player_pk" }}
     {{ rival_pk|json_script:"rival_pk" }}
     {{ current_user|json_script:"current_user" }}

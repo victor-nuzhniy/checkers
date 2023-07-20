@@ -242,7 +242,7 @@ function buildBoard() {
   for (let i = 0; i < board.length; i++) {
     const element = board[i];
     let row = document.createElement("div"); // create div for each row
-    row.setAttribute("class", "row");
+    row.setAttribute("class", "r");
 
     for (let j = 0; j < element.length; j++) {
       const elmt = element[j];

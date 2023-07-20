@@ -5,6 +5,9 @@ class Piece {
   }
 
   compare(piece) {
+    if (!piece){
+        return false
+    }
     return piece.row === this.row && piece.column === this.column;
   }
 }

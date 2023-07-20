@@ -96,7 +96,7 @@ function movePiece(e) {
     capturedPosition = [];
   if (currentPlayer === board[row][column]) {
     player = reverse(currentPlayer);
-    if (!findPieceCaptured(p, player)) {
+    if (!findPieceCaptured(player, p)) {
       findPossibleNewPosition(p, player);
     }
   }
@@ -122,7 +122,9 @@ function enableToCapture(p) {
     board[pos.row][pos.column] = currentPlayer; // move the piece
     board[readyToMove.row][readyToMove.column] = 0; // delete the old position
     // delete the piece that had been captured
-    board[old.row][old.column] = 0;
+    old.forEach((element) => {
+        board[element.row][element.column] = 0;
+    });
 
     // reinit ready to move value
 
@@ -339,23 +341,42 @@ function displayCurrentPlayer() {
   }
 }
 
-function findPieceCaptured(p, player) {
+function pieceInCapturedPosition(p){
+    let arr = []
+    capturedPosition.forEach((element) => {
+        if (element.newPosition.compare(p)){
+            arr = element.pieceCaptured
+            return;
+        }
+    });
+    return arr
+}
+
+function findPieceCaptured(player, p, prev=null) {
   let found = false;
+  let existPieceCapturedArr = pieceInCapturedPosition(p)
+  let localCapturedPosition = []
   if (
     p.row > 1 &&
     p.column > 1 &&
     board[p.row - 1][p.column - 1] === player &&
     board[p.row - 2][p.column - 2] === 0
   ) {
-    found = true;
     newPosition = new Piece(p.row - 2, p.column - 2);
-    readyToMove = p;
-    markPossiblePosition(newPosition);
-    // save the new position and the opponent's piece position
-    capturedPosition.push({
-      newPosition: newPosition,
-      pieceCaptured: new Piece(p.row - 1, p.column - 1),
-    });
+    if (!newPosition.compare(prev)){
+        found = true;
+        if (!prev){
+            readyToMove = p;
+        }
+        markPossiblePosition(newPosition);
+        let pieceCapturedArr = [...existPieceCapturedArr]
+        pieceCapturedArr.push(new Piece(p.row - 1, p.column - 1))
+        // save the new position and the opponent's piece position
+        localCapturedPosition.push({
+          newPosition: newPosition,
+          pieceCaptured: pieceCapturedArr,
+        });
+    }
   }
 
   if (
@@ -364,15 +385,21 @@ function findPieceCaptured(p, player) {
     board[p.row - 1][p.column + 1] === player &&
     board[p.row - 2][p.column + 2] === 0
   ) {
-    found = true;
     newPosition = new Piece(p.row - 2, p.column + 2);
-    readyToMove = p;
-    markPossiblePosition(newPosition);
-    // save the new position and the opponent's piece position
-    capturedPosition.push({
-      newPosition: newPosition,
-      pieceCaptured: new Piece(p.row - 1, p.column + 1),
-    });
+    if (!newPosition.compare(prev)){
+        found = true;
+        if (!prev){
+            readyToMove = p;
+        }
+        markPossiblePosition(newPosition);
+        let pieceCapturedArr = [...existPieceCapturedArr]
+        pieceCapturedArr.push(new Piece(p.row - 1, p.column + 1))
+        // save the new position and the opponent's piece position
+        localCapturedPosition.push({
+          newPosition: newPosition,
+          pieceCaptured: pieceCapturedArr,
+        });
+    }
   }
 
   if (
@@ -381,15 +408,21 @@ function findPieceCaptured(p, player) {
     board[p.row + 1][p.column - 1] === player &&
     board[p.row + 2][p.column - 2] === 0
   ) {
-    found = true;
     newPosition = new Piece(p.row + 2, p.column - 2);
-    readyToMove = p;
-    markPossiblePosition(newPosition);
-    // save the new position and the opponent's piece position
-    capturedPosition.push({
-      newPosition: newPosition,
-      pieceCaptured: new Piece(p.row + 1, p.column - 1),
-    });
+    if (!newPosition.compare(prev)){
+        found = true;
+        if (!prev){
+            readyToMove = p;
+        }
+        markPossiblePosition(newPosition);
+        let pieceCapturedArr = [...existPieceCapturedArr]
+        pieceCapturedArr.push(new Piece(p.row + 1, p.column - 1))
+        // save the new position and the opponent's piece position
+        localCapturedPosition.push({
+          newPosition: newPosition,
+          pieceCaptured: pieceCapturedArr,
+        });
+    }
   }
 
   if (
@@ -398,16 +431,28 @@ function findPieceCaptured(p, player) {
     board[p.row + 1][p.column + 1] === player &&
     board[p.row + 2][p.column + 2] === 0
   ) {
-    found = true;
     newPosition = new Piece(p.row + 2, p.column + 2);
-    readyToMove = p;
-    markPossiblePosition(newPosition);
-    // save the new position and the opponent's piece position
-    capturedPosition.push({
-      newPosition: newPosition,
-      pieceCaptured: new Piece(p.row + 1, p.column + 1),
-    });
-  }
+    if (!newPosition.compare(prev)){
+        found = true;
+        if (!prev){
+            readyToMove = p;
+        }
+        markPossiblePosition(newPosition);
+        let pieceCapturedArr = [...existPieceCapturedArr]
+        pieceCapturedArr.push(new Piece(p.row + 1, p.column + 1))
+        // save the new position and the opponent's piece position
+        localCapturedPosition.push({
+          newPosition: newPosition,
+          pieceCaptured: pieceCapturedArr,
+        });
+    }
+  };
+  localCapturedPosition.forEach((element) => {
+    capturedPosition.push(element)
+  })
+  localCapturedPosition.forEach((element) => {
+    findPieceCaptured(player, element.newPosition, p)
+  });
 
   return found;
 }

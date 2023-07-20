@@ -96,7 +96,7 @@ function movePiece(e) {
     posNewPosition = [];
     capturedPosition = [];
     capturedMap = new Map();
-  if (currentPlayer * value > 0) {
+  if (currentPlayer * value > 0 && currentPlayer === currentUser) {
     player = reverse(currentPlayer);
     if (currentPlayer * value > 1){
         findKingNewPosition(p, player)

@@ -83,7 +83,8 @@ function movePiece(e) {
   let piece = e.target;
   const row = parseInt(piece.getAttribute("row"));
   const column = parseInt(piece.getAttribute("column"));
-  let p = new Piece(row, column);
+  const value = parseInt(piece.getAttribute("val"))
+  let p = new Piece(row, column, value);
 
   if (capturedPosition.length > 0) {
     enableToCapture(p);
@@ -94,9 +95,9 @@ function movePiece(e) {
   }
     posNewPosition = [];
     capturedPosition = [];
-  if (currentPlayer === board[row][column]) {
+  if (currentPlayer * value > 0) {
     player = reverse(currentPlayer);
-    if (!findPieceCaptured(player, p)) {
+    if (!findPieceCaptured(p, player)) {
       findPossibleNewPosition(p, player);
     }
   }
@@ -119,7 +120,7 @@ function enableToCapture(p) {
 
   if (find) {
     // if the current piece can move on, edit the board and rebuild
-    board[pos.row][pos.column] = currentPlayer; // move the piece
+    board[pos.row][pos.column] = pos.val; // move the piece
     board[readyToMove.row][readyToMove.column] = 0; // delete the old position
     // delete the piece that had been captured
     old.forEach((element) => {
@@ -180,7 +181,7 @@ function enableToMove(p) {
 function moveThePiece(newPosition) {
   if (currentPlayer == currentUser){
   // if the current piece can move on, edit the board and rebuild
-  board[newPosition.row][newPosition.column] = currentPlayer;
+  board[newPosition.row][newPosition.column] = newPosition.val;
   board[readyToMove.row][readyToMove.column] = 0;
 
   // init value
@@ -232,7 +233,7 @@ function markPossiblePosition(p, player = 0, direction = 0) {
   if (position) {
     position.style.background = "green";
     // // save where it can move
-    posNewPosition.push(new Piece(p.row + player, p.column + direction));
+    posNewPosition.push(new Piece(p.row + player, p.column + direction, p.val));
   }
 }
 
@@ -355,7 +356,7 @@ function pieceInCapturedPosition(p){
     return arr
 }
 
-function findPieceCaptured(player, p, prev=null) {
+function findPieceCaptured(p, player, prev=null) {
   let found = false;
   let existPieceCapturedArr = pieceInCapturedPosition(p)
   let localCapturedPosition = []
@@ -365,7 +366,7 @@ function findPieceCaptured(player, p, prev=null) {
     board[p.row - 1][p.column - 1] * player > 0 &&
     board[p.row - 2][p.column - 2] === 0
   ) {
-    newPosition = new Piece(p.row - 2, p.column - 2);
+    newPosition = new Piece(p.row - 2, p.column - 2, p.val);
     if (!newPosition.compare(prev)){
         found = true;
         if (!prev){
@@ -388,7 +389,7 @@ function findPieceCaptured(player, p, prev=null) {
     board[p.row - 1][p.column + 1] * player > 0 &&
     board[p.row - 2][p.column + 2] === 0
   ) {
-    newPosition = new Piece(p.row - 2, p.column + 2);
+    newPosition = new Piece(p.row - 2, p.column + 2, p.val);
     if (!newPosition.compare(prev)){
         found = true;
         if (!prev){
@@ -411,7 +412,7 @@ function findPieceCaptured(player, p, prev=null) {
     board[p.row + 1][p.column - 1] * player > 0 &&
     board[p.row + 2][p.column - 2] === 0
   ) {
-    newPosition = new Piece(p.row + 2, p.column - 2);
+    newPosition = new Piece(p.row + 2, p.column - 2, p.val);
     if (!newPosition.compare(prev)){
         found = true;
         if (!prev){
@@ -434,7 +435,7 @@ function findPieceCaptured(player, p, prev=null) {
     board[p.row + 1][p.column + 1] * player > 0 &&
     board[p.row + 2][p.column + 2] === 0
   ) {
-    newPosition = new Piece(p.row + 2, p.column + 2);
+    newPosition = new Piece(p.row + 2, p.column + 2, p.val);
     if (!newPosition.compare(prev)){
         found = true;
         if (!prev){
@@ -454,7 +455,7 @@ function findPieceCaptured(player, p, prev=null) {
     capturedPosition.push(element)
   })
   localCapturedPosition.forEach((element) => {
-    findPieceCaptured(player, element.newPosition, p)
+    findPieceCaptured(element.newPosition, player, p)
   });
 
   return found;

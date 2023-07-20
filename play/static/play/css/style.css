@@ -46,6 +46,13 @@ body {
   background-color: black;
 }
 
+.occupied.kingWhitePiece {
+  background: radial-gradient(#FFFF00, #FFFFFF, #FFFFFF);
+}
+
+.occupied.kingBlackPiece {
+  background: radial-gradient(#FFFF00, #000000, #000000);
+}
 
 .game {
   background-color: #4c382e;

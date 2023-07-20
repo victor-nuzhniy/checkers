@@ -105,17 +105,17 @@ function movePiece(e) {
 }
 
 function enableToCapture(p) {
+    let find = false;
     if (currentPlayer == currentUser){
-  let find = false;
-  let pos = null;
-  capturedPosition.forEach((element) => {
-    if (element.newPosition.compare(p)) {
-      find = true;
-      pos = element.newPosition;
-      old = element.pieceCaptured;
-      return;
-    }
-  });
+      let pos = null;
+      capturedPosition.forEach((element) => {
+        if (element.newPosition.compare(p)) {
+          find = true;
+          pos = element.newPosition;
+          old = element.pieceCaptured;
+          return;
+        }
+      });
 
   if (find) {
     // if the current piece can move on, edit the board and rebuild
@@ -178,7 +178,6 @@ function enableToMove(p) {
 }
 
 function moveThePiece(newPosition) {
-  console.log("builder", currentPlayer, currentUser, typeof currentPlayer, typeof currentUser)
   if (currentPlayer == currentUser){
   // if the current piece can move on, edit the board and rebuild
   board[newPosition.row][newPosition.column] = currentPlayer;
@@ -270,8 +269,12 @@ function buildBoard() {
       // add the piece if the case isn't empty
       if (board[i][j] === 1) {
         occupied = "whitePiece";
+      } else if (board[i][j] === 2) {
+        occupied = "kingWhitePiece";
       } else if (board[i][j] === -1) {
         occupied = "blackPiece";
+      } else if (board[i][j] === -2) {
+        occupied = "kingBlackPiece";
       } else {
         occupied = "empty";
       }
@@ -281,6 +284,7 @@ function buildBoard() {
       // set row and colum in the case
       piece.setAttribute("row", i);
       piece.setAttribute("column", j);
+      piece.setAttribute("val", board[i][j])
       piece.setAttribute("data-position", i + "-" + j);
 
       //add event listener to each piece
@@ -292,9 +296,9 @@ function buildBoard() {
       row.appendChild(col);
 
       // counter number of each piece
-      if (board[i][j] === -1) {
+      if (board[i][j] < 0) {
         black++;
-      } else if (board[i][j] === 1) {
+      } else if (board[i][j] > 0) {
         white++;
       }
 
@@ -326,7 +330,6 @@ function buildBoard() {
             board = data.message["board"];
             buildBoard();
               currentPlayer = reverse(currentPlayer);
-
               displayCurrentPlayer();
         }
         };
@@ -359,7 +362,7 @@ function findPieceCaptured(player, p, prev=null) {
   if (
     p.row > 1 &&
     p.column > 1 &&
-    board[p.row - 1][p.column - 1] === player &&
+    board[p.row - 1][p.column - 1] * player > 0 &&
     board[p.row - 2][p.column - 2] === 0
   ) {
     newPosition = new Piece(p.row - 2, p.column - 2);
@@ -382,7 +385,7 @@ function findPieceCaptured(player, p, prev=null) {
   if (
     p.column < 8 &&
     p.row > 1 &&
-    board[p.row - 1][p.column + 1] === player &&
+    board[p.row - 1][p.column + 1] * player > 0 &&
     board[p.row - 2][p.column + 2] === 0
   ) {
     newPosition = new Piece(p.row - 2, p.column + 2);
@@ -405,7 +408,7 @@ function findPieceCaptured(player, p, prev=null) {
   if (
     p.row < 8 &&
     p.column > 1 &&
-    board[p.row + 1][p.column - 1] === player &&
+    board[p.row + 1][p.column - 1] * player > 0 &&
     board[p.row + 2][p.column - 2] === 0
   ) {
     newPosition = new Piece(p.row + 2, p.column - 2);
@@ -428,7 +431,7 @@ function findPieceCaptured(player, p, prev=null) {
   if (
     p.row < 8 &&
     p.column < 8 &&
-    board[p.row + 1][p.column + 1] === player &&
+    board[p.row + 1][p.column + 1] * player > 0 &&
     board[p.row + 2][p.column + 2] === 0
   ) {
     newPosition = new Piece(p.row + 2, p.column + 2);

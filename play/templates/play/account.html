@@ -5,8 +5,10 @@
     <h3>{{ user.username }}</h3>
     <form action="post">
         {% csrf_token %}
+        <div class="d-flex flex-column" style="max-width: 350px;">
         {{ form }}
-        <input type="submit" value="Save"/>
+        </div>
+        <input class="my-3" type="submit" value="Save changes"/>
     </form>
     <div><a href="{% url 'play:password_change' %}">Change password</a></div>
     <div><a href="{% url 'play:password_reset' %}">Forgot password?</a></div>

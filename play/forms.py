@@ -11,7 +11,7 @@ class UserProfileForm(forms.ModelForm):
     class Meta:
         """Class Meta for UserProfileForm."""
         model = User
-        fields = ("username", "email")
+        fields = ("username", "email", "first_name", "last_name")
 
 
 class ResultDeleteForm(forms.Form):

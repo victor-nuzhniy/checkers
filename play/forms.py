@@ -1,5 +1,4 @@
 """Forms for 'play' app."""
-from typing import Any
 
 from django import forms
 from django.contrib.auth.models import User
@@ -10,6 +9,7 @@ class UserProfileForm(forms.ModelForm):
 
     class Meta:
         """Class Meta for UserProfileForm."""
+
         model = User
         fields = ("username", "email", "first_name", "last_name")
 

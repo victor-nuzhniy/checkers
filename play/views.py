@@ -1,17 +1,17 @@
 """Module for class and function views 'play' app."""
 import json
 from abc import ABC
-from typing import Dict, Any
+from typing import Any, Dict
 
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect, HttpRequest
+from django.http import HttpRequest, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import FormView, TemplateView
 
-from play.forms import UserProfileForm, ResultDeleteForm
+from play.forms import ResultDeleteForm, UserProfileForm
 from play.models import Result
 from play.utils import get_all_logged_in_users, get_all_users_data
 
@@ -28,9 +28,7 @@ class RegisterView(FormView):
         """Create new user. Add received after creating customer in Zoho CRM zoho_id."""
         user: User = form.save()
         login(self.request, user)
-        return super().form_valid(
-            form
-        )
+        return super().form_valid(form)
 
 
 class MainView(TemplateView):
@@ -58,7 +56,7 @@ class MainView(TemplateView):
 class StartView(TemplateView):
     """Class view for start page."""
 
-    template_name = 'play/start.html'
+    template_name = "play/start.html"
     extra_context = {"title": "Board"}
 
     def get_context_data(self, **kwargs: Any) -> Dict:
@@ -71,15 +69,15 @@ class StartView(TemplateView):
 class RatingView(TemplateView):
     """Class view for rating page."""
 
-    template_name = 'play/rating.html'
+    template_name = "play/rating.html"
     extra_context = {"title": "Rating"}
 
     def get_context_data(self, **kwargs: Any) -> Dict:
         """Get context data for the view."""
         context = super().get_context_data(**kwargs)
         context["players"] = get_all_users_data()
-        context["players_points"] = get_all_users_data().order_by('points')
-        context["players_plays"] = get_all_users_data().order_by('plays_number')
+        context["players_points"] = get_all_users_data().order_by("points")
+        context["players_plays"] = get_all_users_data().order_by("plays_number")
         return context
 
 
@@ -100,10 +98,12 @@ class ProfileView(UserPassesTestMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         statistics = get_all_logged_in_users().filter(id=self.kwargs["pk"]).first()
         results = Result.objects.filter(player=self.kwargs["pk"]).reverse()
-        context.update({
-            "statistics": statistics,
-            "results": results,
-        })
+        context.update(
+            {
+                "statistics": statistics,
+                "results": results,
+            }
+        )
         return context
 
 
@@ -124,9 +124,9 @@ class AccountUpdateView(UserPassesTestMixin, FormView, ABC):
     def get_initial(self) -> Dict:
         """Return the initial data to use for forms on this view."""
         initial: Dict = super().get_initial()
-        initial.update({
-            "username": self.request.user.username, "email": self.request.user.email
-        })
+        initial.update(
+            {"username": self.request.user.username, "email": self.request.user.email}
+        )
         return initial
 
     def get_context_data(self, **kwargs: Any) -> Dict:

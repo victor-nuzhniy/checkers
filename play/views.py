@@ -83,9 +83,9 @@ class RatingView(TemplateView):
     def get_context_data(self, **kwargs: Any) -> Dict:
         """Get context data for the view."""
         context: Dict = super().get_context_data(**kwargs)
-        context["players"] = get_all_users_data()
-        context["players_points"] = get_all_users_data().order_by("points")
-        context["players_plays"] = get_all_users_data().order_by("plays_number")
+        context["players"] = get_all_users_data().order_by("id")
+        context["players_points"] = get_all_users_data().order_by("points").reverse()
+        context["players_plays"] = get_all_users_data().order_by("plays_number").reverse()
         return context
 
 

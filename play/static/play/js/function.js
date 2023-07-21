@@ -5,77 +5,98 @@ const currentUser = JSON.parse(document.getElementById('current_user').textConte
 const receiver = JSON.parse(document.getElementById('receiver').textContent);
 const userId = JSON.parse(document.getElementById('user_id').textContent);
 
-const socket = new WebSocket(
-    "ws://"
-     + window.location.host
-     + "/ws/"
-     + playerPk
-     + "/"
-     + rivalPk
-     + "/"
-);
-socket.onclose = function(e) {
-    console.log('Socket closed unexpectedly.');
-};
-socket.addEventListener("close", (event) => {
-    console.log("Socket was closed.")
-});
-socket.onopen = function(){
-     socket.send(JSON.stringify({
+let socket = null;
+
+function connectSocket() {
+    socket = new WebSocket(
+        "ws://"
+         + window.location.host
+         + "/ws/play/"
+         + playerPk
+         + "/"
+         + rivalPk
+         + "/"
+    );
+    socket.onopen = function(){
+        console.log("Socket successfully connected to the WebSocket.");
+    };
+    socket.onclose = function(e) {
+        console.log("WebSocket socket connection closed unexpectedly. Trying to reconnect in 2s...");
+        setTimeout(function() {
+            console.log("Reconnecting...");
+            connectSocket();
+        }, 2000);
+    };
+    socket.onerror = function(err) {
+        console.log("WebSocket socket encountered an error: " + err.message);
+        console.log("Closing the socket.");
+        socket.close();
+    };
+}
+connectSocket();
+
+socket.onopen = function() {
+    socket.send(JSON.stringify({
         'message': {
-        "type": "start_playing",
-        "player_pk": playerPk,
-        "rival_pk": rivalPk,
-        }
+            "player_pk": playerPk,
+            "rival_pk": rivalPk,
+        },
     }));
 };
 
-const startSocket = new WebSocket(
-    "ws://"
-     + window.location.host
-     + "/ws/start/1/"
-    );
-startSocket.onclose = function(e) {
-    console.log('Socket closed unexpectedly.');
-    };
-startSocket.addEventListener("close", (event) => {
-        console.log("Socket was closed.")
-    })
-startSocket.onopen = function(){
-     startSocket.send(JSON.stringify({
-        'message': {
-        "type": "start_playing",
-        "player_pk": playerPk,
-        "rival_pk": rivalPk,
-        }
-    }));
-}
-startSocket.onmessage = function(e) {
-    const data = JSON.parse(e.data);
-    if (data.message["type"] == "start_refresh"){
-        const startSocket = new WebSocket(
+let startSocket = null
+
+function connectStartSocket() {
+
+    startSocket = new WebSocket(
         "ws://"
          + window.location.host
          + "/ws/start/1/"
         );
-        startSocket.onclose = function(e) {
-            console.log('Socket closed unexpectedly.');
-        };
-        startSocket.addEventListener("close", (event) => {
-            console.log("Socket was closed.")
-        })
-        startSocket.onopen = function(){
-             startSocket.send(JSON.stringify({
-            'message': {
-                    "type": "start_playing",
-                    "player_pk": playerPk,
-                    "rival_pk": rivalPk,
-                }
-          }));
-        };
+    startSocket.onopen = function(){
+        console.log("startSocket successfully connected to the WebSocket.");
+    };
+    startSocket.onclose = function(e) {
+        console.log("WebSocket with startSocket connection closed unexpectedly. Trying to reconnect in 2s...");
+        setTimeout(function() {
+            console.log("Reconnecting...");
+            connectStartSocket();
+        }, 2000);
+    };
+    startSocket.onerror = function(err) {
+        console.log("WebSocket startSocket encountered an error: " + err.message);
+        console.log("Closing the startSocket.");
+        startSocket.close();
     };
 };
+connectStartSocket();
 
+startSocket.onopen = function() {
+    startSocket.send(JSON.stringify({
+        'message': {
+            "type": "start_playing",
+            "player_pk": playerPk,
+            "rival_pk": rivalPk,
+        }
+    }));
+}
+
+startSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    if (data.type == "play_message") {
+        if (data.message["type"] == "start_refresh"){
+            startSocket.send(JSON.stringify({
+                'message': {
+                        "type": "start_playing",
+                        "player_pk": playerPk,
+                        "rival_pk": rivalPk,
+                    }
+            }));
+        };
+    } else {
+        console.log("Unknown message type!");
+    };
+};
 
 function movePiece(e) {
     let piece = e.target;
@@ -143,23 +164,9 @@ function enableToCapture(p) {
             capturedMap = new Map();
             displayCurrentPlayer();
 
-            const socket = new WebSocket(
-                "ws://"
-                + window.location.host
-                + "/ws/"
-                + playerPk
-                + "/"
-                + rivalPk
-                + "/"
-            );
-            socket.onclose = function(e) {
-                console.log('Socket closed unexpectedly.');
-            };
-            socket.onopen = function(){
-                socket.send(JSON.stringify({
-                   'message': {"receiver": receiver, "board": board}
-                }));
-            };
+            socket.send(JSON.stringify({
+               'message': {"receiver": receiver, "board": board},
+            }));
 
             buildBoard();
             // check if there are possibility to capture other piece
@@ -204,23 +211,10 @@ function moveThePiece(newPosition) {
         capturedPosition = [];
         capturedMap = new Map();
 
-        const socket = new WebSocket(
-            "ws://"
-            + window.location.host
-            + "/ws/"
-            + playerPk
-            + "/"
-            + rivalPk
-            + "/"
-        );
-        socket.onclose = function(e) {
-            console.log('Socket closed unexpectedly 3');
-        };
-        socket.onopen = function(){
-            socket.send(JSON.stringify({
-                'message': {"receiver": receiver, "board": board}
-            }));
-        };
+        socket.send(JSON.stringify({
+            'message': {"receiver": receiver, "board": board},
+        }));
+
 
         currentPlayer = reverse(currentPlayer);
 
@@ -327,24 +321,27 @@ function buildBoard() {
 
     if (black === 0 || white === 0) {
         modalOpen(black);
+        startSocket.send(JSON.stringify({
+            'message': {
+            "type": "game_over",
+            "user_id": userId,
+            "rival_id": receiver,
+            "result": white && currentUser > 0 || black && currentUser < 0 ? 2 : 0
+            }
+        }));
+    };
 
-        startSocket.onopen = function(){
-            startSocket.send(JSON.stringify({
-                'message': {
-                "type": "game_over",
-                "winner": white ? playerPk : rivalPk,
-                "loser": black ? rivalPk : playerPk,
-                }
-            }));
-        };
-    }
     socket.onmessage = function(e) {
         const data = JSON.parse(e.data);
-        if (data.message["receiver"] == userId){
-            board = data.message["board"];
-            buildBoard();
-            currentPlayer = reverse(currentPlayer);
-            displayCurrentPlayer();
+        if (data.type == "play_message") {
+            if (data.message["receiver"] == userId){
+                board = data.message["board"];
+                buildBoard();
+                currentPlayer = reverse(currentPlayer);
+                displayCurrentPlayer();
+            };
+        } else {
+            console.log("Unknown message type!");
         };
     };
 }

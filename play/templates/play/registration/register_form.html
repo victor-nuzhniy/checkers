@@ -4,10 +4,10 @@
 {% block content %}
     <h2>Sign up</h2>
 
-    <form method="post">
+    <form class="d-flex flex-column" style="max-width:360px" method="post">
         {% csrf_token %}
-    {{ form }}
-        <button type="submit">Register</button>
+        {{ form }}
+        <button class="my-1" type="submit">Register</button>
     </form>
 
 {% endblock content %}

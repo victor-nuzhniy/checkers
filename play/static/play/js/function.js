@@ -322,9 +322,9 @@ function buildBoard() {
     if (black === 0 || white === 0) {
         modalOpen(black);
         let result = 0;
-        if (white && currentUser) {
+        if (white && currentUser > 0) {
             result = white;
-        } else if (black && currentUser) {
+        } else if (black && currentUser < 0) {
             result = black;
         }
         startSocket.send(JSON.stringify({

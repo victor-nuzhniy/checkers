@@ -8,5 +8,7 @@
         {{ form }}
         <input type="submit" value="Save"/>
     </form>
+    <div><a href="{% url 'play:password_change' %}">Change password</a></div>
+    <div><a href="{% url 'play:password_reset' %}">Forgot password?</a></div>
 
 {% endblock content %}

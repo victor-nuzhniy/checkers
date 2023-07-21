@@ -13,7 +13,7 @@ from django.views.generic import FormView, TemplateView
 
 from play.forms import UserProfileForm, ResultDeleteForm
 from play.models import Result
-from play.utils import get_all_logged_in_users
+from play.utils import get_all_logged_in_users, get_all_users_data
 
 
 class RegisterView(FormView):
@@ -65,6 +65,21 @@ class StartView(TemplateView):
         """Get context data for the view."""
         context = super().get_context_data(**kwargs)
         context["logged_players"] = get_all_logged_in_users()
+        return context
+
+
+class RatingView(TemplateView):
+    """Class view for rating page."""
+
+    template_name = 'play/rating.html'
+    extra_context = {"title": "Rating"}
+
+    def get_context_data(self, **kwargs: Any) -> Dict:
+        """Get context data for the view."""
+        context = super().get_context_data(**kwargs)
+        context["players"] = get_all_users_data()
+        context["players_points"] = get_all_users_data().order_by('points')
+        context["players_plays"] = get_all_users_data().order_by('plays_number')
         return context
 
 

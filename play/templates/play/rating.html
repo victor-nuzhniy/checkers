@@ -1,0 +1,28 @@
+{% extends 'play/base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <h3 class="w-100 text-center">Players rating</h3>
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-lg-6 col-xl-4">
+                <h4 class="w-100 text-center">Rating by points</h4>
+                {% with players_points as players %}
+                    {% include 'play/samples/table_for_rating.html' %}
+                {% endwith %}
+            </div>
+            <div class="col-12 col-lg-6 col-xl-4">
+                <h4 class="w-100 text-center">Rating by plays number</h4>
+                {% with players_plays as players %}
+                    {% include 'play/samples/table_for_rating.html' %}
+                {% endwith %}
+            </div>
+            <div class="col-12 col-xl-4">
+                <h4 class="w-100 text-center">Rating by registration date</h4>
+                {% include 'play/samples/table_for_rating.html' %}
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

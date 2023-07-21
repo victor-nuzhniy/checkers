@@ -13,9 +13,11 @@ from django.urls import path, reverse_lazy
 
 from play.views import (
     AccountUpdateView,
+    EmailActivationView,
     MainView,
     ProfileView,
     RatingView,
+    RegisterEmailConfirmView,
     RegisterView,
     ResultDeleteView,
     StartView,
@@ -28,6 +30,16 @@ urlpatterns = [
         "accounts/login/",
         LoginView.as_view(template_name="play/registration/login.html"),
         name="login",
+    ),
+    path(
+        "accounts/email_verification/<uidb64>/<token>",
+        EmailActivationView.as_view(),
+        name="activate",
+    ),
+    path(
+        "accounts/email_confirm/",
+        RegisterEmailConfirmView.as_view(),
+        name="email_confirm",
     ),
     path("accounts/logout/", LogoutView.as_view(), name="logout"),
     path(

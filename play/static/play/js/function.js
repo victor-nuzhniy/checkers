@@ -83,7 +83,7 @@ startSocket.onopen = function() {
 
 startSocket.onmessage = function(e) {
     const data = JSON.parse(e.data);
-    if (data.type == "play_message") {
+    if (data.type == "start_message") {
         if (data.message["type"] == "start_refresh"){
             startSocket.send(JSON.stringify({
                 'message': {

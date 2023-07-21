@@ -88,10 +88,10 @@ class StartConsumer(WebsocketConsumer):
                 result: Optional[int] = message.get("result")
                 Result.objects.create(player=user, rival=rival.username, count=result)
             async_to_sync(self.channel_layer.group_send)(
-                self.start_group_name, {"type": "play_message", "message": message}
+                self.start_group_name, {"type": "start_message", "message": message}
             )
 
-    def play_message(self, event: bytes) -> None:
+    def start_message(self, event: bytes) -> None:
         """Send message."""
         self.send(text_data=json.dumps(event))
 
@@ -128,9 +128,9 @@ class ProposeToPlay(WebsocketConsumer):
             text_data_json: Dict = json.loads(text_data)
             message: Union[str, Dict] = text_data_json["message"]
             async_to_sync(self.channel_layer.group_send)(
-                self.propose_group_name, {"type": "play_message", "message": message}
+                self.propose_group_name, {"type": "propose_message", "message": message}
             )
 
-    def play_message(self, event: bytes) -> None:
+    def propose_message(self, event: bytes) -> None:
         """Send message."""
         self.send(text_data=json.dumps(event))

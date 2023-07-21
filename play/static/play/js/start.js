@@ -38,23 +38,23 @@ startSocket.onopen = function () {
 
 startSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
-        if (data.type == "play_message") {
-                if (data.message["type"] == "start_playing"){
-            playerStatus = document.getElementById(data.message["player_pk"]);
-            rivalStatus = document.getElementById(data.message["rival_pk"]);
-            playerStatus.innerHTML = "No";
-            rivalStatus.innerHTML = "No";
-            playerStatus.removeAttribute("style");
-            rivalStatus.removeAttribute("style");
-        };
-        if (data.message["type"] == "end_playing"){
-            playerStatus = document.getElementById(data.message["winner"]);
-            rivalStatus = document.getElementById(data.message["loser"]);
-            playerStatus.innerHTML = "Yes";
-            rivalStatus.innerHTML = "Yes";
-            playerStatus.setAttribute("style", "cursor:pointer; color:blue");
-            rivalStatus.setAttribute("style", "cursor:pointer; color:blue");
-        };
+        if (data.type == "start_message") {
+            if (data.message["type"] == "start_playing"){
+                playerStatus = document.getElementById(data.message["player_pk"]);
+                rivalStatus = document.getElementById(data.message["rival_pk"]);
+                playerStatus.innerHTML = "No";
+                rivalStatus.innerHTML = "No";
+                playerStatus.removeAttribute("style");
+                rivalStatus.removeAttribute("style");
+            };
+            if (data.message["type"] == "end_playing"){
+                playerStatus = document.getElementById(data.message["winner"]);
+                rivalStatus = document.getElementById(data.message["loser"]);
+                playerStatus.innerHTML = "Yes";
+                rivalStatus.innerHTML = "Yes";
+                playerStatus.setAttribute("style", "cursor:pointer; color:blue");
+                rivalStatus.setAttribute("style", "cursor:pointer; color:blue");
+            };
     } else {
         console.log("Unknown message type!");
     }
@@ -91,7 +91,7 @@ connectProposeSocket();
 
 proposeSocket.onmessage = function(e) {
     const data = JSON.parse(e.data);
-    if (data.type == "play_message") {
+    if (data.type == "propose_message") {
         if (
             data.message["type"] == "propose_to_play"
             && data.message["player_id"] != currentUserId
@@ -177,7 +177,7 @@ for(let i=0; i<statuses.length; i++){
         };
             proposeNewSocket.onmessage = function(e) {
                 const data = JSON.parse(e.data);
-                if (data.type == 'play_message') {
+                if (data.type == 'propose_message') {
                     if (
                         data.message["type"] == "agree_to_play"
                         && data.message["player_id"] == statuses[i].id

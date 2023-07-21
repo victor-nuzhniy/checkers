@@ -16,8 +16,10 @@ const modal = document.getElementById("easyModal");
 let game = document.getElementById("game");
 let currentPlayer = 1;
 let posNewPosition = [];
+let prePosNewPosition = [];
 let capturedPosition = [];
 let capturedMap = new Map();
+
 let board = [
   [0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
   [-1, 0, -1, 0, -1, 0, -1, 0, -1, 0],

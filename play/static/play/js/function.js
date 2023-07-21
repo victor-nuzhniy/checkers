@@ -502,8 +502,7 @@ function findKingNewPositionDirection(y, x, p, player, first) {
         if (board[i][j] === 0){
             if (first){
                 let piece = new Piece(i, j, p.val);
-                markPossiblePosition(piece);
-                posNewPosition.push(piece);
+                prePosNewPosition.push(piece)
                 readyToMove = p;
             };
         } else {
@@ -572,4 +571,10 @@ function findKingNewPosition(p, player, first=true){
     localCapturedPosition.forEach((element) => {
         findKingNewPosition(element.newPosition, player, false);
     });
+    if (!capturedPosition.length) {
+        prePosNewPosition.forEach((element) => {
+            markPossiblePosition(element);
+        })
+        prePosNewPosition = [];
+    }
 };

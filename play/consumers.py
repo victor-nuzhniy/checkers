@@ -1,6 +1,6 @@
 """Consumers for 'play' app."""
 import json
-from typing import Any, Optional, Dict, Union
+from typing import Any, Dict, Optional, Union
 
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
@@ -36,7 +36,7 @@ class PlayConsumer(WebsocketConsumer):
         )
 
     def receive(
-            self, text_data: Optional[bytes] = None, bytes_data: Optional[bytes] = None
+        self, text_data: Optional[bytes] = None, bytes_data: Optional[bytes] = None
     ) -> None:
         """Receive and process messages."""
         if text_data:
@@ -76,7 +76,7 @@ class StartConsumer(WebsocketConsumer):
         )
 
     def receive(
-            self, text_data: Optional[bytes] = None, bytes_data: Optional[bytes] = None
+        self, text_data: Optional[bytes] = None, bytes_data: Optional[bytes] = None
     ) -> None:
         """Receive and process messages."""
         if text_data:
@@ -121,7 +121,7 @@ class ProposeToPlay(WebsocketConsumer):
         )
 
     def receive(
-            self, text_data: Optional[bytes] = None, bytes_data: Optional[bytes] = None
+        self, text_data: Optional[bytes] = None, bytes_data: Optional[bytes] = None
     ) -> None:
         """Receive and process messages."""
         if text_data:

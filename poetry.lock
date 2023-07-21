@@ -500,6 +500,17 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-utils-six"
+version = "2.0"
+description = "Forward compatibility django.utils.six for Django 3"
+optional = false
+python-versions = ">=3.6,<4.0"
+files = [
+    {file = "django-utils-six-2.0.tar.gz", hash = "sha256:4ef9d20de679a5b2448429476452493661fe08f23d6e788a8e9816ec05e3c5b0"},
+    {file = "django_utils_six-2.0-py3-none-any.whl", hash = "sha256:8f0e77289d911069a6a15bab5a25ccf2c0fcb8fc4177461dd17470cfdeb94aa6"},
+]
+
+[[package]]
 name = "flake8"
 version = "5.0.4"
 description = "the modular source code checker: pep8 pyflakes and co"
@@ -1278,4 +1289,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "ccb8e66f2f4c117c752d1fe1c2091521bccb75453df0626dc192ccd59c4a69a9"
+content-hash = "04ca79f185ebbf36eadc7fabd24472002ed0ec8f68429bd9be9e4a36c550f1cb"

@@ -1,10 +1,11 @@
 """Utility class and function for 'play' app."""
-from typing import List, Dict
+from typing import Dict, List
 
 from django.contrib.auth.models import User
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.sessions.models import Session
-from django.db.models import Count, Q, Sum, QuerySet
-from django.utils import timezone
+from django.db.models import Count, Q, QuerySet, Sum
+from django.utils import six, timezone
 
 
 def get_all_logged_in_users() -> QuerySet:
@@ -35,3 +36,18 @@ def get_all_users_data() -> QuerySet:
         .annotate(wins=Count("result", filter=Q(result__count__gt=0)))
         .annotate(points=Sum("result__count"))
     )
+
+
+class TokenGenerator(PasswordResetTokenGenerator):
+    """Custom token generator class."""
+
+    def _make_hash_value(self, user, timestamp):
+        """Rewrite method for email verifying need."""
+        return (
+            six.text_type(user.pk)
+            + six.text_type(timestamp)
+            + six.text_type(user.is_active)
+        )
+
+
+account_activation_token = TokenGenerator()

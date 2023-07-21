@@ -1,17 +1,19 @@
 """Utility class and function for 'play' app."""
+from typing import List, Dict
+
 from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
-from django.db.models import Count, Q, Sum
+from django.db.models import Count, Q, Sum, QuerySet
 from django.utils import timezone
 
 
-def get_all_logged_in_users():
+def get_all_logged_in_users() -> QuerySet:
     """Get all logged_in users data."""
-    sessions = Session.objects.filter(expire_date__gte=timezone.now())
-    uid_list = []
+    sessions: QuerySet = Session.objects.filter(expire_date__gte=timezone.now())
+    uid_list: List = []
 
     for session in sessions:
-        data = session.get_decoded()
+        data: Dict = session.get_decoded()
         uid_list.append(data.get("_auth_user_id", None))
 
     return (
@@ -24,7 +26,7 @@ def get_all_logged_in_users():
     )
 
 
-def get_all_users_data():
+def get_all_users_data() -> QuerySet:
     """Get all users data."""
     return (
         User.objects.annotate(plays_number=Count("result"))

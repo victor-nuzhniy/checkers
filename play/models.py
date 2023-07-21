@@ -11,6 +11,6 @@ class Result(models.Model):
     count = models.IntegerField(verbose_name="Count")
     created_at = models.DateField(auto_now_add=True, verbose_name="Created at")
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Represent model instance."""
         return f"{self.player}-{self.rival}-{self.count}"

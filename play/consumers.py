@@ -1,5 +1,6 @@
 """Consumers for 'play' app."""
 import json
+from typing import Any, Optional, Dict, Union
 
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
@@ -11,13 +12,12 @@ from play.models import Result
 class PlayConsumer(WebsocketConsumer):
     """Class socket server for playing page."""
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Add custom class attributes."""
         super().__init__(*args, **kwargs)
-        self.play_group_name = None
-        self.player_id = None
-        self.rival_id = None
-        self.player_id = None
+        self.play_group_name: Optional[str] = None
+        self.player_id: Optional[int] = None
+        self.rival_id: Optional[int] = None
 
     def connect(self) -> None:
         """Add/connect group to channel layer."""
@@ -29,21 +29,24 @@ class PlayConsumer(WebsocketConsumer):
         )
         self.accept()
 
-    def disconnect(self, code):
+    def disconnect(self, code: int) -> None:
         """Disconnect group from channel layer."""
         async_to_sync(self.channel_layer.group_discard)(
             self.play_group_name, self.channel_name
         )
 
-    def receive(self, text_data=None, bytes_data=None):
+    def receive(
+            self, text_data: Optional[bytes] = None, bytes_data: Optional[bytes] = None
+    ) -> None:
         """Receive and process messages."""
-        text_data_json = json.loads(text_data)
-        message = text_data_json["message"]
-        async_to_sync(self.channel_layer.group_send)(
-            self.play_group_name, {"type": "play_message", "message": message}
-        )
+        if text_data:
+            text_data_json: Dict = json.loads(text_data)
+            message: Union[str, Dict] = text_data_json["message"]
+            async_to_sync(self.channel_layer.group_send)(
+                self.play_group_name, {"type": "play_message", "message": message}
+            )
 
-    def play_message(self, event):
+    def play_message(self, event: bytes) -> None:
         """Send message."""
         self.send(text_data=json.dumps(event))
 
@@ -51,11 +54,11 @@ class PlayConsumer(WebsocketConsumer):
 class StartConsumer(WebsocketConsumer):
     """Class socket server for start page."""
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Add custom class attributes."""
         super().__init__(*args, **kwargs)
-        self.start_name = None
-        self.start_group_name = None
+        self.start_name: Optional[int] = None
+        self.start_group_name: Optional[str] = None
 
     def connect(self) -> None:
         """Add/connect group to channel layer."""
@@ -66,27 +69,29 @@ class StartConsumer(WebsocketConsumer):
         )
         self.accept()
 
-    def disconnect(self, code):
+    def disconnect(self, code: int) -> None:
         """Disconnect group from channel layer."""
         async_to_sync(self.channel_layer.group_discard)(
             self.start_group_name, self.channel_name
         )
 
-    def receive(self, text_data=None, bytes_data=None):
+    def receive(
+            self, text_data: Optional[bytes] = None, bytes_data: Optional[bytes] = None
+    ) -> None:
         """Receive and process messages."""
-        text_data_json = json.loads(text_data)
-        message = text_data_json["message"]
-        if message.get("type") == "game_over":
-            print("Hello")
-            user: User = User.objects.get(id=message.get("user_id"))
-            rival: User = User.objects.get(id=message.get("rival_id"))
-            result: int = message.get("result")
-            Result.objects.create(player=user, rival=rival.username, count=result)
-        async_to_sync(self.channel_layer.group_send)(
-            self.start_group_name, {"type": "play_message", "message": message}
-        )
+        if text_data:
+            text_data_json: Dict = json.loads(text_data)
+            message: Dict = text_data_json["message"]
+            if message.get("type") == "game_over":
+                user: User = User.objects.get(id=message.get("user_id"))
+                rival: User = User.objects.get(id=message.get("rival_id"))
+                result: Optional[int] = message.get("result")
+                Result.objects.create(player=user, rival=rival.username, count=result)
+            async_to_sync(self.channel_layer.group_send)(
+                self.start_group_name, {"type": "play_message", "message": message}
+            )
 
-    def play_message(self, event):
+    def play_message(self, event: bytes) -> None:
         """Send message."""
         self.send(text_data=json.dumps(event))
 
@@ -97,8 +102,8 @@ class ProposeToPlay(WebsocketConsumer):
     def __init__(self, *args, **kwargs) -> None:
         """Add custom class attributes."""
         super().__init__(*args, **kwargs)
-        self.player_id = None
-        self.propose_group_name = None
+        self.player_id: Optional[int] = None
+        self.propose_group_name: Optional[str] = None
 
     def connect(self) -> None:
         """Add/connect group to channel layer."""
@@ -109,20 +114,23 @@ class ProposeToPlay(WebsocketConsumer):
         )
         self.accept()
 
-    def disconnect(self, code):
+    def disconnect(self, code: int) -> None:
         """Disconnect group from channel layer."""
         async_to_sync(self.channel_layer.group_discard)(
             self.propose_group_name, self.channel_name
         )
 
-    def receive(self, text_data=None, bytes_data=None):
+    def receive(
+            self, text_data: Optional[bytes] = None, bytes_data: Optional[bytes] = None
+    ) -> None:
         """Receive and process messages."""
-        text_data_json = json.loads(text_data)
-        message = text_data_json["message"]
-        async_to_sync(self.channel_layer.group_send)(
-            self.propose_group_name, {"type": "play_message", "message": message}
-        )
+        if text_data:
+            text_data_json: Dict = json.loads(text_data)
+            message: Union[str, Dict] = text_data_json["message"]
+            async_to_sync(self.channel_layer.group_send)(
+                self.propose_group_name, {"type": "play_message", "message": message}
+            )
 
-    def play_message(self, event):
+    def play_message(self, event: bytes) -> None:
         """Send message."""
         self.send(text_data=json.dumps(event))

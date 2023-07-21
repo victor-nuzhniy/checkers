@@ -7,6 +7,7 @@ from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.models import User
+from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import FormView, TemplateView
@@ -31,21 +32,28 @@ class RegisterView(FormView):
         return super().form_valid(form)
 
 
-class MainView(TemplateView):
+class MainView(UserPassesTestMixin, TemplateView, ABC):
     """Class for main view."""
 
     template_name = "play/index.html"
     extra_context = {"title": "Checkers"}
 
+    def test_func(self, **kwargs: Any) -> bool:
+        """Test whether kwargs pk is equal user.zoho_id."""
+        if self.request.user.is_anonymous:
+            return False
+        user_id: int = self.request.user.id
+        return user_id in {self.kwargs.get("player_pk"), self.kwargs.get("rival_pk")}
+
     def get_context_data(self, **kwargs: Any) -> Dict:
         """Get context data for the view."""
         if self.request.user.id == self.kwargs.get("player_pk"):
-            current_user = 1
-            receiver = self.kwargs.get("rival_pk")
+            current_user: int = 1
+            receiver: int = self.kwargs.get("rival_pk")
         else:
             current_user = -1
             receiver = self.kwargs.get("player_pk")
-        context = super().get_context_data(**kwargs)
+        context: Dict = super().get_context_data(**kwargs)
         context["player_pk"] = json.dumps(self.kwargs.get("player_pk"))
         context["rival_pk"] = json.dumps(self.kwargs.get("rival_pk"))
         context["current_user"] = current_user
@@ -61,7 +69,7 @@ class StartView(TemplateView):
 
     def get_context_data(self, **kwargs: Any) -> Dict:
         """Get context data for the view."""
-        context = super().get_context_data(**kwargs)
+        context: Dict = super().get_context_data(**kwargs)
         context["logged_players"] = get_all_logged_in_users()
         return context
 
@@ -74,7 +82,7 @@ class RatingView(TemplateView):
 
     def get_context_data(self, **kwargs: Any) -> Dict:
         """Get context data for the view."""
-        context = super().get_context_data(**kwargs)
+        context: Dict = super().get_context_data(**kwargs)
         context["players"] = get_all_users_data()
         context["players_points"] = get_all_users_data().order_by("points")
         context["players_plays"] = get_all_users_data().order_by("plays_number")
@@ -95,9 +103,11 @@ class ProfileView(UserPassesTestMixin, TemplateView):
 
     def get_context_data(self, **kwargs: Any) -> Dict:
         """Get context data for the view."""
-        context = super().get_context_data(**kwargs)
-        statistics = get_all_logged_in_users().filter(id=self.kwargs["pk"]).first()
-        results = Result.objects.filter(player=self.kwargs["pk"]).reverse()
+        context: Dict = super().get_context_data(**kwargs)
+        statistics: QuerySet = get_all_logged_in_users().filter(
+            id=self.kwargs["pk"]
+        ).first()
+        results: QuerySet = Result.objects.filter(player=self.kwargs["pk"]).reverse()
         context.update(
             {
                 "statistics": statistics,
@@ -128,12 +138,6 @@ class AccountUpdateView(UserPassesTestMixin, FormView, ABC):
             {"username": self.request.user.username, "email": self.request.user.email}
         )
         return initial
-
-    def get_context_data(self, **kwargs: Any) -> Dict:
-        """Get context data for the view."""
-        context = super().get_context_data(**kwargs)
-
-        return context
 
 
 class ResultDeleteView(UserPassesTestMixin, FormView, ABC):

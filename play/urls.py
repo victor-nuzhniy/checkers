@@ -9,7 +9,7 @@ from django.contrib.auth.views import (
     PasswordResetDoneView,
     PasswordResetView,
 )
-from django.urls import path
+from django.urls import path, reverse_lazy
 
 from play.views import (
     AccountUpdateView,
@@ -47,7 +47,9 @@ urlpatterns = [
     path(
         "accounts/password_reset/",
         PasswordResetView.as_view(
-            template_name="play/registration/password_reset_form.html"
+            template_name="play/registration/password_reset_form.html",
+            email_template_name="play/registration/password_reset_email.html",
+            success_url=reverse_lazy("play:password_reset_done"),
         ),
         name="password_reset",
     ),

@@ -118,3 +118,13 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_REDIRECT_URL = "/start/"
 
 LOGOUT_REDIRECT_URL = "/start/"
+
+EMAIL_HOST = os.getenv("MAIL_SERVER")
+
+EMAIL_HOST_USER = os.getenv("MAIL_USERNAME")
+
+EMAIL_HOST_PASSWORD = os.getenv("MAIL_PASSWORD")
+
+EMAIL_PORT = os.getenv("MAIL_PORT")
+
+DEFAULT_FROM_MAIL = os.getenv("MAIL_FROM")

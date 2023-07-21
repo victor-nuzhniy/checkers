@@ -321,12 +321,18 @@ function buildBoard() {
 
     if (black === 0 || white === 0) {
         modalOpen(black);
+        let result = 0;
+        if (white && currentUser) {
+            result = white;
+        } else if (black && currentUser) {
+            result = black;
+        }
         startSocket.send(JSON.stringify({
             'message': {
             "type": "game_over",
             "user_id": userId,
             "rival_id": receiver,
-            "result": white && currentUser > 0 || black && currentUser < 0 ? 2 : 0
+            "result": result,
             }
         }));
     };

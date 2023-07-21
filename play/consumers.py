@@ -12,9 +12,17 @@ from play.models import Result
 class PlayConsumer(WebsocketConsumer):
     """Class socket server for playing page."""
 
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.play_group_name = None
+        self.player_id = None
+        self.rival_id = None
+        self.player_id = None
+
     def connect(self) -> None:
-        self.play_name = self.scope["url_route"]["kwargs"]["player_name"]
-        self.play_group_name = "play_%s" % self.play_name
+        self.player_id = self.scope["url_route"]["kwargs"]["player_id"]
+        self.rival_id = self.scope["url_route"]["kwargs"]["rival_id"]
+        self.play_group_name = f"play_{self.player_id}_{self.rival_id}"
         async_to_sync(self.channel_layer.group_add)(
             self.play_group_name, self.channel_name
         )
@@ -31,73 +39,78 @@ class PlayConsumer(WebsocketConsumer):
         async_to_sync(self.channel_layer.group_send)(
             self.play_group_name, {"type": "play_message", "message": message}
         )
-        # self.send(text_data=json.dumps({"message": message}))
 
     def play_message(self, event):
-        message = event["message"]
-        self.send(text_data=json.dumps({"message": message}))
+        self.send(text_data=json.dumps(event))
 
 
 class StartConsumer(WebsocketConsumer):
     """Class socket server for start page."""
 
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.start_name = None
+        self.start_group_name = None
+
     def connect(self) -> None:
-        self.play_name = "start"
-        self.play_group_name = "page_%s" % self.play_name
+        self.start_name = self.scope["url_route"]["kwargs"]["player_id"]
+        self.start_group_name = "page_%s" % self.start_name
         async_to_sync(self.channel_layer.group_add)(
-            self.play_group_name, self.channel_name
+            self.start_group_name, self.channel_name
         )
         self.accept()
 
     def disconnect(self, code):
         async_to_sync(self.channel_layer.group_discard)(
-            self.play_group_name, self.channel_name
+            self.start_group_name, self.channel_name
         )
 
     def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
         if message.get("type") == "game_over":
-            winner: User = User.objects.get(id=message.get("winner"))
-            loser: User = User.objects.get(id=message.get("loser"))
-            Result.objects.bulk_create([
-                Result(player=winner, rival=loser.username, count=2),
-                Result(player=loser, rival=winner.username, count=0),
-            ])
+            print("Hello")
+            user: User = User.objects.get(id=message.get("user_id"))
+            rival: User = User.objects.get(id=message.get("rival_id"))
+            result: int = message.get("result")
+            Result.objects.create(player=user, rival=rival.username, count=result)
         async_to_sync(self.channel_layer.group_send)(
-            self.play_group_name, {"type": "play_message", "message": message}
+            self.start_group_name, {"type": "play_message", "message": message}
         )
-        # self.send(text_data=json.dumps({"message": message}))
 
     def play_message(self, event):
         message = event["message"]
-        self.send(text_data=json.dumps({"message": message}))
+        self.send(text_data=json.dumps(event))
 
 
 class ProposeToPlay(WebsocketConsumer):
     """Class socket server for start page."""
 
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.player_id = None
+        self.propose_group_name = None
+
     def connect(self) -> None:
-        self.play_name = self.scope["url_route"]["kwargs"]["player_id"]
-        self.play_group_name = "proposal_%s" % self.play_name
+        self.player_id = self.scope["url_route"]["kwargs"]["player_id"]
+        self.propose_group_name = "proposal_%s" % self.player_id
         async_to_sync(self.channel_layer.group_add)(
-            self.play_group_name, self.channel_name
+            self.propose_group_name, self.channel_name
         )
         self.accept()
 
     def disconnect(self, code):
         async_to_sync(self.channel_layer.group_discard)(
-            self.play_group_name, self.channel_name
+            self.propose_group_name, self.channel_name
         )
 
     def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
         async_to_sync(self.channel_layer.group_send)(
-            self.play_group_name, {"type": "play_message", "message": message}
+            self.propose_group_name, {"type": "play_message", "message": message}
         )
-        # self.send(text_data=json.dumps({"message": message}))
 
     def play_message(self, event):
         message = event["message"]
-        self.send(text_data=json.dumps({"message": message}))
+        self.send(text_data=json.dumps(event))

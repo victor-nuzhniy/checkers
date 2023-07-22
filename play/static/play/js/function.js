@@ -321,6 +321,15 @@ function buildBoard() {
 
     if (black === 0 || white === 0) {
         modalOpen(black);
+        document.getElementById("game_over").innerHTML = "Game over"
+        const resultDiv = document.getElementById("result")
+        resultDiv.setAttribute("class", "counter mt-2")
+        let showResult = white ? 'White' : 'Black'
+        resultDiv.innerHTML =
+            showResult
+            + ' wins! <a href="http://'
+            + window.location.host
+            + '/start/">Go and see result!</a>'
         let result = 0;
         if (white && currentUser > 0) {
             result = white;
@@ -335,6 +344,7 @@ function buildBoard() {
             "result": result,
             }
         }));
+
     };
 
     socket.onmessage = function(e) {

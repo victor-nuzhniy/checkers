@@ -18,16 +18,18 @@ class PlayConsumer(WebsocketConsumer):
         self.play_group_name: Optional[str] = None
         self.player_id: Optional[int] = None
         self.rival_id: Optional[int] = None
+        self.user: Optional[User] = None
 
     def connect(self) -> None:
         """Add/connect group to channel layer."""
         self.player_id = self.scope["url_route"]["kwargs"]["player_id"]
         self.rival_id = self.scope["url_route"]["kwargs"]["rival_id"]
         self.play_group_name = f"play_{self.player_id}_{self.rival_id}"
+        self.user = self.scope.get("user")
+        self.accept()
         async_to_sync(self.channel_layer.group_add)(
             self.play_group_name, self.channel_name
         )
-        self.accept()
 
     def disconnect(self, code: int) -> None:
         """Disconnect group from channel layer."""
@@ -42,6 +44,8 @@ class PlayConsumer(WebsocketConsumer):
         if text_data:
             text_data_json: Dict = json.loads(text_data)
             message: Union[str, Dict] = text_data_json["message"]
+            if not self.user.is_authenticated:
+                return
             async_to_sync(self.channel_layer.group_send)(
                 self.play_group_name, {"type": "play_message", "message": message}
             )
@@ -59,15 +63,17 @@ class StartConsumer(WebsocketConsumer):
         super().__init__(*args, **kwargs)
         self.start_name: Optional[int] = None
         self.start_group_name: Optional[str] = None
+        self.user: Optional[User] = None
 
     def connect(self) -> None:
         """Add/connect group to channel layer."""
         self.start_name = self.scope["url_route"]["kwargs"]["player_id"]
         self.start_group_name = "page_%s" % self.start_name
+        self.user = self.scope.get("user")
+        self.accept()
         async_to_sync(self.channel_layer.group_add)(
             self.start_group_name, self.channel_name
         )
-        self.accept()
 
     def disconnect(self, code: int) -> None:
         """Disconnect group from channel layer."""
@@ -82,16 +88,27 @@ class StartConsumer(WebsocketConsumer):
         if text_data:
             text_data_json: Dict = json.loads(text_data)
             message: Dict = text_data_json["message"]
+            if not self.user.is_authenticated:
+                return
             if message.get("type") == "game_over":
                 user: User = User.objects.get(id=message.get("user_id"))
                 rival: User = User.objects.get(id=message.get("rival_id"))
                 result: Optional[int] = message.get("result")
                 Result.objects.create(player=user, rival=rival.username, count=result)
-            async_to_sync(self.channel_layer.group_send)(
-                self.start_group_name, {"type": "start_message", "message": message}
-            )
+            if message.get("type") == "user_data":
+                async_to_sync(self.channel_layer.group_send)(
+                    self.start_group_name, {"type": "user_message", "message": message}
+                )
+            else:
+                async_to_sync(self.channel_layer.group_send)(
+                    self.start_group_name, {"type": "start_message", "message": message}
+                )
 
     def start_message(self, event: bytes) -> None:
+        """Send message."""
+        self.send(text_data=json.dumps(event))
+
+    def user_message(self, event: bytes) -> None:
         """Send message."""
         self.send(text_data=json.dumps(event))
 
@@ -104,15 +121,17 @@ class ProposeToPlay(WebsocketConsumer):
         super().__init__(*args, **kwargs)
         self.player_id: Optional[int] = None
         self.propose_group_name: Optional[str] = None
+        self.user: Optional[User] = None
 
     def connect(self) -> None:
         """Add/connect group to channel layer."""
         self.player_id = self.scope["url_route"]["kwargs"]["player_id"]
         self.propose_group_name = "proposal_%s" % self.player_id
+        self.user = self.scope.get("user")
+        self.accept()
         async_to_sync(self.channel_layer.group_add)(
             self.propose_group_name, self.channel_name
         )
-        self.accept()
 
     def disconnect(self, code: int) -> None:
         """Disconnect group from channel layer."""
@@ -127,6 +146,8 @@ class ProposeToPlay(WebsocketConsumer):
         if text_data:
             text_data_json: Dict = json.loads(text_data)
             message: Union[str, Dict] = text_data_json["message"]
+            if not self.user.is_authenticated:
+                return
             async_to_sync(self.channel_layer.group_send)(
                 self.propose_group_name, {"type": "propose_message", "message": message}
             )

@@ -23,9 +23,9 @@
                             <th scope="col">Info</th>
                         </tr>
                     </thead>
-                    {% for player in logged_players %}
-                        <tbody>
-                            <tr>
+                    <tbody id="table_body">
+                        {% for player in logged_players %}
+                            <tr id="table_{{ player.id }}">
                                 <th scope="row">{{ player.username}}</th>
                                 <th>{{ player.plays_number }}</th>
                                 <th>{{ player.loses }}</th>
@@ -35,8 +35,8 @@
                                 <th id="{{ player.id }}" class="ready-to-play" style="cursor:pointer; color:blue">Yes</th>
                                 <th id="proposal_{{ player.id }}" style="font-size:12px"></th>
                             </tr>
-                        </tbody>
-                    {% endfor %}
+                        {% endfor %}
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -44,5 +44,6 @@
 
     {{ user.id|json_script:"current_user_id" }}
     {{ user.username|json_script:"current_username" }}
+    {{ user_data|json_script:"current_user_data" }}
     <script src="{% static 'play/js/start.js' %}"></script>
 {% endblock content %}

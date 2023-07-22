@@ -89,6 +89,13 @@ class EmailActivationView(TemplateView):
         return context
 
 
+class EntryView(TemplateView):
+    """Class for entry page."""
+
+    template_name = "play/entry.html"
+    extra_context = {"title": "Welcome"}
+
+
 class MainView(UserPassesTestMixin, TemplateView, ABC):
     """Class for main view."""
 

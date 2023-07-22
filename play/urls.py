@@ -20,7 +20,7 @@ from play.views import (
     RegisterEmailConfirmView,
     RegisterView,
     ResultDeleteView,
-    StartView,
+    StartView, EntryView,
 )
 
 app_name = "play"
@@ -30,16 +30,6 @@ urlpatterns = [
         "accounts/login/",
         LoginView.as_view(template_name="play/registration/login.html"),
         name="login",
-    ),
-    path(
-        "accounts/email_verification/<uidb64>/<token>",
-        EmailActivationView.as_view(),
-        name="activate",
-    ),
-    path(
-        "accounts/email_confirm/",
-        RegisterEmailConfirmView.as_view(),
-        name="email_confirm",
     ),
     path("accounts/logout/", LogoutView.as_view(), name="logout"),
     path(
@@ -87,6 +77,17 @@ urlpatterns = [
         name="password_reset_done",
     ),
     path("accounts/registration/", RegisterView.as_view(), name="registration"),
+    path(
+        "accounts/email_verification/<uidb64>/<token>",
+        EmailActivationView.as_view(),
+        name="activate",
+    ),
+    path(
+        "accounts/email_confirm/",
+        RegisterEmailConfirmView.as_view(),
+        name="email_confirm",
+    ),
+    path("entry/", EntryView.as_view(), name="entry"),
     path("<int:player_pk>/<int:rival_pk>/", MainView.as_view(), name="main"),
     path("start/", StartView.as_view(), name="start"),
     path("rating/", RatingView.as_view(), name="rating"),

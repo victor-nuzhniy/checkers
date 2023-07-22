@@ -1,0 +1,31 @@
+{% extends 'play/base.html' %}
+{% load static %}
+
+{% block content %}
+    <h2>Welcome to play checkers!</h2>
+
+    <div style="max-width:900px">
+        <p>Here you can challenge the game of checkers.</p>
+        <p>Here some points how to manage on site.</p>
+        <p>To have the ability to play you have to <a href="{% url 'play:registration' %}">register</a>
+            and <a href="{% url 'play:login' %}">login</a>. <a href="{% url 'play:start' %}">This</a> is a link to board page, where you can see
+        active players, their current rating, invite them and join the game.
+            <a href="{% url 'play:rating' %}">Here</a> you can see all players rating, and
+            {% if user.is_authenticated %}
+            <a href="{% url 'play:profile' user.id %}">here</a>
+            {% else %}
+            <a href="{% url 'play:login' %}">here</a>
+            {% endif %}
+            - personal rating info. You account data -
+            {% if user.is_authenticated %}
+            <a href="{% url 'play:account' user.id %}">here</a>
+            {% else %}
+            <a href="{% url 'play:login' %}">here</a>
+            {% endif %}.</p>
+        <p>On board you can invite a somebody to play checkers. Here is a list of active players.
+        Status 'Yes' means, that player is not playing now, and you can invite him by clicking on his
+        status. A link with invitation will appear by you record on players board page. If player agrees to
+            play with you, you'll see the link in front of his entry.</p>
+    </div>
+
+{% endblock content %}

@@ -87,7 +87,7 @@ urlpatterns = [
         RegisterEmailConfirmView.as_view(),
         name="email_confirm",
     ),
-    path("entry/", EntryView.as_view(), name="entry"),
+    path("", EntryView.as_view(), name="entry"),
     path("<int:player_pk>/<int:rival_pk>/", MainView.as_view(), name="main"),
     path("start/", StartView.as_view(), name="start"),
     path("rating/", RatingView.as_view(), name="rating"),

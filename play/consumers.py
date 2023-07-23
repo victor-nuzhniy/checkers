@@ -7,6 +7,7 @@ from channels.generic.websocket import WebsocketConsumer
 from django.contrib.auth.models import User
 
 from play.models import Result
+from play.utils import get_all_users_data
 
 
 class PlayConsumer(WebsocketConsumer):
@@ -74,12 +75,43 @@ class StartConsumer(WebsocketConsumer):
         async_to_sync(self.channel_layer.group_add)(
             self.start_group_name, self.channel_name
         )
+        if self.user.is_authenticated:
+            profile_data = get_all_users_data().get(id=self.user.pk)
+            user_data = {
+                "plays": profile_data.plays_number,
+                "loses": profile_data.loses,
+                "draws": profile_data.draws,
+                "wins": profile_data.wins,
+                "points": profile_data.points,
+            }
+            async_to_sync(self.channel_layer.group_send)(
+                self.start_group_name,
+                {
+                    "type": "user_join_message",
+                    "message": {
+                        "user_id": self.user.pk,
+                        "username": self.user.username,
+                        "user_data": user_data,
+                    },
+                }
+            )
 
     def disconnect(self, code: int) -> None:
         """Disconnect group from channel layer."""
         async_to_sync(self.channel_layer.group_discard)(
             self.start_group_name, self.channel_name
         )
+        if self.user.is_authenticated:
+            async_to_sync(self.channel_layer.group_send)(
+                self.start_group_name,
+                {
+                    "type": "user_leave_message",
+                    "message": {
+                        "user_id": self.user.pk,
+                        "username": self.user.username,
+                    }
+                }
+            )
 
     def receive(
         self, text_data: Optional[bytes] = None, bytes_data: Optional[bytes] = None
@@ -95,20 +127,28 @@ class StartConsumer(WebsocketConsumer):
                 rival: User = User.objects.get(id=message.get("rival_id"))
                 result: Optional[int] = message.get("result")
                 Result.objects.create(player=user, rival=rival.username, count=result)
-            if message.get("type") == "user_data":
-                async_to_sync(self.channel_layer.group_send)(
-                    self.start_group_name, {"type": "user_message", "message": message}
-                )
-            else:
-                async_to_sync(self.channel_layer.group_send)(
-                    self.start_group_name, {"type": "start_message", "message": message}
-                )
+            # if message.get("type") == "user_data":
+            #     async_to_sync(self.channel_layer.group_send)(
+            #         self.start_group_name, {"type": "user_message", "message": message}
+            #     )
+            # else:
+            async_to_sync(self.channel_layer.group_send)(
+                self.start_group_name, {"type": "start_message", "message": message}
+            )
 
     def start_message(self, event: bytes) -> None:
         """Send message."""
         self.send(text_data=json.dumps(event))
 
     def user_message(self, event: bytes) -> None:
+        """Send message."""
+        self.send(text_data=json.dumps(event))
+
+    def user_join_message(self, event: bytes) -> None:
+        """Send message."""
+        self.send(text_data=json.dumps(event))
+
+    def user_leave_message(self, event: bytes) -> None:
         """Send message."""
         self.send(text_data=json.dumps(event))
 

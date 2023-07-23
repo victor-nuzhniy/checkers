@@ -44,6 +44,5 @@
 
     {{ user.id|json_script:"current_user_id" }}
     {{ user.username|json_script:"current_username" }}
-    {{ user_data|json_script:"current_user_data" }}
     <script src="{% static 'play/js/start.js' %}"></script>
 {% endblock content %}

@@ -1,6 +1,5 @@
 const currentUserId = JSON.parse(document.getElementById('current_user_id').textContent);
 const currentUserName = JSON.parse(document.getElementById('current_username').textContent);
-const currentUserData = JSON.parse(document.getElementById('current_user_data').textContent);
 
 let startSocket = null
 
@@ -35,16 +34,6 @@ startSocket.onopen = function () {
             "type": "start_refresh",
         }
     }));
-    if (currentUserData.length){
-        startSocket.send(JSON.stringify({
-            'message': {
-                "type": "user_data",
-                "user_id": currentUserId,
-                "username": currentUserName,
-                "user_data": currentUserData,
-            }
-        }))
-    }
 }
 
 startSocket.onmessage = function(e) {
@@ -66,17 +55,15 @@ startSocket.onmessage = function(e) {
             playerStatus.setAttribute("style", "cursor:pointer; color:blue");
             rivalStatus.setAttribute("style", "cursor:pointer; color:blue");
         };
-    } else if (data.type == "user_message") {
-        if (data.message["type"] == "user_data"){
+    } else if (data.type == "user_join_message") {
             let addedUserId = data.message["user_id"]
             if (document.getElementById("table_" + addedUserId) == null){
-                let addedUserData = JSON.parse(data.message["user_data"])
+                let addedUserData = data.message["user_data"]
                 let addedUsername = data.message["username"]
                 let tableBody = document.getElementById("table_body")
                 let row = createTableRow(addedUserData, addedUserId, addedUsername)
                 tableBody.appendChild(row)
             };
-        };
     } else {
         console.log("Unknown message type!");
     }

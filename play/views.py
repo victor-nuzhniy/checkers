@@ -133,20 +133,8 @@ class StartView(TemplateView):
 
     def get_context_data(self, **kwargs: Any) -> Dict:
         """Get context data for the view."""
-        user: User = self.request.user
-        user_data: Dict = dict()
-        if self.request.user.is_authenticated:
-            profile_data = get_all_users_data().get(id=user.pk)
-            user_data = {
-                "plays": profile_data.plays_number,
-                "loses": profile_data.loses,
-                "draws": profile_data.draws,
-                "wins": profile_data.wins,
-                "points": profile_data.points,
-            }
         context: Dict = super().get_context_data(**kwargs)
         context["logged_players"] = get_all_logged_in_users()
-        context["user_data"] = json.dumps(user_data)
         return context
 
 

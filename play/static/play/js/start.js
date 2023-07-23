@@ -111,25 +111,20 @@ proposeSocket.onmessage = function(e) {
             && data.message["player_id"] != currentUserId
             && data.message["rival_id"] == currentUserId
         ) {
-            let message = document.getElementById("proposal_" + data.message["player_id"])
-            message.innerHTML =
-            '<a href="http://'
-            + window.location.host
-            + '/'
-            + data.message["player_id"]
-            + '/'
-            + currentUserId
-            + '/">'
-            + data.message["player_username"]
-            + " invite!</a>"
-            let board = document.getElementById("board")
-            board.innerHTML =
-                '<div>'
-                + data.message["player_username"]
-                + ' invite!'
-                + '</div>'
-                + board.innerHTML
-            message.addEventListener("click", (event) => {
+            const message = document.getElementById("proposal_" + data.message["player_id"])
+            const a = document.createElement("a")
+            const link =
+                'http://'
+                + window.location.host
+                + '/'
+                + data.message["player_id"]
+                + '/'
+                + currentUserId
+                + '/'
+            a.setAttribute("href", link)
+            a.innerHTML = data.message["player_username"] + " invite!"
+            const board = document.getElementById("board")
+            a.addEventListener("click", (event) => {
 
                 proposeSocket.send(JSON.stringify({
                    'message': {

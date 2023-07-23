@@ -134,6 +134,19 @@ proposeSocket.onmessage = function(e) {
                        }
                 }));
             });
+            const cloneA = a.cloneNode(true)
+            cloneA.addEventListener("click", (event) => {
+
+                proposeSocket.send(JSON.stringify({
+                   'message': {
+                       "type": "agree_to_play",
+                       "player_id": currentUserId,
+                       "player_username": currentUserName,
+                       }
+                }));
+            });
+            message.appendChild(a)
+            board.insertBefore(cloneA, board.firstChild)
         };
     } else {
         console.log("Unknown message type!");

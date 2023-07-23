@@ -41,15 +41,12 @@ startSocket.onmessage = function(e) {
     if (data.type == "start_message") {
         if (data.message["type"] == "start_playing"){
             playerStatus = document.getElementById(data.message["player_pk"]);
-            rivalStatus = document.getElementById(data.message["rival_pk"]);
             playerStatus.innerHTML = "No";
-            rivalStatus.innerHTML = "No";
             playerStatus.removeAttribute("style");
-            rivalStatus.removeAttribute("style");
         };
-        if (data.message["type"] == "end_playing"){
-            playerStatus = document.getElementById(data.message["winner"]);
-            rivalStatus = document.getElementById(data.message["loser"]);
+        if (data.message["type"] == "game_over"){
+            playerStatus = document.getElementById(data.message["user_id"]);
+            rivalStatus = document.getElementById(data.message["rival_id"]);
             playerStatus.innerHTML = "Yes";
             rivalStatus.innerHTML = "Yes";
             playerStatus.setAttribute("style", "cursor:pointer; color:blue");
@@ -58,10 +55,10 @@ startSocket.onmessage = function(e) {
     } else if (data.type == "user_join_message") {
         let addedUserId = data.message["user_id"]
         if (document.getElementById("table_" + addedUserId) == null){
-            let addedUserData = data.message["user_data"]
-            let addedUsername = data.message["username"]
-            let tableBody = document.getElementById("table_body")
-            let row = createTableRow(addedUserData, addedUserId, addedUsername)
+            const addedUserData = data.message["user_data"]
+            const addedUsername = data.message["username"]
+            const tableBody = document.getElementById("table_body")
+            const row = createTableRow(addedUserData, addedUserId, addedUsername)
             tableBody.appendChild(row)
         };
     } else if (data.type == "user_leave_message") {
@@ -70,8 +67,9 @@ startSocket.onmessage = function(e) {
         if (row !== null) {
             const tableBody = document.getElementById("table_body")
             tableBody.removeChild(row)
-        }
-    }else {
+            }
+
+    } else {
         console.log("Unknown message type!");
     }
 };

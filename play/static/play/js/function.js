@@ -35,15 +35,6 @@ function connectSocket() {
 }
 connectSocket();
 
-socket.onopen = function() {
-    socket.send(JSON.stringify({
-        'message': {
-            "player_pk": playerPk,
-            "rival_pk": rivalPk,
-        },
-    }));
-};
-
 let startSocket = null
 
 function connectStartSocket() {
@@ -75,8 +66,7 @@ startSocket.onopen = function() {
     startSocket.send(JSON.stringify({
         'message': {
             "type": "start_playing",
-            "player_pk": playerPk,
-            "rival_pk": rivalPk,
+            "player_pk": userId,
         }
     }));
 }
@@ -88,8 +78,7 @@ startSocket.onmessage = function(e) {
             startSocket.send(JSON.stringify({
                 'message': {
                         "type": "start_playing",
-                        "player_pk": playerPk,
-                        "rival_pk": rivalPk,
+                        "player_pk": userId,
                     }
             }));
         };

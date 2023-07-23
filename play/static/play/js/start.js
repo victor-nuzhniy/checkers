@@ -164,7 +164,7 @@ function connectProposeNewSocket(userId) {
     };
     proposeNewSocket.onerror = function(err) {
         console.log("WebSocket proposeNewSocket encountered an error: " + err.message);
-        console.log("Closing the prososeNewSocket.");
+        console.log("Closing the proposeNewSocket.");
         proposeNewSocket.close();
     };
 }
@@ -191,19 +191,22 @@ for(let i=0; i<statuses.length; i++){
                         data.message["type"] == "agree_to_play"
                         && data.message["player_id"] == statuses[i].id
                     ) {
-                        let returnMessage = document.getElementById("proposal_" + data.message["player_id"])
-                        returnMessage.innerHTML =
-                        '<a href="http://'
-                        + window.location.host
-                        + '/'
-                        + currentUserId
-                        + '/'
-                        + data.message["player_id"]
-                        + '/">Join '
-                        + data.message["player_username"]
-                        + '!</a>'
-                        let board = document.getElementById("board");
-                        board.innerHTML = '<div>' + returnMessage.innerHTML + '</div>' + board.innerHTML;
+                        const returnMessage = document.getElementById("proposal_" + data.message["player_id"])
+                        const board = document.getElementById("board");
+                        const a = document.createElement("a")
+                        const link =
+                            "http://"
+                            + window.location.host
+                            + '/'
+                            + currentUserId
+                            + '/'
+                            + data.message["player_id"]
+                            + '/'
+                        a.setAttribute("href", link)
+                        a.innerHTML = "Join " + data.message["player_username"] + "!"
+                        const cloneA = a.cloneNode(true)
+                        returnMessage.appendChild(a)
+                        board.insertBefore(cloneA, board.firstChild)
                     };
                 } else {
                     console.log("Unknown message type!");
@@ -260,19 +263,19 @@ function createTableRow(userData, userId, username){
                         data.message["type"] == "agree_to_play"
                         && data.message["player_id"] == userId
                     ) {
-                        let returnMessage = document.getElementById("proposal_" + data.message["player_id"])
-                        returnMessage.innerHTML =
-                        '<a href="http://'
-                        + window.location.host
-                        + '/'
-                        + currentUserId
-                        + '/'
-                        + data.message["player_id"]
-                        + '/">Join '
-                        + data.message["player_username"]
-                        + '!</a>'
-                        let board = document.getElementById("board");
-                        board.innerHTML = '<div>' + returnMessage.innerHTML + '</div>' + board.innerHTML;
+                        const a = document.createElement("a")
+                        const link =
+                            'http://'
+                            + window.location.host
+                            + '/'
+                            + currentUserId
+                            + '/'
+                            + data.message["player_id"]
+                            + '/'
+                        a.setAttribute("href", link)
+                        a.innerHTML = "Join " + data.message["player_username"] + "!"
+                        const board = document.getElementById("board");
+                        board.insertBefore(a, board.firstChild)
                     };
                 } else {
                     console.log("Unknown message type!");

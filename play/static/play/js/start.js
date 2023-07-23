@@ -56,15 +56,22 @@ startSocket.onmessage = function(e) {
             rivalStatus.setAttribute("style", "cursor:pointer; color:blue");
         };
     } else if (data.type == "user_join_message") {
-            let addedUserId = data.message["user_id"]
-            if (document.getElementById("table_" + addedUserId) == null){
-                let addedUserData = data.message["user_data"]
-                let addedUsername = data.message["username"]
-                let tableBody = document.getElementById("table_body")
-                let row = createTableRow(addedUserData, addedUserId, addedUsername)
-                tableBody.appendChild(row)
-            };
-    } else {
+        let addedUserId = data.message["user_id"]
+        if (document.getElementById("table_" + addedUserId) == null){
+            let addedUserData = data.message["user_data"]
+            let addedUsername = data.message["username"]
+            let tableBody = document.getElementById("table_body")
+            let row = createTableRow(addedUserData, addedUserId, addedUsername)
+            tableBody.appendChild(row)
+        };
+    } else if (data.type == "user_leave_message") {
+        let addedUserId = data.message["user_id"]
+        const row = document.getElementById("table_" + addedUserId)
+        if (row !== null) {
+            const tableBody = document.getElementById("table_body")
+            tableBody.removeChild(row)
+        }
+    }else {
         console.log("Unknown message type!");
     }
 };

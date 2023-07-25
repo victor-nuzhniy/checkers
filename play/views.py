@@ -50,7 +50,13 @@ class RegisterView(FormView):
             },
         )
         to_email: str = form.cleaned_data.get("email")
-        send_mail(mail_subject, message, "admin@email.com", [to_email])
+        send_mail(
+            mail_subject,
+            message,
+            "admin@email.com",
+            [to_email],
+            fail_silently=True,
+        )
         return super().form_valid(form)
 
 

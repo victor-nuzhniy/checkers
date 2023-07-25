@@ -22,7 +22,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['2.59.223.13', '*']
 
 INSTALLED_APPS = [
     "daphne",
@@ -119,6 +119,8 @@ LOGIN_REDIRECT_URL = "/start/"
 
 LOGOUT_REDIRECT_URL = "/start/"
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
 EMAIL_HOST = os.getenv("MAIL_SERVER")
 
 EMAIL_HOST_USER = os.getenv("MAIL_USERNAME")
@@ -128,3 +130,5 @@ EMAIL_HOST_PASSWORD = os.getenv("MAIL_PASSWORD")
 EMAIL_PORT = os.getenv("MAIL_PORT")
 
 DEFAULT_FROM_MAIL = os.getenv("MAIL_FROM")
+
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS")

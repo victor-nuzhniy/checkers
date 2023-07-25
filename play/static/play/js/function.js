@@ -34,6 +34,72 @@ function connectSocket() {
     };
 }
 connectSocket();
+socket.onopen = function() {
+    socket.onmessage = function(e){
+        const data = JSON.parse(e.data);
+        if (data.type == "user_play_join_message"){
+            const joinedUserId = data.message["user_id"];
+            let playerBoard = null
+            if (joinedUserId == playerPk) {
+                playerBoard = document.getElementById("white_player")
+            } else {
+                playerBoard = document.getElementById("black_player")
+            };
+            playerBoard.innerHTML = "Active";
+            playerBoard.setAttribute("style", "color:blue")
+        } else if (data.type == "user_play_leave_message"){
+            const joinedUserId = data.message["user_id"];
+            let playerBoard = null
+            if (joinedUserId == playerPk) {
+                playerBoard = document.getElementById("white_player")
+            } else {
+                playerBoard = document.getElementById("black_player")
+            }
+            playerBoard.innerHTML = "Not active.";
+            playerBoard.removeAttribute("style")
+        } else if (data.type == "play_message") {
+            if (data.message["receiver"] == userId){
+                board = data.message["board"];
+                buildBoard();
+                currentPlayer = reverse(currentPlayer);
+                displayCurrentPlayer();
+            } else if(data.message["type"] == "ask_rival"){
+                if (
+                    userId != data.message["user_id"] && (
+                    data.message["user_id"] == playerPk && document.getElementById("black_player").innerHTML == "Active" ||
+                    data.message["user_id"] == rivalPk && document.getElementById("black_player").innerHTML == "Active"
+                    )
+                ){
+                    socket.send(JSON.stringify({
+                        'message': {
+                            "type": "answer_rival",
+                        }
+                    }));
+                };
+            } else if(data.message["type"] == "answer_rival") {
+                let blackStatus = document.getElementById("black_player")
+                blackStatus.innerHTML = "Active"
+                blackStatus.setAttribute("style", "color:blue")
+                let whiteStatus = document.getElementById("white_player")
+                whiteStatus.innerHTML = "Active"
+                whiteStatus.setAttribute("style", "color:blue")
+            }
+        } else {
+            console.log("Unknown message type!");
+        };
+    };
+    if (
+        userId == playerPk && document.getElementById("black_player").innerHTML != 'Active' ||
+        userId == rivalPk && document.getElementById("white_player").innerHTML != 'Active'
+    ) {
+        socket.send(JSON.stringify({
+            'message': {
+                "type": "ask_rival",
+                "user_id": userId,
+            }
+        }));
+    }
+};
 
 let startSocket = null
 

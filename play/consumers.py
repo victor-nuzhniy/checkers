@@ -31,12 +31,30 @@ class PlayConsumer(WebsocketConsumer):
         async_to_sync(self.channel_layer.group_add)(
             self.play_group_name, self.channel_name
         )
+        if self.user.is_authenticated:
+            async_to_sync(self.channel_layer.group_send)(
+                self.play_group_name,
+                {
+                    "type": "user_play_join_message",
+                    "message": {
+                        "user_id": self.user.pk,
+                    },
+                }
+            )
 
     def disconnect(self, code: int) -> None:
         """Disconnect group from channel layer."""
         async_to_sync(self.channel_layer.group_discard)(
             self.play_group_name, self.channel_name
         )
+        if self.user.is_authenticated:
+            async_to_sync(self.channel_layer.group_send)(
+                self.play_group_name,
+                {
+                    "type": "user_play_leave_message",
+                    "message": {"user_id": self.user.pk},
+                }
+            )
 
     def receive(
         self, text_data: Optional[bytes] = None, bytes_data: Optional[bytes] = None
@@ -52,6 +70,14 @@ class PlayConsumer(WebsocketConsumer):
             )
 
     def play_message(self, event: bytes) -> None:
+        """Send message."""
+        self.send(text_data=json.dumps(event))
+
+    def user_play_join_message(self, event: bytes) -> None:
+        """Send message."""
+        self.send(text_data=json.dumps(event))
+
+    def user_play_leave_message(self, event: bytes) -> None:
         """Send message."""
         self.send(text_data=json.dumps(event))
 

@@ -17,7 +17,7 @@ body {
   display: flex;
   gap: 20px;
   background-color: #ecc59a;
-  padding: 10px 20px;
+  padding: 3px 10px;
   border: 1px solid #ecc59a;
   border-radius: 5px;
 }
@@ -34,8 +34,8 @@ body {
   font-size: 20px;
 }
 .occupied {
-  width: 30px;
-  height: 30px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
 }
 .occupied.whitePiece {
@@ -56,8 +56,8 @@ body {
 
 .game {
   background-color: #4c382e;
-  width: 500px;
-  height: 500px;
+  width: 350px;
+  height: 350px;
   display: flex;
   flex-direction: column;
 }
@@ -209,3 +209,19 @@ body {
     border: 1px solid #4c382e;
     border-radius: 5px;
   }
+
+@media (min-width:576px){
+
+    .occupied {
+      width: 30px;
+      height: 30px;
+    }
+    .game {
+      width: 500px;
+      height: 500px;
+      display: flex;
+    }
+    .counter {
+      padding: 10px 20px;
+    }
+}

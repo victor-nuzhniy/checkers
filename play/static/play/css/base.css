@@ -2,3 +2,13 @@
     max-height: 600px;
     overflow-y: auto;
 }
+.table {
+    font-size: 10px;
+}
+
+@media(min-width: 576px) {
+    .table {
+        font-size: 18px;
+    }
+
+}

@@ -8,7 +8,11 @@ class Result(models.Model):
 
     player = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Player")
     rival = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True, verbose_name="Rival name"
+        User,
+        related_name="rivals",
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name="Rival name",
     )
     count = models.IntegerField(verbose_name="Count")
     created_at = models.DateField(auto_now_add=True, verbose_name="Created at")

@@ -70,9 +70,20 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [
+                (str(os.getenv("CHANNELS_HOST")), int(os.getenv("CHANNELS_PORT")))
+            ],
         },
     },
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": os.getenv("REDIS_LOCATION"),
+        "KEY_PREFIX": "checkers",
+        "TIMEOUT": 60 * 50000,
+    }
 }
 
 DATABASES = {

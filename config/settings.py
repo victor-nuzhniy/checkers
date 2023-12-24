@@ -77,12 +77,14 @@ CHANNEL_LAYERS = {
     },
 }
 
+CACHE_TTL = 60 * 50000
+
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
         "LOCATION": os.getenv("REDIS_LOCATION"),
         "KEY_PREFIX": "checkers",
-        "TIMEOUT": 60 * 50000,
+        "TIMEOUT": CACHE_TTL,
     }
 }
 

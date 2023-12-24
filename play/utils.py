@@ -23,7 +23,7 @@ def get_all_logged_in_users() -> QuerySet:
         .annotate(loses=Count("result", filter=Q(result__count=0)))
         .annotate(draws=Count("result", filter=Q(result__count=-1)))
         .annotate(wins=Count("result", filter=Q(result__count__gt=0)))
-        .annotate(points=Sum("result__count"))
+        .annotate(points=Sum("result__count", filter=Q(result__count__gt=0)))
     )
 
 
@@ -34,7 +34,7 @@ def get_all_users_data() -> QuerySet:
         .annotate(loses=Count("result", filter=Q(result__count=0)))
         .annotate(draws=Count("result", filter=Q(result__count=-1)))
         .annotate(wins=Count("result", filter=Q(result__count__gt=0)))
-        .annotate(points=Sum("result__count"))
+        .annotate(points=Sum("result__count", filter=Q(result__count__gt=0)))
     )
 
 

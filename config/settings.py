@@ -20,9 +20,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-DEBUG = False
+DEBUG = bool(os.getenv("DEBUG"))
 
-ALLOWED_HOSTS = ['2.59.223.13', '*']
+ALLOWED_HOSTS = ["2.59.223.13", "*"]
 
 INSTALLED_APPS = [
     "daphne",
@@ -84,7 +84,8 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": "django.contrib.auth.password_validation"
+        ".UserAttributeSimilarityValidator",
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
@@ -119,7 +120,7 @@ LOGIN_REDIRECT_URL = "/start/"
 
 LOGOUT_REDIRECT_URL = "/start/"
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 EMAIL_HOST = os.getenv("MAIL_SERVER")
 

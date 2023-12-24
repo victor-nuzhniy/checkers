@@ -5,7 +5,9 @@ from typing import Any, Dict, Optional, Union
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from django.contrib.auth.models import User
+from django.core.cache import cache
 
+from config.settings import CACHE_TTL
 from play.models import Result
 from play.utils import get_all_users_data
 
@@ -32,14 +34,16 @@ class PlayConsumer(WebsocketConsumer):
             self.play_group_name, self.channel_name
         )
         if self.user.is_authenticated:
+            board = cache.get(self.play_group_name)
             async_to_sync(self.channel_layer.group_send)(
                 self.play_group_name,
                 {
                     "type": "user_play_join_message",
                     "message": {
                         "user_id": self.user.pk,
+                        "board": board,
                     },
-                }
+                },
             )
 
     def disconnect(self, code: int) -> None:
@@ -53,7 +57,7 @@ class PlayConsumer(WebsocketConsumer):
                 {
                     "type": "user_play_leave_message",
                     "message": {"user_id": self.user.pk},
-                }
+                },
             )
 
     def receive(
@@ -65,6 +69,9 @@ class PlayConsumer(WebsocketConsumer):
             message: Union[str, Dict] = text_data_json["message"]
             if not self.user.is_authenticated:
                 return
+            if board := message.get("board"):
+                if message.get("receiver"):
+                    cache.set(self.play_group_name, board, CACHE_TTL)
             async_to_sync(self.channel_layer.group_send)(
                 self.play_group_name, {"type": "play_message", "message": message}
             )
@@ -119,7 +126,7 @@ class StartConsumer(WebsocketConsumer):
                         "username": self.user.username,
                         "user_data": user_data,
                     },
-                }
+                },
             )
 
     def disconnect(self, code: int) -> None:
@@ -135,8 +142,8 @@ class StartConsumer(WebsocketConsumer):
                     "message": {
                         "user_id": self.user.pk,
                         "username": self.user.username,
-                    }
-                }
+                    },
+                },
             )
 
     def receive(
@@ -149,15 +156,19 @@ class StartConsumer(WebsocketConsumer):
             if not self.user.is_authenticated:
                 return
             if message.get("type") == "game_over":
-                user: User = User.objects.get(id=message.get("user_id"))
-                rival: User = User.objects.get(id=message.get("rival_id"))
                 result: Optional[int] = message.get("result")
-                Result.objects.create(player=user, rival=rival.username, count=result)
-            # if message.get("type") == "user_data":
-            #     async_to_sync(self.channel_layer.group_send)(
-            #         self.start_group_name, {"type": "user_message", "message": message}
-            #     )
-            # else:
+                user_id = message.get("user_id")
+                rival_id = message.get("rival_id")
+                if message.get("white"):
+                    cache.delete(f"play_{user_id}_{rival_id}")
+                else:
+                    cache.delete(f"play_{rival_id}_{user_id}")
+
+                Result.objects.create(
+                    player__id=user_id,
+                    rival__id=rival_id,
+                    count=result,
+                )
             async_to_sync(self.channel_layer.group_send)(
                 self.start_group_name, {"type": "start_message", "message": message}
             )

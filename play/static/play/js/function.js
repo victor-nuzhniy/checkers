@@ -45,6 +45,10 @@ socket.onopen = function() {
             } else {
                 playerBoard = document.getElementById("black_player")
             };
+            if (Boolean(data.message["board"]) && playerBoard.innerHTML !== "Active"){
+                board = data.message["board"]
+                buildBoard();
+            }
             playerBoard.innerHTML = "Active";
             playerBoard.setAttribute("style", "color:blue")
         } else if (data.type == "user_play_leave_message"){
@@ -397,6 +401,7 @@ function buildBoard() {
             "user_id": userId,
             "rival_id": receiver,
             "result": result,
+            "white": currentUser > 0 ? true : false,
             }
         }));
 

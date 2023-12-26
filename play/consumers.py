@@ -2,8 +2,7 @@
 import json
 from typing import Any, Dict, Optional, Union
 
-from asgiref.sync import async_to_sync
-from channels.generic.websocket import WebsocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth.models import User
 from django.core.cache import cache
 
@@ -12,7 +11,7 @@ from play.models import Result
 from play.utils import get_all_users_data
 
 
-class PlayConsumer(WebsocketConsumer):
+class PlayConsumer(AsyncWebsocketConsumer):
     """Class socket server for playing page."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -23,19 +22,17 @@ class PlayConsumer(WebsocketConsumer):
         self.rival_id: Optional[int] = None
         self.user: Optional[User] = None
 
-    def connect(self) -> None:
+    async def connect(self) -> None:
         """Add/connect group to channel layer."""
         self.player_id = self.scope["url_route"]["kwargs"]["player_id"]
         self.rival_id = self.scope["url_route"]["kwargs"]["rival_id"]
         self.play_group_name = f"play_{self.player_id}_{self.rival_id}"
         self.user = self.scope.get("user")
-        self.accept()
-        async_to_sync(self.channel_layer.group_add)(
-            self.play_group_name, self.channel_name
-        )
+        await self.accept()
+        await self.channel_layer.group_add(self.play_group_name, self.channel_name)
         if self.user.is_authenticated:
             board = cache.get(self.play_group_name)
-            async_to_sync(self.channel_layer.group_send)(
+            await self.channel_layer.group_send(
                 self.play_group_name,
                 {
                     "type": "user_play_join_message",
@@ -46,13 +43,11 @@ class PlayConsumer(WebsocketConsumer):
                 },
             )
 
-    def disconnect(self, code: int) -> None:
+    async def disconnect(self, code: int) -> None:
         """Disconnect group from channel layer."""
-        async_to_sync(self.channel_layer.group_discard)(
-            self.play_group_name, self.channel_name
-        )
+        await self.channel_layer.group_discard(self.play_group_name, self.channel_name)
         if self.user.is_authenticated:
-            async_to_sync(self.channel_layer.group_send)(
+            await self.channel_layer.group_send(
                 self.play_group_name,
                 {
                     "type": "user_play_leave_message",
@@ -60,7 +55,7 @@ class PlayConsumer(WebsocketConsumer):
                 },
             )
 
-    def receive(
+    async def receive(
         self, text_data: Optional[bytes] = None, bytes_data: Optional[bytes] = None
     ) -> None:
         """Receive and process messages."""
@@ -72,24 +67,24 @@ class PlayConsumer(WebsocketConsumer):
             if board := message.get("board"):
                 if message.get("receiver"):
                     cache.set(self.play_group_name, board, CACHE_TTL)
-            async_to_sync(self.channel_layer.group_send)(
+            await self.channel_layer.group_send(
                 self.play_group_name, {"type": "play_message", "message": message}
             )
 
-    def play_message(self, event: bytes) -> None:
+    async def play_message(self, event: bytes) -> None:
         """Send message."""
-        self.send(text_data=json.dumps(event))
+        await self.send(text_data=json.dumps(event))
 
-    def user_play_join_message(self, event: bytes) -> None:
+    async def user_play_join_message(self, event: bytes) -> None:
         """Send message."""
-        self.send(text_data=json.dumps(event))
+        await self.send(text_data=json.dumps(event))
 
-    def user_play_leave_message(self, event: bytes) -> None:
+    async def user_play_leave_message(self, event: bytes) -> None:
         """Send message."""
-        self.send(text_data=json.dumps(event))
+        await self.send(text_data=json.dumps(event))
 
 
-class StartConsumer(WebsocketConsumer):
+class StartConsumer(AsyncWebsocketConsumer):
     """Class socket server for start page."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -99,17 +94,15 @@ class StartConsumer(WebsocketConsumer):
         self.start_group_name: Optional[str] = None
         self.user: Optional[User] = None
 
-    def connect(self) -> None:
+    async def connect(self) -> None:
         """Add/connect group to channel layer."""
         self.start_name = self.scope["url_route"]["kwargs"]["player_id"]
         self.start_group_name = "page_%s" % self.start_name
         self.user = self.scope.get("user")
-        self.accept()
-        async_to_sync(self.channel_layer.group_add)(
-            self.start_group_name, self.channel_name
-        )
+        await self.accept()
+        await self.channel_layer.group_add(self.start_group_name, self.channel_name)
         if self.user.is_authenticated:
-            profile_data = get_all_users_data().get(id=self.user.pk)
+            profile_data = await get_all_users_data().aget(id=self.user.pk)
             user_data = {
                 "plays": profile_data.plays_number,
                 "loses": profile_data.loses,
@@ -117,7 +110,7 @@ class StartConsumer(WebsocketConsumer):
                 "wins": profile_data.wins,
                 "points": profile_data.points,
             }
-            async_to_sync(self.channel_layer.group_send)(
+            await self.channel_layer.group_send(
                 self.start_group_name,
                 {
                     "type": "user_join_message",
@@ -129,13 +122,11 @@ class StartConsumer(WebsocketConsumer):
                 },
             )
 
-    def disconnect(self, code: int) -> None:
+    async def disconnect(self, code: int) -> None:
         """Disconnect group from channel layer."""
-        async_to_sync(self.channel_layer.group_discard)(
-            self.start_group_name, self.channel_name
-        )
+        await self.channel_layer.group_discard(self.start_group_name, self.channel_name)
         if self.user.is_authenticated:
-            async_to_sync(self.channel_layer.group_send)(
+            await self.channel_layer.group_send(
                 self.start_group_name,
                 {
                     "type": "user_leave_message",
@@ -146,7 +137,7 @@ class StartConsumer(WebsocketConsumer):
                 },
             )
 
-    def receive(
+    async def receive(
         self, text_data: Optional[bytes] = None, bytes_data: Optional[bytes] = None
     ) -> None:
         """Receive and process messages."""
@@ -164,33 +155,33 @@ class StartConsumer(WebsocketConsumer):
                 else:
                     cache.delete(f"play_{rival_id}_{user_id}")
 
-                Result.objects.create(
+                await Result.objects.acreate(
                     player__id=user_id,
                     rival__id=rival_id,
                     count=result,
                 )
-            async_to_sync(self.channel_layer.group_send)(
+            await self.channel_layer.group_send(
                 self.start_group_name, {"type": "start_message", "message": message}
             )
 
-    def start_message(self, event: bytes) -> None:
+    async def start_message(self, event: bytes) -> None:
         """Send message."""
-        self.send(text_data=json.dumps(event))
+        await self.send(text_data=json.dumps(event))
 
-    def user_message(self, event: bytes) -> None:
+    async def user_message(self, event: bytes) -> None:
         """Send message."""
-        self.send(text_data=json.dumps(event))
+        await self.send(text_data=json.dumps(event))
 
-    def user_join_message(self, event: bytes) -> None:
+    async def user_join_message(self, event: bytes) -> None:
         """Send message."""
-        self.send(text_data=json.dumps(event))
+        await self.send(text_data=json.dumps(event))
 
-    def user_leave_message(self, event: bytes) -> None:
+    async def user_leave_message(self, event: bytes) -> None:
         """Send message."""
-        self.send(text_data=json.dumps(event))
+        await self.send(text_data=json.dumps(event))
 
 
-class ProposeToPlay(WebsocketConsumer):
+class ProposeToPlay(AsyncWebsocketConsumer):
     """Class socket server for start page."""
 
     def __init__(self, *args, **kwargs) -> None:
@@ -200,23 +191,21 @@ class ProposeToPlay(WebsocketConsumer):
         self.propose_group_name: Optional[str] = None
         self.user: Optional[User] = None
 
-    def connect(self) -> None:
+    async def connect(self) -> None:
         """Add/connect group to channel layer."""
         self.player_id = self.scope["url_route"]["kwargs"]["player_id"]
         self.propose_group_name = "proposal_%s" % self.player_id
         self.user = self.scope.get("user")
-        self.accept()
-        async_to_sync(self.channel_layer.group_add)(
-            self.propose_group_name, self.channel_name
-        )
+        await self.accept()
+        await self.channel_layer.group_add(self.propose_group_name, self.channel_name)
 
-    def disconnect(self, code: int) -> None:
+    async def disconnect(self, code: int) -> None:
         """Disconnect group from channel layer."""
-        async_to_sync(self.channel_layer.group_discard)(
+        await self.channel_layer.group_discard(
             self.propose_group_name, self.channel_name
         )
 
-    def receive(
+    async def receive(
         self, text_data: Optional[bytes] = None, bytes_data: Optional[bytes] = None
     ) -> None:
         """Receive and process messages."""
@@ -225,10 +214,10 @@ class ProposeToPlay(WebsocketConsumer):
             message: Union[str, Dict] = text_data_json["message"]
             if not self.user.is_authenticated:
                 return
-            async_to_sync(self.channel_layer.group_send)(
+            await self.channel_layer.group_send(
                 self.propose_group_name, {"type": "propose_message", "message": message}
             )
 
-    def propose_message(self, event: bytes) -> None:
+    async def propose_message(self, event: bytes) -> None:
         """Send message."""
-        self.send(text_data=json.dumps(event))
+        await self.send(text_data=json.dumps(event))

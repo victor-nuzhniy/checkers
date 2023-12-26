@@ -44,6 +44,8 @@ socket.onopen = function() {
             };
             if (Boolean(data.message["board"]) && playerBoard.innerHTML !== "Active"){
                 board = data.message["board"]
+                currentPlayer = data.message["player"]
+                setCurrentPlayer(currentPlayer)
                 buildBoard();
             }
             playerBoard.innerHTML = "Active";
@@ -218,7 +220,7 @@ function enableToCapture(p) {
             displayCurrentPlayer();
 
             socket.send(JSON.stringify({
-               'message': {"receiver": receiver, "board": board},
+               'message': {"receiver": receiver, "board": board, "player": reverse(currentPlayer)},
             }));
 
             buildBoard();
@@ -265,7 +267,7 @@ function moveThePiece(newPosition) {
         capturedMap = new Map();
 
         socket.send(JSON.stringify({
-            'message': {"receiver": receiver, "board": board},
+            'message': {"receiver": receiver, "board": board, "player": reverse(currentPlayer)},
         }));
 
 

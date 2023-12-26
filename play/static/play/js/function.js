@@ -431,6 +431,15 @@ function displayCurrentPlayer() {
     };
 }
 
+function setCurrentPlayer(currentPlayer) {
+    var container = document.getElementById("next-player");
+    if (currentPlayer < 0) {
+        container.setAttribute("class", "occupied blackPiece");
+    } else {
+        container.setAttribute("class", "occupied whitePiece");
+    };
+};
+
 function pieceInCapturedPosition(p){
     let arr = [];
     capturedPosition.forEach((element) => {

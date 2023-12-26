@@ -31,14 +31,15 @@ class PlayConsumer(AsyncWebsocketConsumer):
         if self.user.is_authenticated:
             await self.accept()
             await self.channel_layer.group_add(self.play_group_name, self.channel_name)
-            board = cache.get(self.play_group_name)
+            board_info = cache.get(self.play_group_name, dict())
             await self.channel_layer.group_send(
                 self.play_group_name,
                 {
                     "type": "user_play_join_message",
                     "message": {
                         "user_id": self.user.pk,
-                        "board": board,
+                        "board": board_info.get("board"),
+                        "player": board_info.get("player"),
                     },
                 },
             )
@@ -66,7 +67,11 @@ class PlayConsumer(AsyncWebsocketConsumer):
                 return
             if board := message.get("board"):
                 if message.get("receiver"):
-                    cache.set(self.play_group_name, board, CACHE_TTL)
+                    cache.set(
+                        self.play_group_name,
+                        {"board": board, "player": message.get("player")},
+                        CACHE_TTL,
+                    )
             await self.channel_layer.group_send(
                 self.play_group_name, {"type": "play_message", "message": message}
             )

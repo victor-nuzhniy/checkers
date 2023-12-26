@@ -28,9 +28,9 @@ class PlayConsumer(AsyncWebsocketConsumer):
         self.rival_id = self.scope["url_route"]["kwargs"]["rival_id"]
         self.play_group_name = f"play_{self.player_id}_{self.rival_id}"
         self.user = self.scope.get("user")
-        await self.accept()
-        await self.channel_layer.group_add(self.play_group_name, self.channel_name)
         if self.user.is_authenticated:
+            await self.accept()
+            await self.channel_layer.group_add(self.play_group_name, self.channel_name)
             board = cache.get(self.play_group_name)
             await self.channel_layer.group_send(
                 self.play_group_name,

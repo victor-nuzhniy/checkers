@@ -17,9 +17,6 @@ function connectSocket() {
          + rivalPk
          + "/"
     );
-    socket.onopen = function(){
-        console.log("Socket successfully connected to the WebSocket.");
-    };
     socket.onclose = function(e) {
         console.log("WebSocket socket connection closed unexpectedly. Trying to reconnect in 2s...");
         setTimeout(function() {
@@ -114,9 +111,6 @@ function connectStartSocket() {
          + window.location.host
          + "/ws/start/1/"
         );
-    startSocket.onopen = function(){
-        console.log("startSocket successfully connected to the WebSocket.");
-    };
     startSocket.onclose = function(e) {
         console.log("WebSocket with startSocket connection closed unexpectedly. Trying to reconnect in 2s...");
         setTimeout(function() {
@@ -405,20 +399,6 @@ function buildBoard() {
             }
         }));
 
-    };
-
-    socket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        if (data.type == "play_message") {
-            if (data.message["receiver"] == userId){
-                board = data.message["board"];
-                buildBoard();
-                currentPlayer = reverse(currentPlayer);
-                displayCurrentPlayer();
-            };
-        } else {
-            console.log("Unknown message type!");
-        };
     };
 }
 

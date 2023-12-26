@@ -154,10 +154,9 @@ class StartConsumer(AsyncWebsocketConsumer):
                     cache.delete(f"play_{user_id}_{rival_id}")
                 else:
                     cache.delete(f"play_{rival_id}_{user_id}")
-
                 await Result.objects.acreate(
-                    player__id=user_id,
-                    rival__id=rival_id,
+                    player_id=user_id,
+                    rival_id=rival_id,
                     count=result,
                 )
             await self.channel_layer.group_send(

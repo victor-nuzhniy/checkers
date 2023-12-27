@@ -63,7 +63,9 @@ startSocket.onmessage = function(e) {
             const tableBody = document.getElementById("table_body")
             tableBody.removeChild(row)
             }
-
+    } else if (data.type == "user_message") {
+        const today = new Date()
+        document.getElementById("chat").value += `${today.toLocaleDateString()} ${today.toLocaleTimeString()} ${data.message.username} ${data.message.text} \n`;
     } else {
         console.log("Unknown message type!");
     }
@@ -291,4 +293,25 @@ function createTableRow(userData, userId, username){
     cell.setAttribute("style", "font-size:12px")
     row.appendChild(cell)
     return row
+};
+
+const chatMessageInput = document.getElementById("chat-message-input");
+const chatMessageSubmit = document.getElementById("chat-message-submit");
+
+chatMessageInput.focus();
+chatMessageInput.onkeyup = function(e) {
+    if (e.key === "Enter") {
+        chatMessageSubmit.click();
+    };
+};
+
+chatMessageInput.onclick = function(e) {
+    const message = chatMessageInput.value;
+    if(Boolean(message)) {
+        startSocket.send(JSON.stringify({
+            "type": "user_message",
+            "message": {"text": message}
+        }));
+        chatMessageInput.value = "";
+    }
 };

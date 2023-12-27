@@ -65,7 +65,9 @@ startSocket.onmessage = function(e) {
             }
     } else if (data.type == "user_message") {
         const today = new Date()
-        document.getElementById("chat").value += `${today.toLocaleDateString()} ${today.toLocaleTimeString()} ${data.message.username} ${data.message.text} \n`;
+        const chat = document.getElementById("chat")
+        chat.value += `${today.toLocaleDateString()} ${today.toLocaleTimeString()} ${data.message.username} ${data.message.text} \n`;
+        chat.scrollTop = chat.scrollHeight
     } else {
         console.log("Unknown message type!");
     }
@@ -305,7 +307,7 @@ chatMessageInput.onkeyup = function(e) {
     };
 };
 
-chatMessageInput.onclick = function(e) {
+chatMessageSubmit.onclick = function(e) {
     const message = chatMessageInput.value;
     if(Boolean(message)) {
         startSocket.send(JSON.stringify({

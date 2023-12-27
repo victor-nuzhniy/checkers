@@ -27,29 +27,42 @@
             crossorigin="anonymous"
     ></script>
   </head>
-  <body class="bg-light">
+  <body class="bg-light w-100">
     {% include 'play/samples/navbar.html' %}
-    <div class="custom-container d-flex flex-row justify-content-center align-items-start">
-      <div class="d-flex flex-column">
-        <div class="counter my-2" id="black_player">Black haven't joined yet.</div>
-        <div class="next-player counter my-2">
-          <div class="occupied whitePiece" id="next-player"></div>
-          Player
-          <div id="game_over"></div>
-          </div>
-        <div class="game" id="game"></div>
-        <div class="counter mt-2">
-          <div>
-            <div class="occupied whitePiece"></div>
-            <span id="white-player-count-pieces">10</span>
-          </div>
-          <div>
-            <div class="occupied blackPiece"></div>
-            <span id="black-player-count-pieces">10</span>
+    <div class="container">
+      <div class="row">
+        <div class="col-12 col-lg-6">
+          <div class="d-flex flex-row justify-content-center align-items-center">
+            <div class="d-flex flex-column">
+              <div class="counter my-2" id="black_player">Black haven't joined yet.</div>
+              <div class="next-player counter my-2">
+                <div class="occupied whitePiece" id="next-player"></div>
+                Player
+                <div id="game_over"></div>
+                </div>
+              <div class="game" id="game"></div>
+              <div class="counter mt-2">
+                <div>
+                  <div class="occupied whitePiece"></div>
+                  <span id="white-player-count-pieces">10</span>
+                </div>
+                <div>
+                  <div class="occupied blackPiece"></div>
+                  <span id="black-player-count-pieces">10</span>
+                </div>
+              </div>
+              <div class="counter my-2" id="white_player">White haven't joined yet.</div>
+              <div id="result"></div>
+            </div>
           </div>
         </div>
-        <div class="counter my-2" id="white_player">White haven't joined yet.</div>
-        <div id="result"></div>
+        <div class="col-12 col-lg-6 ps-lg-4 d-flex flex-column align-items-center">
+            <div>Chat</div>
+            <textarea rows="4" class="w-100 mb-3 custom-input" id="chat"></textarea>
+            <input id="chat-message-input" class="w-100 mb-3 custom-input custom-input-height" type="text"><br>
+            <button id="chat-message-submit" type="button" class="btn btn-dark">Send</button>
+            <div class="d-lg-none" style="height: 100px;"></div>
+        </div>
       </div>
     </div>
 

@@ -66,27 +66,25 @@ socket.onopen = function() {
                 buildBoard();
                 currentPlayer = reverse(currentPlayer);
                 displayCurrentPlayer();
-            } else if(data.message["type"] == "ask_rival"){
-                if (
-                    userId != data.message["user_id"] && (
-                    data.message["user_id"] == playerPk && document.getElementById("black_player").innerHTML == "Active" ||
-                    data.message["user_id"] == rivalPk && document.getElementById("black_player").innerHTML == "Active"
-                    )
-                ){
-                    socket.send(JSON.stringify({
-                        'message': {
-                            "type": "answer_rival",
-                        }
-                    }));
-                };
-            } else if(data.message["type"] == "answer_rival") {
-                let blackStatus = document.getElementById("black_player")
-                blackStatus.innerHTML = "Active"
-                blackStatus.setAttribute("style", "color:blue")
-                let whiteStatus = document.getElementById("white_player")
-                whiteStatus.innerHTML = "Active"
-                whiteStatus.setAttribute("style", "color:blue")
-            }
+            };
+        } else if(data.type == "ask_rival") {
+            if (
+                userId != data.message["user_id"] && (
+                data.message["user_id"] == playerPk && document.getElementById("black_player").innerHTML == "Active" ||
+                data.message["user_id"] == rivalPk && document.getElementById("black_player").innerHTML == "Active"
+                )
+            ){
+                socket.send(JSON.stringify({
+                    "type": "answer_rival"
+                }));
+            };
+        } else if(data.type == "answer_rival") {
+            let blackStatus = document.getElementById("black_player")
+            blackStatus.innerHTML = "Active"
+            blackStatus.setAttribute("style", "color:blue")
+            let whiteStatus = document.getElementById("white_player")
+            whiteStatus.innerHTML = "Active"
+            whiteStatus.setAttribute("style", "color:blue")
         } else {
             console.log("Unknown message type!");
         };
@@ -96,10 +94,8 @@ socket.onopen = function() {
         userId == rivalPk && document.getElementById("white_player").innerHTML != 'Active'
     ) {
         socket.send(JSON.stringify({
-            'message': {
-                "type": "ask_rival",
-                "user_id": userId,
-            }
+            "type": "ask_rival",
+            "message": {"user_id": userId}
         }));
     }
 };
@@ -130,24 +126,18 @@ connectStartSocket();
 
 startSocket.onopen = function() {
     startSocket.send(JSON.stringify({
-        'message': {
-            "type": "start_playing",
-            "player_pk": userId,
-        }
+        "type": "start_playing",
+        "message": {"player_pk": userId}
     }));
 }
 
 startSocket.onmessage = function(e) {
     const data = JSON.parse(e.data);
-    if (data.type == "start_message") {
-        if (data.message["type"] == "start_refresh"){
-            startSocket.send(JSON.stringify({
-                'message': {
-                        "type": "start_playing",
-                        "player_pk": userId,
-                    }
-            }));
-        };
+    if (data.type == "refresh") {
+        startSocket.send(JSON.stringify({
+            "type": "start_playing",
+            'message': {"player_pk": userId}
+        }));
     } else {
         console.log("Unknown message type!");
     };
@@ -220,7 +210,8 @@ function enableToCapture(p) {
             displayCurrentPlayer();
 
             socket.send(JSON.stringify({
-               'message': {"receiver": receiver, "board": board, "player": reverse(currentPlayer)},
+               "type": "play_message",
+               "message": {"receiver": receiver, "board": board, "player": reverse(currentPlayer)},
             }));
 
             buildBoard();
@@ -267,7 +258,8 @@ function moveThePiece(newPosition) {
         capturedMap = new Map();
 
         socket.send(JSON.stringify({
-            'message': {"receiver": receiver, "board": board, "player": reverse(currentPlayer)},
+            "type": "play_message",
+            "message": {"receiver": receiver, "board": board, "player": reverse(currentPlayer)},
         }));
 
 
@@ -392,8 +384,8 @@ function buildBoard() {
             result = black;
         }
         startSocket.send(JSON.stringify({
-            'message': {
             "type": "game_over",
+            "message": {
             "user_id": userId,
             "rival_id": receiver,
             "result": result,

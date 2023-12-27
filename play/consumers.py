@@ -60,11 +60,14 @@ class PlayConsumer(AsyncWebsocketConsumer):
         self, text_data: Optional[bytes] = None, bytes_data: Optional[bytes] = None
     ) -> None:
         """Receive and process messages."""
+        if not self.user.is_authenticated:
+            return
         if text_data:
             text_data_json: Dict = json.loads(text_data)
-            message: Union[str, Dict] = text_data_json["message"]
-            if not self.user.is_authenticated:
+            message_type: str = text_data_json.get("type")
+            if message_type not in {"play_message", "ask_rival", "answer_rival"}:
                 return
+            message: Union[str, Dict] = text_data_json.get("message", dict())
             if board := message.get("board"):
                 if message.get("receiver"):
                     cache.set(
@@ -73,10 +76,18 @@ class PlayConsumer(AsyncWebsocketConsumer):
                         CACHE_TTL,
                     )
             await self.channel_layer.group_send(
-                self.play_group_name, {"type": "play_message", "message": message}
+                self.play_group_name, {"type": message_type, "message": message}
             )
 
     async def play_message(self, event: bytes) -> None:
+        """Send message."""
+        await self.send(text_data=json.dumps(event))
+
+    async def ask_rival(self, event: bytes) -> None:
+        """Send message."""
+        await self.send(text_data=json.dumps(event))
+
+    async def answer_rival(self, event: bytes) -> None:
         """Send message."""
         await self.send(text_data=json.dumps(event))
 
@@ -146,12 +157,15 @@ class StartConsumer(AsyncWebsocketConsumer):
         self, text_data: Optional[bytes] = None, bytes_data: Optional[bytes] = None
     ) -> None:
         """Receive and process messages."""
+        if not self.user.is_authenticated:
+            return
         if text_data:
             text_data_json: Dict = json.loads(text_data)
-            message: Dict = text_data_json["message"]
-            if not self.user.is_authenticated:
+            message_type: str = text_data_json.get("type")
+            if message_type not in {"game_over", "start_playing", "refresh"}:
                 return
-            if message.get("type") == "game_over":
+            message: Dict = text_data_json.get("message", dict())
+            if message_type == "game_over":
                 result: Optional[int] = message.get("result")
                 user_id = message.get("user_id")
                 rival_id = message.get("rival_id")
@@ -165,10 +179,18 @@ class StartConsumer(AsyncWebsocketConsumer):
                     count=result,
                 )
             await self.channel_layer.group_send(
-                self.start_group_name, {"type": "start_message", "message": message}
+                self.start_group_name, {"type": message_type, "message": message}
             )
 
-    async def start_message(self, event: bytes) -> None:
+    async def game_over(self, event: bytes) -> None:
+        """Send message."""
+        await self.send(text_data=json.dumps(event))
+
+    async def start_playing(self, event: bytes) -> None:
+        """Send message."""
+        await self.send(text_data=json.dumps(event))
+
+    async def refresh(self, event: bytes) -> None:
         """Send message."""
         await self.send(text_data=json.dumps(event))
 
@@ -215,13 +237,20 @@ class ProposeToPlay(AsyncWebsocketConsumer):
         """Receive and process messages."""
         if text_data:
             text_data_json: Dict = json.loads(text_data)
+            message_type: str = text_data_json.get("type")
+            if message_type not in {"propose", "agree"}:
+                return
             message: Union[str, Dict] = text_data_json["message"]
             if not self.user.is_authenticated:
                 return
             await self.channel_layer.group_send(
-                self.propose_group_name, {"type": "propose_message", "message": message}
+                self.propose_group_name, {"type": message_type, "message": message}
             )
 
-    async def propose_message(self, event: bytes) -> None:
+    async def propose(self, event: bytes) -> None:
+        """Send message."""
+        await self.send(text_data=json.dumps(event))
+
+    async def agree(self, event: bytes) -> None:
         """Send message."""
         await self.send(text_data=json.dumps(event))

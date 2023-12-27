@@ -30,28 +30,23 @@ connectStartSocket();
 
 startSocket.onopen = function () {
     startSocket.send(JSON.stringify({
-        'message': {
-            "type": "start_refresh",
-        }
+        "type": "refresh",
     }));
 }
 
 startSocket.onmessage = function(e) {
     const data = JSON.parse(e.data);
-    if (data.type == "start_message") {
-        if (data.message["type"] == "start_playing"){
-            playerStatus = document.getElementById(data.message["player_pk"]);
-            playerStatus.innerHTML = "No";
-            playerStatus.removeAttribute("style");
-        };
-        if (data.message["type"] == "game_over"){
-            playerStatus = document.getElementById(data.message["user_id"]);
-            rivalStatus = document.getElementById(data.message["rival_id"]);
-            playerStatus.innerHTML = "Yes";
-            rivalStatus.innerHTML = "Yes";
-            playerStatus.setAttribute("style", "cursor:pointer; color:blue");
-            rivalStatus.setAttribute("style", "cursor:pointer; color:blue");
-        };
+    if (data.message["type"] == "start_playing"){
+        playerStatus = document.getElementById(data.message["player_pk"]);
+        playerStatus.innerHTML = "No";
+        playerStatus.removeAttribute("style");
+    } else if (data.type == "game_over"){
+        playerStatus = document.getElementById(data.message["user_id"]);
+        rivalStatus = document.getElementById(data.message["rival_id"]);
+        playerStatus.innerHTML = "Yes";
+        rivalStatus.innerHTML = "Yes";
+        playerStatus.setAttribute("style", "cursor:pointer; color:blue");
+        rivalStatus.setAttribute("style", "cursor:pointer; color:blue");
     } else if (data.type == "user_join_message") {
         let addedUserId = data.message["user_id"]
         if (document.getElementById("table_" + addedUserId) == null){
@@ -105,10 +100,9 @@ connectProposeSocket();
 
 proposeSocket.onmessage = function(e) {
     const data = JSON.parse(e.data);
-    if (data.type == "propose_message") {
+    if (data.type == "propose") {
         if (
-            data.message["type"] == "propose_to_play"
-            && data.message["player_id"] != currentUserId
+            data.message["player_id"] != currentUserId
             && data.message["rival_id"] == currentUserId
         ) {
             const message = document.getElementById("proposal_" + data.message["player_id"])
@@ -127,8 +121,8 @@ proposeSocket.onmessage = function(e) {
             a.addEventListener("click", (event) => {
 
                 proposeSocket.send(JSON.stringify({
-                   'message': {
-                       "type": "agree_to_play",
+                   "type": "agree",
+                   "message": {
                        "player_id": currentUserId,
                        "player_username": currentUserName,
                        }
@@ -138,8 +132,8 @@ proposeSocket.onmessage = function(e) {
             cloneA.addEventListener("click", (event) => {
 
                 proposeSocket.send(JSON.stringify({
-                   'message': {
-                       "type": "agree_to_play",
+                   "type": "agree",
+                   "message": {
                        "player_id": currentUserId,
                        "player_username": currentUserName,
                        }
@@ -189,8 +183,8 @@ for(let i=0; i<statuses.length; i++){
         connectProposeNewSocket(statuses[i].id)
         proposeNewSocket.onopen = function() {
             proposeNewSocket.send(JSON.stringify({
-                'message': {
-                    "type": "propose_to_play",
+                "type": "propose",
+                "message": {
                     "player_id": currentUserId,
                     "player_username": currentUserName,
                     "rival_id": statuses[i].id,
@@ -199,10 +193,9 @@ for(let i=0; i<statuses.length; i++){
         };
             proposeNewSocket.onmessage = function(e) {
                 const data = JSON.parse(e.data);
-                if (data.type == 'propose_message') {
+                if (data.type == "agree") {
                     if (
-                        data.message["type"] == "agree_to_play"
-                        && data.message["player_id"] == statuses[i].id
+                        data.message["player_id"] == statuses[i].id
                     ) {
                         const returnMessage = document.getElementById("proposal_" + data.message["player_id"])
                         const board = document.getElementById("board");
@@ -261,8 +254,8 @@ function createTableRow(userData, userId, username){
         connectProposeNewSocket(userId)
         proposeNewSocket.onopen = function() {
             proposeNewSocket.send(JSON.stringify({
-                'message': {
-                    "type": "propose_to_play",
+                "type": "propose",
+                "message": {
                     "player_id": currentUserId,
                     "player_username": currentUserName,
                     "rival_id": userId,
@@ -271,11 +264,8 @@ function createTableRow(userData, userId, username){
         };
             proposeNewSocket.onmessage = function(e) {
                 const data = JSON.parse(e.data);
-                if (data.type == 'propose_message') {
-                    if (
-                        data.message["type"] == "agree_to_play"
-                        && data.message["player_id"] == userId
-                    ) {
+                if (data.type == "agree") {
+                    if (data.message["player_id"] == userId) {
                         const a = document.createElement("a")
                         const link =
                             'http://'

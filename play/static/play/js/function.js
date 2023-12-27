@@ -35,23 +35,23 @@ socket.onopen = function() {
     socket.onmessage = function(e){
         const data = JSON.parse(e.data);
         if (data.type == "user_play_join_message"){
-            const joinedUserId = data.message["user_id"];
+            const joinedUserId = data.message.user_id;
             let playerBoard = null
             if (joinedUserId == playerPk) {
                 playerBoard = document.getElementById("white_player")
             } else {
                 playerBoard = document.getElementById("black_player")
             };
-            if (Boolean(data.message["board"]) && playerBoard.innerHTML !== "Active"){
-                board = data.message["board"]
-                currentPlayer = data.message["player"]
+            if (Boolean(data.message.board) && playerBoard.innerHTML !== "Active"){
+                board = data.message.board
+                currentPlayer = data.message.player
                 setCurrentPlayer(currentPlayer)
                 buildBoard();
             }
             playerBoard.innerHTML = "Active";
             playerBoard.setAttribute("style", "color:blue")
         } else if (data.type == "user_play_leave_message"){
-            const joinedUserId = data.message["user_id"];
+            const joinedUserId = data.message.user_id;
             let playerBoard = null
             if (joinedUserId == playerPk) {
                 playerBoard = document.getElementById("white_player")
@@ -61,17 +61,17 @@ socket.onopen = function() {
             playerBoard.innerHTML = "Not active.";
             playerBoard.removeAttribute("style")
         } else if (data.type == "play_message") {
-            if (data.message["receiver"] == userId){
-                board = data.message["board"];
+            if (data.message.receiver == userId){
+                board = data.message.board;
                 buildBoard();
                 currentPlayer = reverse(currentPlayer);
                 displayCurrentPlayer();
             };
         } else if(data.type == "ask_rival") {
             if (
-                userId != data.message["user_id"] && (
-                data.message["user_id"] == playerPk && document.getElementById("black_player").innerHTML == "Active" ||
-                data.message["user_id"] == rivalPk && document.getElementById("black_player").innerHTML == "Active"
+                userId != data.message.user_id && (
+                data.message.user_id == playerPk && document.getElementById("black_player").innerHTML == "Active" ||
+                data.message.user_id == rivalPk && document.getElementById("black_player").innerHTML == "Active"
                 )
             ){
                 socket.send(JSON.stringify({

@@ -36,19 +36,19 @@ startSocket.onopen = function () {
 
 startSocket.onmessage = function(e) {
     const data = JSON.parse(e.data);
-    if (data.message["type"] == "start_playing"){
-        playerStatus = document.getElementById(data.message["player_pk"]);
+    if (data.message.type == "start_playing"){
+        playerStatus = document.getElementById(data.message.player_pk);
         playerStatus.innerHTML = "No";
         playerStatus.removeAttribute("style");
     } else if (data.type == "game_over"){
-        playerStatus = document.getElementById(data.message["user_id"]);
-        rivalStatus = document.getElementById(data.message["rival_id"]);
+        playerStatus = document.getElementById(data.message.user_id);
+        rivalStatus = document.getElementById(data.message.rival_id);
         playerStatus.innerHTML = "Yes";
         rivalStatus.innerHTML = "Yes";
         playerStatus.setAttribute("style", "cursor:pointer; color:blue");
         rivalStatus.setAttribute("style", "cursor:pointer; color:blue");
     } else if (data.type == "user_join_message") {
-        let addedUserId = data.message["user_id"]
+        let addedUserId = data.message.user_id
         if (document.getElementById("table_" + addedUserId) == null){
             const addedUserData = data.message["user_data"]
             const addedUsername = data.message["username"]
@@ -57,7 +57,7 @@ startSocket.onmessage = function(e) {
             tableBody.appendChild(row)
         };
     } else if (data.type == "user_leave_message") {
-        let addedUserId = data.message["user_id"]
+        let addedUserId = data.message.user_id
         const row = document.getElementById("table_" + addedUserId)
         if (row !== null) {
             const tableBody = document.getElementById("table_body")
@@ -102,21 +102,21 @@ proposeSocket.onmessage = function(e) {
     const data = JSON.parse(e.data);
     if (data.type == "propose") {
         if (
-            data.message["player_id"] != currentUserId
-            && data.message["rival_id"] == currentUserId
+            data.message.player_id != currentUserId
+            && data.message.rival_id == currentUserId
         ) {
-            const message = document.getElementById("proposal_" + data.message["player_id"])
+            const message = document.getElementById("proposal_" + data.message.player_id)
             const a = document.createElement("a")
             const link =
                 'http://'
                 + window.location.host
                 + '/'
-                + data.message["player_id"]
+                + data.message.player_id
                 + '/'
                 + currentUserId
                 + '/'
             a.setAttribute("href", link)
-            a.innerHTML = data.message["player_username"] + " invite!"
+            a.innerHTML = data.message.player_username + " invite!"
             const board = document.getElementById("board")
             a.addEventListener("click", (event) => {
 
@@ -195,9 +195,9 @@ for(let i=0; i<statuses.length; i++){
                 const data = JSON.parse(e.data);
                 if (data.type == "agree") {
                     if (
-                        data.message["player_id"] == statuses[i].id
+                        data.message.player_id == statuses[i].id
                     ) {
-                        const returnMessage = document.getElementById("proposal_" + data.message["player_id"])
+                        const returnMessage = document.getElementById("proposal_" + data.message.player_id)
                         const board = document.getElementById("board");
                         const a = document.createElement("a")
                         const link =
@@ -206,10 +206,10 @@ for(let i=0; i<statuses.length; i++){
                             + '/'
                             + currentUserId
                             + '/'
-                            + data.message["player_id"]
+                            + data.message.player_id
                             + '/'
                         a.setAttribute("href", link)
-                        a.innerHTML = "Join " + data.message["player_username"] + "!"
+                        a.innerHTML = "Join " + data.message.player_username + "!"
                         const cloneA = a.cloneNode(true)
                         returnMessage.appendChild(a)
                         board.insertBefore(cloneA, board.firstChild)
@@ -265,7 +265,7 @@ function createTableRow(userData, userId, username){
             proposeNewSocket.onmessage = function(e) {
                 const data = JSON.parse(e.data);
                 if (data.type == "agree") {
-                    if (data.message["player_id"] == userId) {
+                    if (data.message.player_id == userId) {
                         const a = document.createElement("a")
                         const link =
                             'http://'
@@ -273,10 +273,10 @@ function createTableRow(userData, userId, username){
                             + '/'
                             + currentUserId
                             + '/'
-                            + data.message["player_id"]
+                            + data.message.player_id
                             + '/'
                         a.setAttribute("href", link)
-                        a.innerHTML = "Join " + data.message["player_username"] + "!"
+                        a.innerHTML = "Join " + data.message.player_username + "!"
                         const board = document.getElementById("board");
                         board.insertBefore(a, board.firstChild)
                     };

@@ -162,7 +162,12 @@ class StartConsumer(AsyncWebsocketConsumer):
         if text_data:
             text_data_json: Dict = json.loads(text_data)
             message_type: str = text_data_json.get("type")
-            if message_type not in {"game_over", "start_playing", "refresh"}:
+            if message_type not in {
+                "game_over",
+                "start_playing",
+                "refresh",
+                "user_message",
+            }:
                 return
             message: Dict = text_data_json.get("message", dict())
             if message_type == "game_over":
@@ -178,6 +183,8 @@ class StartConsumer(AsyncWebsocketConsumer):
                     rival_id=rival_id,
                     count=result,
                 )
+            elif message_type == "user_message":
+                message["username"] = self.user.username
             await self.channel_layer.group_send(
                 self.start_group_name, {"type": message_type, "message": message}
             )

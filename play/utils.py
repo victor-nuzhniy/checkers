@@ -10,13 +10,13 @@ from django.utils import six, timezone
 def get_all_logged_in_users() -> QuerySet:
     """Get all logged_in users data."""
     sessions: QuerySet = Session.objects.filter(expire_date__gte=timezone.now())
-    uid_list = [
+    uid_set = {
         session.get_decoded().get("_auth_user_id")
         for session in sessions
         if session.get_decoded().get("_auth_user_id")
-    ]
+    }
     return (
-        User.objects.filter(id__in=uid_list)
+        User.objects.filter(id__in=uid_set)
         .annotate(plays_number=Count("result"))
         .annotate(loses=Count("result", filter=Q(result__count=0)))
         .annotate(draws=Count("result", filter=Q(result__count=-1)))

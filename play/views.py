@@ -5,6 +5,12 @@ from typing import Any, Dict, Optional
 
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.models import User
+from django.contrib.auth.views import (
+    LoginView,
+    PasswordChangeView,
+    PasswordResetConfirmView,
+    PasswordResetView,
+)
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
@@ -16,7 +22,15 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views.generic import FormView, TemplateView
 
-from play.forms import ResultDeleteForm, SignupForm, UserProfileForm
+from play.forms import (
+    CustomAuthForm,
+    CustomPasswordChangeForm,
+    CustomPasswordResetForm,
+    CustomSetPasswordForm,
+    ResultDeleteForm,
+    SignupForm,
+    UserProfileForm,
+)
 from play.models import Result
 from play.utils import (
     account_activation_token,
@@ -58,6 +72,37 @@ class RegisterView(FormView):
             fail_silently=True,
         )
         return super().form_valid(form)
+
+
+class CustomLoginView(LoginView):
+    """Custom login view."""
+
+    template_name = "play/registration/login.html"
+    form_class = CustomAuthForm
+
+
+class CustomPasswordChangeView(PasswordChangeView):
+    """Custom password change view."""
+
+    template_name = "play/registration/password_change_form.html"
+    form_class = CustomPasswordChangeForm
+
+
+class CustomPasswordResetView(PasswordResetView):
+    """Custom password reset view."""
+
+    template_name = "play/registration/password_reset_form.html"
+    email_template_name = "play/registration/password_reset_email.html"
+    success_url = reverse_lazy("play:password_reset_done")
+    form_class = CustomPasswordResetForm
+
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    """Custom password reset confirm view."""
+
+    template_name = "play/registration/password_reset_confirm.html"
+    form_class = CustomSetPasswordForm
+    success_url = reverse_lazy("play:password_reset_complete")
 
 
 class RegisterEmailConfirmView(TemplateView):

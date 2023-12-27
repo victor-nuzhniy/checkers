@@ -1,26 +1,27 @@
 """Urls list for 'play' app."""
 from django.contrib.auth.views import (
-    LoginView,
     LogoutView,
     PasswordChangeDoneView,
-    PasswordChangeView,
     PasswordResetCompleteView,
-    PasswordResetConfirmView,
     PasswordResetDoneView,
-    PasswordResetView,
 )
-from django.urls import path, reverse_lazy
+from django.urls import path
 
 from play.views import (
     AccountUpdateView,
+    CustomLoginView,
+    CustomPasswordChangeView,
+    CustomPasswordResetConfirmView,
+    CustomPasswordResetView,
     EmailActivationView,
+    EntryView,
     MainView,
     ProfileView,
     RatingView,
     RegisterEmailConfirmView,
     RegisterView,
     ResultDeleteView,
-    StartView, EntryView,
+    StartView,
 )
 
 app_name = "play"
@@ -28,15 +29,13 @@ app_name = "play"
 urlpatterns = [
     path(
         "accounts/login/",
-        LoginView.as_view(template_name="play/registration/login.html"),
+        CustomLoginView.as_view(),
         name="login",
     ),
     path("accounts/logout/", LogoutView.as_view(), name="logout"),
     path(
         "accounts/password_change/",
-        PasswordChangeView.as_view(
-            template_name="play/registration/password_change_form.html"
-        ),
+        CustomPasswordChangeView.as_view(),
         name="password_change",
     ),
     path(
@@ -48,11 +47,7 @@ urlpatterns = [
     ),
     path(
         "accounts/password_reset/",
-        PasswordResetView.as_view(
-            template_name="play/registration/password_reset_form.html",
-            email_template_name="play/registration/password_reset_email.html",
-            success_url=reverse_lazy("play:password_reset_done"),
-        ),
+        CustomPasswordResetView.as_view(),
         name="password_reset",
     ),
     path(
@@ -64,9 +59,7 @@ urlpatterns = [
     ),
     path(
         "accounts/reset/<uidb64>/<token>/",
-        PasswordResetConfirmView.as_view(
-            template_name="play/registration/password_reset_confirm.html"
-        ),
+        CustomPasswordResetConfirmView.as_view(),
         name="password_reset_confirm",
     ),
     path(
@@ -74,7 +67,7 @@ urlpatterns = [
         PasswordResetCompleteView.as_view(
             template_name="play/registration/password_reset_complete.html"
         ),
-        name="password_reset_done",
+        name="password_reset_complete",
     ),
     path("accounts/registration/", RegisterView.as_view(), name="registration"),
     path(

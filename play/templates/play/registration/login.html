@@ -19,7 +19,7 @@
     <form method="post" class="d-flex flex-column" style="max-width:360px" action="{% url 'play:login' %}">
     {% csrf_token %}
     {{ form }}
-    <input class="my-2" type="submit" style="max-width:100px;" value="login">
+        <button class="w-50 my-2 btn btn-dark" type="submit">Login</button>
     <input type="hidden" name="next" value="{{ next }}">
     </form>
 

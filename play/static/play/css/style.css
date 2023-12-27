@@ -225,3 +225,13 @@ body {
       padding: 10px 20px;
     }
 }
+
+.custom-input {
+    border: 0;
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.3);
+    width: 100%;
+    border-radius: 12px;
+}
+.custom-input-height {
+    height: 48px; border-radius:12px;
+}

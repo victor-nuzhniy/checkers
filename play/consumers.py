@@ -65,7 +65,12 @@ class PlayConsumer(AsyncWebsocketConsumer):
         if text_data:
             text_data_json: Dict = json.loads(text_data)
             message_type: str = text_data_json.get("type")
-            if message_type not in {"play_message", "ask_rival", "answer_rival"}:
+            if message_type not in {
+                "play_message",
+                "ask_rival",
+                "answer_rival",
+                "user_message",
+            }:
                 return
             message: Union[str, Dict] = text_data_json.get("message", dict())
             if board := message.get("board"):
@@ -75,11 +80,17 @@ class PlayConsumer(AsyncWebsocketConsumer):
                         {"board": board, "player": message.get("player")},
                         CACHE_TTL,
                     )
+            if message_type == "user_message":
+                message["username"] = self.user.username
             await self.channel_layer.group_send(
                 self.play_group_name, {"type": message_type, "message": message}
             )
 
     async def play_message(self, event: bytes) -> None:
+        """Send message."""
+        await self.send(text_data=json.dumps(event))
+
+    async def user_message(self, event: bytes) -> None:
         """Send message."""
         await self.send(text_data=json.dumps(event))
 

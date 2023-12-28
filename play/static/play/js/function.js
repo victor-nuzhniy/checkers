@@ -85,6 +85,11 @@ socket.onopen = function() {
             let whiteStatus = document.getElementById("white_player")
             whiteStatus.innerHTML = "Active"
             whiteStatus.setAttribute("style", "color:blue")
+        } else if (data.type == "user_message") {
+            const today = new Date()
+            const chat = document.getElementById("chat")
+            chat.value += `${today.toLocaleDateString()} ${today.toLocaleTimeString()} ${data.message.username} ${data.message.text} \n`;
+            chat.scrollTop = chat.scrollHeight
         } else {
             console.log("Unknown message type!");
         };
@@ -637,3 +642,25 @@ function findKingNewPosition(p, player, first=true){
         prePosNewPosition = [];
     }
 };
+
+const chatMessageInput = document.getElementById("chat-message-input");
+const chatMessageSubmit = document.getElementById("chat-message-submit");
+
+chatMessageInput.focus();
+chatMessageInput.onkeyup = function(e) {
+    if (e.key === "Enter") {
+        chatMessageSubmit.click();
+    };
+};
+
+chatMessageSubmit.onclick = function(e) {
+    const message = chatMessageInput.value;
+    if(Boolean(message)) {
+        socket.send(JSON.stringify({
+            "type": "user_message",
+            "message": {"text": message}
+        }));
+        chatMessageInput.value = "";
+    }
+};
+

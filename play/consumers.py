@@ -73,13 +73,12 @@ class PlayConsumer(AsyncWebsocketConsumer):
             }:
                 return
             message: Union[str, Dict] = text_data_json.get("message", dict())
-            if board := message.get("board"):
-                if message.get("receiver"):
-                    cache.set(
-                        self.play_group_name,
-                        {"board": board, "player": message.get("player")},
-                        CACHE_TTL,
-                    )
+            if message_type == "play_message":
+                cache.set(
+                    self.play_group_name,
+                    {"board": message.get("board"), "player": message.get("player")},
+                    CACHE_TTL,
+                )
             if message_type == "user_message":
                 message["username"] = self.user.username
             await self.channel_layer.group_send(

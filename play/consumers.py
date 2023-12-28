@@ -167,6 +167,8 @@ class StartConsumer(AsyncWebsocketConsumer):
                 "start_playing",
                 "refresh",
                 "user_message",
+                "propose",
+                "agree",
             }:
                 return
             message: Dict = text_data_json.get("message", dict())
@@ -212,47 +214,6 @@ class StartConsumer(AsyncWebsocketConsumer):
     async def user_leave_message(self, event: bytes) -> None:
         """Send message."""
         await self.send(text_data=json.dumps(event))
-
-
-class ProposeToPlay(AsyncWebsocketConsumer):
-    """Class socket server for start page."""
-
-    def __init__(self, *args, **kwargs) -> None:
-        """Add custom class attributes."""
-        super().__init__(*args, **kwargs)
-        self.player_id: Optional[int] = None
-        self.propose_group_name: Optional[str] = None
-        self.user: Optional[User] = None
-
-    async def connect(self) -> None:
-        """Add/connect group to channel layer."""
-        self.player_id = self.scope["url_route"]["kwargs"]["player_id"]
-        self.propose_group_name = "proposal_%s" % self.player_id
-        self.user = self.scope.get("user")
-        await self.accept()
-        await self.channel_layer.group_add(self.propose_group_name, self.channel_name)
-
-    async def disconnect(self, code: int) -> None:
-        """Disconnect group from channel layer."""
-        await self.channel_layer.group_discard(
-            self.propose_group_name, self.channel_name
-        )
-
-    async def receive(
-        self, text_data: Optional[bytes] = None, bytes_data: Optional[bytes] = None
-    ) -> None:
-        """Receive and process messages."""
-        if text_data:
-            text_data_json: Dict = json.loads(text_data)
-            message_type: str = text_data_json.get("type")
-            if message_type not in {"propose", "agree"}:
-                return
-            message: Union[str, Dict] = text_data_json["message"]
-            if not self.user.is_authenticated:
-                return
-            await self.channel_layer.group_send(
-                self.propose_group_name, {"type": message_type, "message": message}
-            )
 
     async def propose(self, event: bytes) -> None:
         """Send message."""

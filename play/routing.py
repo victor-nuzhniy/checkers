@@ -13,8 +13,4 @@ websocket_urlpatterns = [
         r"ws/start/(?P<player_id>\w+)/$",
         consumers.StartConsumer.as_asgi(),
     ),
-    re_path(
-        r"ws/propose/(?P<player_id>\w+)/$",
-        consumers.ProposeToPlay.as_asgi(),
-    ),
 ]

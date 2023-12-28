@@ -68,47 +68,8 @@ startSocket.onmessage = function(e) {
         const chat = document.getElementById("chat")
         chat.value += `${today.toLocaleDateString()} ${today.toLocaleTimeString()} ${data.message.username} ${data.message.text} \n`;
         chat.scrollTop = chat.scrollHeight
-    } else {
-        console.log("Unknown message type!");
-    }
-};
-
-let proposeSocket = null
-
-function connectProposeSocket() {
-    proposeSocket = new WebSocket(
-        "ws://"
-        + window.location.host
-        + "/ws/propose/"
-        + currentUserId
-        + "/"
-    );
-    proposeSocket.onopen = function(){
-        console.log("proposeSocket successfully connected to the WebSocket.");
-    };
-    proposeSocket.onclose = function(e) {
-        console.log("WebSocket proposeSocket connection closed unexpectedly. Trying to reconnect in 2s...");
-        setTimeout(function() {
-            console.log("Reconnecting...");
-            connectProposeSocket();
-        }, 2000);
-    };
-    proposeSocket.onerror = function(err) {
-        console.log("WebSocket proposeSocket encountered an error: " + err.message);
-        console.log("Closing the proposeSocket.");
-        proposeSocket.close();
-    };
-};
-
-connectProposeSocket();
-
-proposeSocket.onmessage = function(e) {
-    const data = JSON.parse(e.data);
-    if (data.type == "propose") {
-        if (
-            data.message.player_id != currentUserId
-            && data.message.rival_id == currentUserId
-        ) {
+    } else if (data.type == "propose") {
+        if (data.message.rival_id === currentUserId){
             const message = document.getElementById("proposal_" + data.message.player_id)
             const a = document.createElement("a")
             const link =
@@ -124,10 +85,11 @@ proposeSocket.onmessage = function(e) {
             const board = document.getElementById("board")
             a.addEventListener("click", (event) => {
 
-                proposeSocket.send(JSON.stringify({
+                startSocket.send(JSON.stringify({
                    "type": "agree",
                    "message": {
                        "player_id": currentUserId,
+                       "rival_id": data.message.player_id,
                        "player_username": currentUserName,
                        }
                 }));
@@ -135,15 +97,35 @@ proposeSocket.onmessage = function(e) {
             const cloneA = a.cloneNode(true)
             cloneA.addEventListener("click", (event) => {
 
-                proposeSocket.send(JSON.stringify({
+                startSocket.send(JSON.stringify({
                    "type": "agree",
                    "message": {
                        "player_id": currentUserId,
+                       "rival_id": data.message.player_id,
                        "player_username": currentUserName,
                        }
                 }));
             });
             message.appendChild(a)
+            board.insertBefore(cloneA, board.firstChild)
+        };
+    } else if (data.type == "agree") {
+        if (data.message.rival_id === currentUserId) {
+            const returnMessage = document.getElementById("proposal_" + data.message.player_id)
+            const board = document.getElementById("board");
+            const a = document.createElement("a")
+            const link =
+                "http://"
+                + window.location.host
+                + '/'
+                + currentUserId
+                + '/'
+                + data.message.player_id
+                + '/'
+            a.setAttribute("href", link)
+            a.innerHTML = "Join " + data.message.player_username + "!"
+            const cloneA = a.cloneNode(true)
+            returnMessage.appendChild(a)
             board.insertBefore(cloneA, board.firstChild)
         };
     } else {
@@ -153,75 +135,17 @@ proposeSocket.onmessage = function(e) {
 
 let statuses = document.getElementsByClassName("ready-to-play");
 
-let proposeNewSocket = null
-
-function connectProposeNewSocket(userId) {
-    proposeNewSocket = new WebSocket(
-        "ws://"
-         + window.location.host
-         + "/ws/propose/"
-         + userId
-         + "/"
-    );
-    proposeNewSocket.onopen = function(){
-        console.log("proposeNewSocket successfully connected to the WebSocket.");
-    };
-    proposeNewSocket.onclose = function(e) {
-        console.log("WebSocket socket connection closed unexpectedly. Trying to reconnect in 2s...");
-        setTimeout(function() {
-            console.log("Reconnecting...");
-            connectProposeNewSocket(userId);
-        }, 2000);
-    };
-    proposeNewSocket.onerror = function(err) {
-        console.log("WebSocket proposeNewSocket encountered an error: " + err.message);
-        console.log("Closing the proposeNewSocket.");
-        proposeNewSocket.close();
-    };
-}
-
 for(let i=0; i<statuses.length; i++){
-    if (currentUserId != statuses[i].id && statuses[i].innerHTML == 'Yes'){
+    if (currentUserId != statuses[i].id && statuses[i].innerHTML == 'Ready'){
         statuses[i].addEventListener("click", (event) => {
-
-        connectProposeNewSocket(statuses[i].id)
-        proposeNewSocket.onopen = function() {
-            proposeNewSocket.send(JSON.stringify({
+            startSocket.send(JSON.stringify({
                 "type": "propose",
                 "message": {
                     "player_id": currentUserId,
                     "player_username": currentUserName,
-                    "rival_id": statuses[i].id,
+                    "rival_id": parseInt(statuses[i].id),
                 }
             }));
-        };
-            proposeNewSocket.onmessage = function(e) {
-                const data = JSON.parse(e.data);
-                if (data.type == "agree") {
-                    if (
-                        data.message.player_id == statuses[i].id
-                    ) {
-                        const returnMessage = document.getElementById("proposal_" + data.message.player_id)
-                        const board = document.getElementById("board");
-                        const a = document.createElement("a")
-                        const link =
-                            "http://"
-                            + window.location.host
-                            + '/'
-                            + currentUserId
-                            + '/'
-                            + data.message.player_id
-                            + '/'
-                        a.setAttribute("href", link)
-                        a.innerHTML = "Join " + data.message.player_username + "!"
-                        const cloneA = a.cloneNode(true)
-                        returnMessage.appendChild(a)
-                        board.insertBefore(cloneA, board.firstChild)
-                    };
-                } else {
-                    console.log("Unknown message type!");
-                };
-            };
         });
     };
 }
@@ -252,43 +176,17 @@ function createTableRow(userData, userId, username){
     cell.setAttribute("id", userId)
     cell.setAttribute("class", "ready-to-play")
     cell.setAttribute("style", "cursor:pointer; color:blue")
-    cell.innerHTML = "Yes"
+    cell.innerHTML = "Ready"
     cell.addEventListener("click", (event) => {
-
-        connectProposeNewSocket(userId)
-        proposeNewSocket.onopen = function() {
-            proposeNewSocket.send(JSON.stringify({
-                "type": "propose",
-                "message": {
-                    "player_id": currentUserId,
-                    "player_username": currentUserName,
-                    "rival_id": userId,
-                }
-            }));
-        };
-            proposeNewSocket.onmessage = function(e) {
-                const data = JSON.parse(e.data);
-                if (data.type == "agree") {
-                    if (data.message.player_id == userId) {
-                        const a = document.createElement("a")
-                        const link =
-                            'http://'
-                            + window.location.host
-                            + '/'
-                            + currentUserId
-                            + '/'
-                            + data.message.player_id
-                            + '/'
-                        a.setAttribute("href", link)
-                        a.innerHTML = "Join " + data.message.player_username + "!"
-                        const board = document.getElementById("board");
-                        board.insertBefore(a, board.firstChild)
-                    };
-                } else {
-                    console.log("Unknown message type!");
-                };
-            };
-        });
+        startSocket.send(JSON.stringify({
+            "type": "propose",
+            "message": {
+                "player_id": currentUserId,
+                "player_username": currentUserName,
+                "rival_id": parseInt(userId),
+            }
+        }));
+    });
     row.appendChild(cell)
     cell = document.createElement("th")
     cell.setAttribute("id", "proposal_" + userId)

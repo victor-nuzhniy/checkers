@@ -4,11 +4,11 @@
 {% block content %}
     <div class="container">
         <div class="row">
-            <div class="col-12 col-xl-6 text-centered">
+            <div class="col-12 col-xl-6 text-centered limited-container">
                 Messages
                 <div class="messages" id="board"></div>
             </div>
-            <div class="col-12 col-xl-6 bg-light">
+            <div class="col-12 col-xl-6 bg-light limited-table">
                 <table class="table table-striped table-sm">
                     <thead>
                         <tr>
@@ -40,11 +40,11 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-12 w-100 d-flex flex-column align-items-center">
+            <div class="col-12 mt-1 mb-5 w-100 d-flex flex-column align-items-center">
                 <div>Chat</div>
                 <textarea rows="4" class="w-100 mb-2 custom-input" id="chat"></textarea>
                 <input id="chat-message-input" class="w-100 mb-2 custom-input custom-input-height" type="text"><br>
-                <button id="chat-message-submit" type="button" class="btn btn-dark">Send</button>
+                <button id="chat-message-submit" type="button" class="btn btn-dark mb-3">Send</button>
             </div>
         </div>
     </div>

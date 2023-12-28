@@ -22,3 +22,20 @@
 .custom-input-height {
     height: 48px; border-radius:12px;
 }
+
+.limited-container {
+    min-height: 70px;
+    overflow-y: auto;
+    max-height: 250px;
+}
+
+.limited-table {
+    overflow-y: auto;
+    max-height: 400px;
+}
+
+@media(min-width: 1200px){
+    .limited-container {
+        max-height: 400px;
+    }
+}

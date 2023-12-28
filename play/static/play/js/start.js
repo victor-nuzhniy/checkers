@@ -36,9 +36,9 @@ startSocket.onopen = function () {
 
 startSocket.onmessage = function(e) {
     const data = JSON.parse(e.data);
-    if (data.message.type == "start_playing"){
+    if (data.type == "start_playing"){
         playerStatus = document.getElementById(data.message.player_pk);
-        playerStatus.innerHTML = "No";
+        playerStatus.innerHTML = "Busy";
         playerStatus.removeAttribute("style");
     } else if (data.type == "game_over"){
         playerStatus = document.getElementById(data.message.user_id);

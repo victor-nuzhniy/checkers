@@ -556,6 +556,16 @@ function reverse(player) {
     return player === -1 ? 1 : -1;
 }
 
+function findPieceInArr(p, arr) {
+    let flag = false
+    arr.every(element => {
+        if (element.compare(p)){
+            flag = true
+        };
+    });
+    return flag
+};
+
 function findKingNewPositionDirection(y, x, p, player, first) {
     let localCapturedPosition = [];
     let i = p.row + y;
@@ -570,35 +580,43 @@ function findKingNewPositionDirection(y, x, p, player, first) {
                 readyToMove = p;
             };
         } else {
+            let flag = true
             if (i + y != row_limit && j + x != column_limit) {
                 if (board[i][j] * player > 0 && board[i + y][j + x] === 0) {
                     let pieceCapturedArr = [...pieceInCapturedPosition(p)];
-                    pieceCapturedArr.push(new Piece(i, j));
-                    if (first){
-                        readyToMove = p;
-                    };
-                    i += y;
-                    j += x;
-                    while (i != row_limit && j != column_limit) {
-                        if (board[i][j] === 0){
-                            let newPosition = new Piece(i, j, p.val);
-                            if (!capturedMap.has(i.toString() + j.toString())){
-                                capturedMap.set(i.toString() + j.toString(), [-y, -x]);
-                                markPossiblePosition(newPosition);
-                                localCapturedPosition.push({
-                                    newPosition: newPosition,
-                                    pieceCaptured: pieceCapturedArr,
-                                });
-                            };
-                        } else {
-                            break;
+                    const newPiece = new Piece(i, j)
+                    if (!findPieceInArr(newPiece, pieceCapturedArr)) {
+                        pieceCapturedArr.push(newPiece);
+                        if (first){
+                            readyToMove = p;
                         };
                         i += y;
                         j += x;
+                        while (i != row_limit && j != column_limit) {
+                            if (board[i][j] === 0){
+                                let newPosition = new Piece(i, j, p.val);
+                                if (!capturedMap.has(i.toString() + j.toString())){
+                                    capturedMap.set(i.toString() + j.toString(), [-y, -x]);
+                                    markPossiblePosition(newPosition);
+                                    localCapturedPosition.push({
+                                        newPosition: newPosition,
+                                        pieceCaptured: pieceCapturedArr,
+                                    });
+                                };
+                            } else {
+                                break;
+                            };
+                            i += y;
+                            j += x;
+                        }
+                    } else {
+                        flag = false;
                     };
                 };
             };
-            return localCapturedPosition;
+            if (flag) {
+                return localCapturedPosition;
+            };
         };
         i += y;
         j += x;

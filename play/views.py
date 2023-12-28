@@ -86,6 +86,7 @@ class CustomPasswordChangeView(PasswordChangeView):
 
     template_name = "play/registration/password_change_form.html"
     form_class = CustomPasswordChangeForm
+    success_url = reverse_lazy("play:password_change_done")
 
 
 class CustomPasswordResetView(PasswordResetView):

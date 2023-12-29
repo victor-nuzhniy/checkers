@@ -237,20 +237,16 @@ function moveThePiece(newPosition) {
             board[newPosition.row][newPosition.column] = newPosition.val;
         };
         board[readyToMove.row][readyToMove.column] = 0;
-
         // init value
         readyToMove = null;
         posNewPosition = new Set();
         capturedPosition = [];
         capturedMap = new Map();
-
+        currentPlayer = reverse(currentPlayer);
         socket.send(JSON.stringify({
             "type": "play_message",
-            "message": {"receiver": receiver, "board": board, "player": reverse(currentPlayer)},
+            "message": {"receiver": receiver, "board": board, "player": currentPlayer},
         }));
-
-        currentPlayer = reverse(currentPlayer);
-
         displayCurrentPlayer();
         buildBoard();
     };
@@ -261,7 +257,6 @@ function findPossibleNewPosition(piece, player) {
         readyToMove = piece;
         markPossiblePosition(piece, player, 1);
     };
-
     if (board[piece.row + player][piece.column - 1] === 0) {
         readyToMove = piece;
         markPossiblePosition(piece, player, -1);
@@ -270,7 +265,6 @@ function findPossibleNewPosition(piece, player) {
 
 function markPossiblePosition(p, player = 0, direction = 0, prevPosition=null) {
     attribute = parseInt(p.row + player) + "-" + parseInt(p.column + direction);
-
     position = document.querySelector("[data-position='" + attribute + "']");
     if (position) {
         position.style.background = "green";
@@ -296,17 +290,9 @@ function buildBoard() {
             let occupied = "";
 
             if (i % 2 === 0) {
-                if (j % 2 === 0) {
-                    caseType = "Whitecase";
-                } else {
-                    caseType = "blackCase";
-                };
+                caseType = j % 2 === 0 ? "Whitecase" : "blackCase"
             } else {
-                if (j % 2 !== 0) {
-                    caseType = "Whitecase";
-                } else {
-                    caseType = "blackCase";
-                };
+                caseType = j % 2 !== 0 ? "Whitecase" : "blackCase"
             };
 
             // add the piece if the case isn't empty
@@ -344,11 +330,9 @@ function buildBoard() {
             } else if (board[i][j] > 0) {
                 white++;
             };
-
             //display the number of piece for each player
             displayCounter(black, white);
         };
-
         game.appendChild(row);
     };
 
@@ -378,7 +362,6 @@ function buildBoard() {
             "white": currentUser > 0 ? true : false,
             }
         }));
-
     };
 }
 
@@ -404,15 +387,15 @@ function pieceInCapturedPosition(p){
     let arr = [];
     capturedPosition.forEach((element) => {
         if (element.newPosition.compare(p)){
-            arr = element.pieceCaptured
+            arr = element.pieceCaptured;
             return;
-        }
+        };
     });
     return arr;
 }
 
 function findCapturedPieces(p, player, prev=null, first=true) {
-    if (p.val * player * (-1) === 1) {
+    if (p.val * (-player) === 1) {
         return findSimplePieceCaptured(p, player, prev);
         };
     return findKingNewPosition(p, player, first)

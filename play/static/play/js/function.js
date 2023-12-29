@@ -162,28 +162,15 @@ function movePiece(e) {
           enableToMove(p);
         };
     };
-    posNewPosition = new Map();
+    posNewPosition = new Set();
     capturedPosition = [];
     capturedMap = new Map();
     if (currentPlayer * value > 0 && currentPlayer === currentUser) {
         player = reverse(currentPlayer);
-        if (currentPlayer * value > 1) {
-            findKingNewPosition(p, player)
-        } else {
-            if (!findPieceCaptured(p, player)) {
-                findPossibleNewPosition(p, player);
-            };
+        if (!findCapturedPieces(p, player)) {
+            findPossibleNewPosition(p, player);
         };
     };
-};
-
-function checkIfKing(arr, index) {
-    for (const elem of arr) {
-        if (elem.row === index) {
-            return true
-        };
-    };
-    return false
 };
 
 function enableToCapture(p) {
@@ -202,12 +189,7 @@ function enableToCapture(p) {
         if (find) {
             // if the current piece can move on, edit the board and rebuild
             board[pos.row][pos.column] = pos.val; // move the piece
-            const arr = posNewPosition.get(`${pos.row}${pos.column}`)
-            if ((pos.row === 0 && pos.val === 1) || (pos.val === 1 && checkIfKing(arr, 0))) {
-                board[pos.row][pos.column] = 2;
-            } else if ((pos.row === 9 && pos.val === -1) || (pos.val === -1 && checkIfKing(arr, 9))) {
-                board[pos.row][pos.column] = -2;
-            };
+
             board[readyToMove.row][readyToMove.column] = 0; // delete the old position
             // delete the piece that had been captured
             old.forEach((element) => {
@@ -218,7 +200,7 @@ function enableToCapture(p) {
 
             readyToMove = null;
             capturedPosition = [];
-            posNewPosition = new Map();
+            posNewPosition = new Set();
             capturedMap = new Map();
             displayCurrentPlayer();
 
@@ -237,8 +219,7 @@ function enableToCapture(p) {
 }
 
 function enableToMove(p) {
-    const item = posNewPosition.get(`${p.row}${p.column}`)
-    if (Array.isArray(item)) {
+    if (posNewPosition.has(`${p.row}${p.column}`)) {
         moveThePiece(p)
     } else {
         buildBoard();
@@ -253,13 +234,13 @@ function moveThePiece(newPosition) {
         } else if (newPosition.row === 9 && newPosition.val === -1) {
             board[newPosition.row][newPosition.column] = -2;
         } else {
-            board[newPosition.row][newPosition.column] = readyToMove.value;
+            board[newPosition.row][newPosition.column] = newPosition.val;
         };
         board[readyToMove.row][readyToMove.column] = 0;
 
         // init value
         readyToMove = null;
-        posNewPosition = new Map();
+        posNewPosition = new Set();
         capturedPosition = [];
         capturedMap = new Map();
 
@@ -293,17 +274,8 @@ function markPossiblePosition(p, player = 0, direction = 0, prevPosition=null) {
     position = document.querySelector("[data-position='" + attribute + "']");
     if (position) {
         position.style.background = "green";
-        let posHistory = null
-        if (Boolean(prevPosition)) {
-            posHistory = posNewPosition.get(`${prevPosition.row}${prevPosition.column}`)
-        }
-        if (posHistory === null || posHistory === undefined) {
-            posHistory = [];
-        } else {
-            posHistory = [...posHistory]
-            posHistory.push(prevPosition)
-        };
-        posNewPosition.set(`${p.row + player}${p.column + direction}`, posHistory);
+        position.setAttribute("val", p.val)
+        posNewPosition.add(`${p.row + player}${p.column + direction}`);
     };
 };
 
@@ -439,7 +411,14 @@ function pieceInCapturedPosition(p){
     return arr;
 }
 
-function findPieceCaptured(p, player, prev=null) {
+function findCapturedPieces(p, player, prev=null, first=true) {
+    if (p.val * player * (-1) === 1) {
+        return findSimplePieceCaptured(p, player, prev);
+        };
+    return findKingNewPosition(p, player, first)
+};
+
+function findSimplePieceCaptured(p, player, prev=null) {
     let found = false;
     let existPieceCapturedArr = pieceInCapturedPosition(p);
     let localCapturedPosition = [];
@@ -449,7 +428,8 @@ function findPieceCaptured(p, player, prev=null) {
         board[p.row - 1][p.column - 1] * player > 0 &&
         board[p.row - 2][p.column - 2] === 0
     ) {
-        newPosition = new Piece(p.row - 2, p.column - 2, p.val);
+        const coef = p.row - 2 === 0 ? 2 : 1
+        newPosition = new Piece(p.row - 2, p.column - 2, coef * p.val);
         if (!newPosition.compare(prev)){
             found = true;
             if (!prev){
@@ -472,7 +452,8 @@ function findPieceCaptured(p, player, prev=null) {
             board[p.row - 1][p.column + 1] * player > 0 &&
             board[p.row - 2][p.column + 2] === 0
         ) {
-            newPosition = new Piece(p.row - 2, p.column + 2, p.val);
+            const coef = p.row - 2 === 0 ? 2 : 1
+            newPosition = new Piece(p.row - 2, p.column + 2, coef * p.val);
             if (!newPosition.compare(prev)){
                 found = true;
                 if (!prev){
@@ -495,7 +476,8 @@ function findPieceCaptured(p, player, prev=null) {
             board[p.row + 1][p.column - 1] * player > 0 &&
             board[p.row + 2][p.column - 2] === 0
         ) {
-            newPosition = new Piece(p.row + 2, p.column - 2, p.val);
+            const coef = p.row + 2 === 9 ? 2 : 1
+            newPosition = new Piece(p.row + 2, p.column - 2, coef * p.val);
             if (!newPosition.compare(prev)){
                 found = true;
                 if (!prev){
@@ -518,7 +500,8 @@ function findPieceCaptured(p, player, prev=null) {
             board[p.row + 1][p.column + 1] * player > 0 &&
             board[p.row + 2][p.column + 2] === 0
         ) {
-            newPosition = new Piece(p.row + 2, p.column + 2, p.val);
+            const coef = p.row + 2 === 9 ? 2 : 1
+            newPosition = new Piece(p.row + 2, p.column + 2, coef * p.val);
             if (!newPosition.compare(prev)){
                 found = true;
                 if (!prev){
@@ -538,7 +521,7 @@ function findPieceCaptured(p, player, prev=null) {
         capturedPosition.push(element);
     });
     localCapturedPosition.forEach((element) => {
-        findPieceCaptured(element.newPosition, player, p);
+        findCapturedPieces(element.newPosition, player, p, false);
     });
 
     return found;
@@ -566,13 +549,7 @@ function reverse(player) {
 }
 
 function findPieceInArr(p, arr) {
-    let flag = false
-    arr.every(element => {
-        if (element.compare(p)){
-            flag = true
-        };
-    });
-    return flag
+    return arr.every(element => !element.compare(p))
 };
 
 function findKingNewPositionDirection(y, x, p, player, first) {
@@ -594,7 +571,7 @@ function findKingNewPositionDirection(y, x, p, player, first) {
                 if (board[i][j] * player > 0 && board[i + y][j + x] === 0) {
                     let pieceCapturedArr = [...pieceInCapturedPosition(p)];
                     const newPiece = new Piece(i, j)
-                    if (!findPieceInArr(newPiece, pieceCapturedArr)) {
+                    if (findPieceInArr(newPiece, pieceCapturedArr)) {
                         pieceCapturedArr.push(newPiece);
                         if (first){
                             readyToMove = p;
@@ -668,6 +645,7 @@ function findKingNewPosition(p, player, first=true){
         })
         prePosNewPosition = [];
     }
+    return true
 };
 
 const chatMessageInput = document.getElementById("chat-message-input");

@@ -15,7 +15,7 @@ class Piece {
 const modal = document.getElementById("easyModal");
 let game = document.getElementById("game");
 let currentPlayer = 1;
-let posNewPosition = new Map();
+let posNewPosition = new Set();
 let prePosNewPosition = [];
 let capturedPosition = [];
 let capturedMap = new Map();

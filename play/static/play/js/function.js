@@ -158,11 +158,11 @@ function movePiece(e) {
     if (capturedPosition.length > 0) {
         enableToCapture(p);
     } else {
-        if (posNewPosition.length > 0) {
+        if (posNewPosition.size > 0) {
           enableToMove(p);
         };
     };
-    posNewPosition = [];
+    posNewPosition = new Map();
     capturedPosition = [];
     capturedMap = new Map();
     if (currentPlayer * value > 0 && currentPlayer === currentUser) {
@@ -175,7 +175,16 @@ function movePiece(e) {
             };
         };
     };
-}
+};
+
+function checkIfKing(arr, index) {
+    for (const elem of arr) {
+        if (elem.row === index) {
+            return true
+        };
+    };
+    return false
+};
 
 function enableToCapture(p) {
     let find = false;
@@ -193,12 +202,11 @@ function enableToCapture(p) {
         if (find) {
             // if the current piece can move on, edit the board and rebuild
             board[pos.row][pos.column] = pos.val; // move the piece
-            if (pos.row === 0 && pos.val === 1) {
+            const arr = posNewPosition.get(`${pos.row}${pos.column}`)
+            if ((pos.row === 0 && pos.val === 1) || (pos.val === 1 && checkIfKing(arr, 0))) {
                 board[pos.row][pos.column] = 2;
-            } else if (pos.row === 9 && pos.val === -1) {
+            } else if ((pos.row === 9 && pos.val === -1) || (pos.val === -1 && checkIfKing(arr, 9))) {
                 board[pos.row][pos.column] = -2;
-            } else {
-                board[pos.row][pos.column] = pos.val;
             };
             board[readyToMove.row][readyToMove.column] = 0; // delete the old position
             // delete the piece that had been captured
@@ -210,7 +218,7 @@ function enableToCapture(p) {
 
             readyToMove = null;
             capturedPosition = [];
-            posNewPosition = [];
+            posNewPosition = new Map();
             capturedMap = new Map();
             displayCurrentPlayer();
 
@@ -229,19 +237,12 @@ function enableToCapture(p) {
 }
 
 function enableToMove(p) {
-    let find = false;
-    let newPosition = null;
-    // check if the case where the player play the selected piece can move on
-    posNewPosition.forEach((element) => {
-        if (element.compare(p)) {
-          find = true;
-          newPosition = element;
-          return;
-        };
-    });
-
-    if (find) moveThePiece(newPosition);
-    else buildBoard();
+    const item = posNewPosition.get(`${p.row}${p.column}`)
+    if (Array.isArray(item)) {
+        moveThePiece(p)
+    } else {
+        buildBoard();
+    }
 }
 
 function moveThePiece(newPosition) {
@@ -252,13 +253,13 @@ function moveThePiece(newPosition) {
         } else if (newPosition.row === 9 && newPosition.val === -1) {
             board[newPosition.row][newPosition.column] = -2;
         } else {
-            board[newPosition.row][newPosition.column] = newPosition.val;
+            board[newPosition.row][newPosition.column] = readyToMove.value;
         };
         board[readyToMove.row][readyToMove.column] = 0;
 
         // init value
         readyToMove = null;
-        posNewPosition = [];
+        posNewPosition = new Map();
         capturedPosition = [];
         capturedMap = new Map();
 
@@ -266,7 +267,6 @@ function moveThePiece(newPosition) {
             "type": "play_message",
             "message": {"receiver": receiver, "board": board, "player": reverse(currentPlayer)},
         }));
-
 
         currentPlayer = reverse(currentPlayer);
 
@@ -287,16 +287,25 @@ function findPossibleNewPosition(piece, player) {
     };
 }
 
-function markPossiblePosition(p, player = 0, direction = 0) {
+function markPossiblePosition(p, player = 0, direction = 0, prevPosition=null) {
     attribute = parseInt(p.row + player) + "-" + parseInt(p.column + direction);
 
     position = document.querySelector("[data-position='" + attribute + "']");
     if (position) {
         position.style.background = "green";
-        // // save where it can move
-        posNewPosition.push(new Piece(p.row + player, p.column + direction, p.val));
+        let posHistory = null
+        if (Boolean(prevPosition)) {
+            posHistory = posNewPosition.get(`${prevPosition.row}${prevPosition.column}`)
+        }
+        if (posHistory === null || posHistory === undefined) {
+            posHistory = [];
+        } else {
+            posHistory = [...posHistory]
+            posHistory.push(prevPosition)
+        };
+        posNewPosition.set(`${p.row + player}${p.column + direction}`, posHistory);
     };
-}
+};
 
 function buildBoard() {
     game.innerHTML = "";
@@ -446,7 +455,7 @@ function findPieceCaptured(p, player, prev=null) {
             if (!prev){
                 readyToMove = p;
             };
-            markPossiblePosition(newPosition);
+            markPossiblePosition(newPosition, 0, 0, p);
             let pieceCapturedArr = [...existPieceCapturedArr];
             pieceCapturedArr.push(new Piece(p.row - 1, p.column - 1));
             // save the new position and the opponent's piece position
@@ -469,7 +478,7 @@ function findPieceCaptured(p, player, prev=null) {
                 if (!prev){
                     readyToMove = p;
                 };
-                markPossiblePosition(newPosition);
+                markPossiblePosition(newPosition, 0, 0, p);
                 let pieceCapturedArr = [...existPieceCapturedArr];
                 pieceCapturedArr.push(new Piece(p.row - 1, p.column + 1));
                 // save the new position and the opponent's piece position
@@ -492,7 +501,7 @@ function findPieceCaptured(p, player, prev=null) {
                 if (!prev){
                     readyToMove = p;
                 };
-                markPossiblePosition(newPosition);
+                markPossiblePosition(newPosition, 0, 0, p);
                 let pieceCapturedArr = [...existPieceCapturedArr];
                 pieceCapturedArr.push(new Piece(p.row + 1, p.column - 1));
                 // save the new position and the opponent's piece position
@@ -515,7 +524,7 @@ function findPieceCaptured(p, player, prev=null) {
                 if (!prev){
                     readyToMove = p;
                 };
-                markPossiblePosition(newPosition);
+                markPossiblePosition(newPosition, 0, 0, p);
                 let pieceCapturedArr = [...existPieceCapturedArr];
                 pieceCapturedArr.push(new Piece(p.row + 1, p.column + 1));
                 // save the new position and the opponent's piece position

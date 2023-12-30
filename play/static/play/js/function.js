@@ -405,110 +405,38 @@ function findSimplePieceCaptured(p, player, prev=null) {
     let found = false;
     let existPieceCapturedArr = pieceInCapturedPosition(p);
     let localCapturedPosition = [];
-  if (
-        p.row > 1 &&
-        p.column > 1 &&
-        board[p.row - 1][p.column - 1] * player > 0 &&
-        board[p.row - 2][p.column - 2] === 0
-    ) {
-        const coef = p.row - 2 === 0 ? 2 : 1
-        newPosition = new Piece(p.row - 2, p.column - 2, coef * p.val);
-        if (!newPosition.compare(prev)){
-            found = true;
-            if (!prev){
-                readyToMove = p;
-            };
-            markPossiblePosition(newPosition, 0, 0, p);
-            let pieceCapturedArr = [...existPieceCapturedArr];
-            pieceCapturedArr.push(new Piece(p.row - 1, p.column - 1));
-            // save the new position and the opponent's piece position
-            localCapturedPosition.push({
-                newPosition: newPosition,
-                pieceCaptured: pieceCapturedArr,
-            });
-        };
-      }
-
-    if (
-            p.column < 8 &&
-            p.row > 1 &&
-            board[p.row - 1][p.column + 1] * player > 0 &&
-            board[p.row - 2][p.column + 2] === 0
-        ) {
-            const coef = p.row - 2 === 0 ? 2 : 1
-            newPosition = new Piece(p.row - 2, p.column + 2, coef * p.val);
-            if (!newPosition.compare(prev)){
+    directionList.forEach(direction => {
+        if (direction.checkPiece(p, player)) {
+            const limit = direction.row > 0 ? 9 : 0;
+            const coef = p.row + 2 * direction.row === limit ? 2 : 1;
+            newPosition = new Piece(
+                p.row + 2 * direction.row,
+                p.column + 2 * direction.column,
+                coef * p.val
+            );
+            if (!newPosition.compare(prev)) {
                 found = true;
-                if (!prev){
+                if (!prev) {
                     readyToMove = p;
                 };
                 markPossiblePosition(newPosition, 0, 0, p);
                 let pieceCapturedArr = [...existPieceCapturedArr];
-                pieceCapturedArr.push(new Piece(p.row - 1, p.column + 1));
-                // save the new position and the opponent's piece position
+                pieceCapturedArr.push(
+                    new Piece(p.row + direction.row, p.column + direction.column)
+                );
                 localCapturedPosition.push({
                     newPosition: newPosition,
-                    pieceCaptured: pieceCapturedArr,
+                    pieceCaptured: pieceCapturedArr
                 });
             };
         };
-
-    if (
-            p.row < 8 &&
-            p.column > 1 &&
-            board[p.row + 1][p.column - 1] * player > 0 &&
-            board[p.row + 2][p.column - 2] === 0
-        ) {
-            const coef = p.row + 2 === 9 ? 2 : 1
-            newPosition = new Piece(p.row + 2, p.column - 2, coef * p.val);
-            if (!newPosition.compare(prev)){
-                found = true;
-                if (!prev){
-                    readyToMove = p;
-                };
-                markPossiblePosition(newPosition, 0, 0, p);
-                let pieceCapturedArr = [...existPieceCapturedArr];
-                pieceCapturedArr.push(new Piece(p.row + 1, p.column - 1));
-                // save the new position and the opponent's piece position
-                localCapturedPosition.push({
-                    newPosition: newPosition,
-                    pieceCaptured: pieceCapturedArr,
-                });
-            };
-        };
-
-    if (
-            p.row < 8 &&
-            p.column < 8 &&
-            board[p.row + 1][p.column + 1] * player > 0 &&
-            board[p.row + 2][p.column + 2] === 0
-        ) {
-            const coef = p.row + 2 === 9 ? 2 : 1
-            newPosition = new Piece(p.row + 2, p.column + 2, coef * p.val);
-            if (!newPosition.compare(prev)){
-                found = true;
-                if (!prev){
-                    readyToMove = p;
-                };
-                markPossiblePosition(newPosition, 0, 0, p);
-                let pieceCapturedArr = [...existPieceCapturedArr];
-                pieceCapturedArr.push(new Piece(p.row + 1, p.column + 1));
-                // save the new position and the opponent's piece position
-                localCapturedPosition.push({
-                    newPosition: newPosition,
-                    pieceCaptured: pieceCapturedArr,
-                });
-            };
-        };
-    localCapturedPosition.forEach((element) => {
-        capturedPosition.push(element);
     });
-    localCapturedPosition.forEach((element) => {
+    localCapturedPosition.forEach(element => {
+        capturedPosition.push(element);
         findCapturedPieces(element.newPosition, player, p, false);
     });
-
     return found;
-}
+};
 
 function displayCounter(black, white) {
     var blackContainer = document.getElementById("black-player-count-pieces");

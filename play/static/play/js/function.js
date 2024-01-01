@@ -63,8 +63,8 @@ socket.onopen = function() {
         } else if (data.type == "play_message") {
             if (data.message.receiver == userId){
                 board = data.message.board;
-                buildBoard();
                 currentPlayer = reverse(currentPlayer);
+                buildBoard();
                 displayCurrentPlayer();
             };
         } else if(data.type == "ask_rival") {
@@ -208,10 +208,9 @@ function enableToCapture(p) {
                "type": "play_message",
                "message": {"receiver": receiver, "board": board, "player": reverse(currentPlayer)},
             }));
-
+            currentPlayer = reverse(currentPlayer);
             buildBoard();
             // check if there are possibility to capture other piece
-            currentPlayer = reverse(currentPlayer);
         } else {
             buildBoard();
         };
@@ -335,8 +334,10 @@ function buildBoard() {
         };
         game.appendChild(row);
     };
-
-    if (black === 0 || white === 0) {
+    if (black === 0 || white === 0 || !checkPossibilityToMove()) {
+        if (black > 0 && white > 0) {
+            currentPlayer > 0 ? white = 0 : black = 0
+        };
         modalOpen(black);
         document.getElementById("game_over").innerHTML = "Game over"
         const resultDiv = document.getElementById("result")
@@ -467,8 +468,8 @@ function findKingNewPositionDirection(y, x, p, player, first) {
     let localCapturedPosition = [];
     let i = p.row + y;
     let j = p.column + x;
-    row_limit = y > 0 ? 10 : -1;
-    column_limit = x > 0 ? 10 : -1;
+    const row_limit = y > 0 ? 10 : -1;
+    const column_limit = x > 0 ? 10 : -1;
     while (i != row_limit && j != column_limit){
         if (board[i][j] === 0){
             if (first){
@@ -559,6 +560,8 @@ function findKingNewPosition(p, player, first=true){
     return true
 };
 
+// chat message block
+
 const chatMessageInput = document.getElementById("chat-message-input");
 const chatMessageSubmit = document.getElementById("chat-message-submit");
 
@@ -579,4 +582,78 @@ chatMessageSubmit.onclick = function(e) {
         chatMessageInput.value = "";
     }
 };
+//end chat message block
 
+// check moving possibilities block
+
+function checkPossibilityToMove() {
+    for (let i = 0; i < board.length; i++) {
+        for (let j = 0; j < board[i].length; j++) {
+            if (board[i][j] * currentPlayer > 0) {
+                const piece = new Piece(i, j, board[i][j])
+                if (getPieceMovingPossibilities(piece, reverse(currentPlayer))) {
+                    return true;
+                };
+            };
+        };
+    };
+    return false;
+}
+
+function getPieceMovingPossibilities(p, player) {
+    if (p.val * player > 1) {
+        if (checkKingCapturedPiece(p, player)) {
+            return true;
+        }
+    } else {
+        if (checkSimpleCapturedPiece(p, player)) {
+            return true;
+        };
+        if (checkPossibleNewPosition(p, player)) {
+            return true;
+        };
+    }
+    return false;
+};
+
+
+function checkSimpleCapturedPiece(piece, player) {
+    for (const direction of directionList) {
+        if (direction.checkPiece(piece, player)) {
+            return true;
+        };
+    };
+    return false;
+};
+
+function checkKingCapturedPiece(piece, player) {
+    for (const direction of directionList) {
+        let i = piece.row + direction.row
+        let j = piece.column + direction.column
+        const row_limit = direction.row > 0 ? 10 : -1;
+        const column_limit = direction.column > 0 ? 10 : -1;
+        if (i != row_limit && j != column_limit){
+            if (board[i][j] === 0){
+                return true;
+            };
+        };
+        if (i + direction.row != row_limit && j + direction.column != column_limit) {
+            if (board[i + direction.row][j + direction.column] === 0) {
+                return true;
+            };
+        };
+    };
+    return false;
+};
+
+function checkPossibleNewPosition(piece, player) {
+    if (board[piece.row + player][piece.column + 1] === 0) {
+        return true;
+    };
+    if (board[piece.row + player][piece.column - 1] === 0) {
+        return true;
+    };
+    return false;
+};
+
+// end check moving possibilities block

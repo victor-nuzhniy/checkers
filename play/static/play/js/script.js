@@ -21,6 +21,7 @@ let prePosNewPosition = [];
 let capturedPosition = [];
 let capturedMap = new Map();
 
+
 let board = [
   [0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
   [-1, 0, -1, 0, -1, 0, -1, 0, -1, 0],
@@ -33,6 +34,7 @@ let board = [
   [0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
   [1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
 ];
+
 
 class Direction {
     constructor(row, column) {

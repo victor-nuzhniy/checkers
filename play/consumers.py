@@ -32,6 +32,22 @@ class PlayConsumer(AsyncWebsocketConsumer):
             await self.accept()
             await self.channel_layer.group_add(self.play_group_name, self.channel_name)
             board_info = cache.get(self.play_group_name, dict())
+            if not board_info:
+                board_info = {
+                    "board": [
+                        [0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
+                        [-1, 0, -1, 0, -1, 0, -1, 0, -1, 0],
+                        [0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
+                        [-1, 0, -1, 0, -1, 0, -1, 0, -1, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        [0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+                        [1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+                        [0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+                        [1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+                    ],
+                    "player": 1,
+                }
             await self.channel_layer.group_send(
                 self.play_group_name,
                 {

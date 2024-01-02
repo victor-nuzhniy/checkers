@@ -42,12 +42,12 @@ class Direction {
         this.column = column
     };
 
-    checkPiece(piece, player) {
+    checkPiece(row, column, player) {
         return (
-            (this.row > 0 ? piece.row < 8 : piece.row > 1) &&
-            (this.column > 0 ? piece.column < 8 : piece.column > 1) &&
-            (board[piece.row + this.row][piece.column + this.column] * player > 0) &&
-            (board[piece.row + 2 * this.row][piece.column + 2 * this.column] === 0)
+            (this.row > 0 ? row < 8 : row > 1) &&
+            (this.column > 0 ? column < 8 : column > 1) &&
+            (board[row + this.row][column + this.column] * player > 0) &&
+            (board[row + 2 * this.row][column + 2 * this.column] === 0)
         )
     };
 };

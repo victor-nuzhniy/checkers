@@ -409,7 +409,7 @@ function findSimplePieceCaptured(p, player, prev=null) {
     let existPieceCapturedArr = pieceInCapturedPosition(p);
     let localCapturedPosition = [];
     directionList.forEach(direction => {
-        if (direction.checkPiece(p, player)) {
+        if (direction.checkPiece(p.row, p.column, player)) {
             const limit = direction.row > 0 ? 9 : 0;
             const coef = p.row + 2 * direction.row === limit ? 2 : 1;
             newPosition = new Piece(
@@ -589,8 +589,8 @@ function checkPossibilityToMove() {
     for (let i = 0; i < board.length; i++) {
         for (let j = 0; j < board[i].length; j++) {
             if (board[i][j] * currentPlayer > 0) {
-                const piece = new Piece(i, j, board[i][j])
-                if (getPieceMovingPossibilities(piece, reverse(currentPlayer))) {
+//                const piece = new Piece(i, j, board[i][j])
+                if (getPieceMovingPossibilities(i, j, board[i][j], reverse(currentPlayer))) {
                     return true;
                 };
             };
@@ -599,16 +599,16 @@ function checkPossibilityToMove() {
     return false;
 }
 
-function getPieceMovingPossibilities(p, player) {
-    if (p.val * player > 1) {
-        if (checkKingCapturedPiece(p, player)) {
+function getPieceMovingPossibilities(row, column, val, player) {
+    if (val * player > 1) {
+        if (checkKingCapturedPiece(row, column, val, player)) {
             return true;
         }
     } else {
-        if (checkSimpleCapturedPiece(p, player)) {
+        if (checkSimpleCapturedPiece(row, column, player)) {
             return true;
         };
-        if (checkPossibleNewPosition(p, player)) {
+        if (checkPossibleNewPosition(row, column, player)) {
             return true;
         };
     }
@@ -616,19 +616,20 @@ function getPieceMovingPossibilities(p, player) {
 };
 
 
-function checkSimpleCapturedPiece(piece, player) {
+function checkSimpleCapturedPiece(row, column, player) {
     for (const direction of directionList) {
-        if (direction.checkPiece(piece, player)) {
+        // this place for refactor
+        if (direction.checkPiece(row, column, player)) {
             return true;
         };
     };
     return false;
 };
 
-function checkKingCapturedPiece(piece, player) {
+function checkKingCapturedPiece(row, column, val, player) {
     for (const direction of directionList) {
-        let i = piece.row + direction.row
-        let j = piece.column + direction.column
+        let i = row + direction.row
+        let j = column + direction.column
         const row_limit = direction.row > 0 ? 10 : -1;
         const column_limit = direction.column > 0 ? 10 : -1;
         if (i != row_limit && j != column_limit){

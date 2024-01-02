@@ -524,25 +524,22 @@ function findKingNewPositionDirection(y, x, p, player, first) {
     return localCapturedPosition;
 }
 
-function isDifferent(arrA, arrB) {
-    for (let i = 0; i < arrA.length; i++){
-        if (arrA[i] !== arrB[i]) {
-            return true;
-        };
+function isDifferent(objA, objB) {
+    if (objA.row !== objB.row || objA.column !== objB.column) {
+        return true;
     };
     return false;
 }
 
 function findKingNewPosition(p, player, first=true){
     let localCapturedPosition = [];
-    let directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
     let forbiddenDirection = capturedMap.get(p.row.toString() + p.column.toString());
     if (!forbiddenDirection){
-        forbiddenDirection = [0, 0];
+        forbiddenDirection = new Direction(0, 0);
     };
-    directions.forEach((elem) => {
+    directionList.forEach((elem) => {
         if (isDifferent(elem, forbiddenDirection)) {
-            findKingNewPositionDirection(elem[0], elem[1], p, player, first).forEach((element) => {
+            findKingNewPositionDirection(elem.row, elem.column, p, player, first).forEach((element) => {
                 localCapturedPosition.push(element);
             });
         };

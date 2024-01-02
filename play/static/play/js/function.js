@@ -46,7 +46,7 @@ socket.onopen = function() {
                 board = data.message.board
                 currentPlayer = data.message.player
                 setCurrentPlayer(currentPlayer)
-                buildBoard();
+                buildBoard(true);
             }
             playerBoard.innerHTML = "Active";
             playerBoard.setAttribute("style", "color:blue")
@@ -63,8 +63,8 @@ socket.onopen = function() {
         } else if (data.type == "play_message") {
             if (data.message.receiver == userId){
                 board = data.message.board;
-                currentPlayer = reverse(currentPlayer);
-                buildBoard();
+                currentPlayer = data.message.player;
+                buildBoard(true);
                 displayCurrentPlayer();
             };
         } else if(data.type == "ask_rival") {
@@ -209,7 +209,7 @@ function enableToCapture(p) {
                "message": {"receiver": receiver, "board": board, "player": reverse(currentPlayer)},
             }));
             currentPlayer = reverse(currentPlayer);
-            buildBoard();
+            buildBoard(true);
             // check if there are possibility to capture other piece
         } else {
             buildBoard();
@@ -247,7 +247,7 @@ function moveThePiece(newPosition) {
             "message": {"receiver": receiver, "board": board, "player": currentPlayer},
         }));
         displayCurrentPlayer();
-        buildBoard();
+        buildBoard(true);
     };
 }
 
@@ -272,7 +272,7 @@ function markPossiblePosition(p, player = 0, direction = 0, prevPosition=null) {
     };
 };
 
-function buildBoard() {
+function buildBoard(checkBoard=false) {
     game.innerHTML = "";
     let black = 0;
     let white = 0;
@@ -334,37 +334,39 @@ function buildBoard() {
         };
         game.appendChild(row);
     };
-    if (black === 0 || white === 0 || !checkPossibilityToMove()) {
-        if (black > 0 && white > 0) {
-            currentPlayer > 0 ? white = 0 : black = 0
-        };
-        modalOpen(black);
-        document.getElementById("game_over").innerHTML = "Game over"
-        const resultDiv = document.getElementById("result")
-        resultDiv.setAttribute("class", "counter mt-2")
-        let showResult = white ? 'White' : 'Black'
-        resultDiv.innerHTML =
-            showResult
-            + ' wins! <a href="http://'
-            + window.location.host
-            + '/start/">Go and see result!</a>'
-        let result = 0;
-        if (white && currentUser > 0) {
-            result = white;
-        } else if (black && currentUser < 0) {
-            result = black;
-        }
-        startSocket.send(JSON.stringify({
-            "type": "game_over",
-            "message": {
-            "user_id": userId,
-            "rival_id": receiver,
-            "result": result,
-            "white": currentUser > 0 ? true : false,
+    if (checkBoard) {
+        if (!checkPossibilityToMove()) {
+            if (black > 0 && white > 0) {
+                currentPlayer > 0 ? white = 0 : black = 0
+            };
+            modalOpen(black);
+            document.getElementById("game_over").innerHTML = "Game over"
+            const resultDiv = document.getElementById("result")
+            resultDiv.setAttribute("class", "counter mt-2")
+            let showResult = white ? 'White' : 'Black'
+            resultDiv.innerHTML =
+                showResult
+                + ' wins! <a href="http://'
+                + window.location.host
+                + '/start/">Go and see result!</a>'
+            let result = 0;
+            if (white && currentUser > 0) {
+                result = white;
+            } else if (black && currentUser < 0) {
+                result = black;
             }
-        }));
+            startSocket.send(JSON.stringify({
+                "type": "game_over",
+                "message": {
+                "user_id": userId,
+                "rival_id": receiver,
+                "result": result,
+                "white": currentUser > 0 ? true : false,
+                }
+            }));
+        };
     };
-}
+};
 
 function displayCurrentPlayer() {
     var container = document.getElementById("next-player");

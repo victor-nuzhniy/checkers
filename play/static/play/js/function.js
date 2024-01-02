@@ -646,12 +646,14 @@ function checkKingCapturedPiece(row, column, val, player) {
     return false;
 };
 
-function checkPossibleNewPosition(piece, player) {
-    if (board[piece.row + player][piece.column + 1] === 0) {
-        return true;
-    };
-    if (board[piece.row + player][piece.column - 1] === 0) {
-        return true;
+function checkPossibleNewPosition(row, column, player) {
+    if (row + player >= 0 && row + player < 10) {
+        if (board[row + player][column + 1] === 0) {
+            return true;
+        };
+        if (board[row + player][column - 1] === 0) {
+            return true;
+        };
     };
     return false;
 };

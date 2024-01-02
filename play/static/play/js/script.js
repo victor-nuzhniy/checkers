@@ -58,5 +58,3 @@ const directionList = [
     new Direction(1, -1),
     new Direction(1, 1)
 ]
-
-buildBoard();

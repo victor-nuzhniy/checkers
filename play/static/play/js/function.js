@@ -521,9 +521,14 @@ function displayCounter(black, white) {
     whiteContainer.innerHTML = white;
 }
 
-function modalOpen(black) {
-    document.getElementById("winner").innerHTML = black === 0 ? "White" : "Black";
-    document.getElementById("loser").innerHTML = black !== 0 ? "White" : "Black";
+function modalOpen(black=null) {
+    if (black === null) {
+        document.getElementById("winner").innerHTML = "Draw";
+        document.getElementById("loser").innerHTML = "Draw";
+    } else {
+        document.getElementById("winner").innerHTML = black === 0 ? "White" : "Black";
+        document.getElementById("loser").innerHTML = black !== 0 ? "White" : "Black";
+    }
     modal.classList.add("effect");
 }
 

@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 
 from config.settings import CACHE_TTL
+from play.constants import initial_board
 from play.models import Result
 from play.utils import get_all_users_data
 
@@ -34,18 +35,7 @@ class PlayConsumer(AsyncWebsocketConsumer):
             board_info = cache.get(self.play_group_name, dict())
             if not board_info:
                 board_info = {
-                    "board": [
-                        [0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
-                        [-1, 0, -1, 0, -1, 0, -1, 0, -1, 0],
-                        [0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
-                        [-1, 0, -1, 0, -1, 0, -1, 0, -1, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-                        [1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
-                        [0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-                        [1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
-                    ],
+                    "board": initial_board,
                     "player": 1,
                 }
             await self.channel_layer.group_send(

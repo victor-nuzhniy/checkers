@@ -530,7 +530,6 @@ function isDifferent(objA, objB) {
     };
     return false;
 }
-
 function findKingNewPosition(p, player, first=true){
     let localCapturedPosition = [];
     let forbiddenDirection = capturedMap.get(p.row.toString() + p.column.toString());
@@ -600,7 +599,7 @@ function checkPossibilityToMove() {
 }
 
 function getPieceMovingPossibilities(row, column, val, player) {
-    if (val * player > 1) {
+    if (val * (-player) > 1) {
         if (checkKingCapturedPiece(row, column, val, player)) {
             return true;
         }
@@ -637,7 +636,7 @@ function checkKingCapturedPiece(row, column, val, player) {
                 return true;
             };
         };
-        if (i + direction.row != row_limit && j + direction.column != column_limit) {
+        if (i + direction.row >= row_limit && j + direction.column >= column_limit) {
             if (board[i + direction.row][j + direction.column] === 0) {
                 return true;
             };

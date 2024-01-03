@@ -553,9 +553,9 @@ function findKingNewPosition(p, player, first=true){
     if (!capturedPosition.length) {
         prePosNewPosition.forEach((element) => {
             markPossiblePosition(element);
-        })
-        prePosNewPosition = [];
-    }
+        });
+    };
+    prePosNewPosition = [];
     return true
 };
 

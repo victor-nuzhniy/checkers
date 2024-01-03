@@ -168,6 +168,39 @@ startSocket.onmessage = function(e) {
     };
 };
 
+function draw() {
+    const proposeDraw = document.getElementById("proposeDraw");
+    const answerDraw = document.getElementById("answerDraw");
+    const agreeDraw = document.getElementById("agreeDraw");
+    const refuseDraw = document.getElementById("refuseDraw");
+    proposeDraw.addEventListener("click", () => {
+        socket.send(JSON.stringify({
+            "type": "propose_draw",
+            "message": {"receiver": receiver}
+        }));
+        proposeDraw.style.display = "none";
+        answerDraw.style.display = "block";
+    });
+    agreeDraw.addEventListener("click", () => {
+        socket.send(JSON.stringify({
+            "type": "agree_draw",
+            "message": {"receiver": receiver}
+        }));
+        gameOverDraw();
+    });
+    refuseDraw.addEventListener("click", () => {
+        socket.send(JSON.stringify({
+            "type": "refuse_draw",
+            "message": {"receiver": receiver}
+        }));
+        agreeDraw.style.display = "none";
+        refuseDraw.style.display = "none";
+        proposeDraw.style.display = "block";
+    });
+};
+
+draw();
+
 function movePiece(e) {
     let piece = e.target;
     const row = parseInt(piece.getAttribute("row"));

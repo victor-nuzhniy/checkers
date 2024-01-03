@@ -90,6 +90,26 @@ socket.onopen = function() {
             const chat = document.getElementById("chat")
             chat.value += `${today.toLocaleDateString()} ${today.toLocaleTimeString()} ${data.message.username} ${data.message.text} \n`;
             chat.scrollTop = chat.scrollHeight
+        } else if (data.type == "propose_draw") {
+            if (data.message.receiver == userId) {
+                document.getElementById("proposeDraw").style.display = "none";
+                document.getElementById("agreeDraw").style.display = "block";
+                document.getElementById("refuseDraw").style.display = "block";
+            }
+        } else if (data.type == "agree_draw") {
+            if (data.message.receiver == userId){
+                gameOverDraw();
+            };
+        } else if (data.type == "refuse_draw") {
+            if (data.message.receiver == userId) {
+                const answerDraw = document.getElementById("answerDraw")
+                answerDraw.innerHTML = "Rival refused";
+                setTimeout(() => {
+                    answerDraw.innerHTML = "Waiting for an answer";
+                    answerDraw.style.display = "none";
+                    document.getElementById("proposeDraw").style.display = "block";
+                }, 5000);
+            }
         } else {
             console.log("Unknown message type!");
         };

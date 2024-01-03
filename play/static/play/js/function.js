@@ -390,13 +390,13 @@ function buildBoard(checkBoard=false) {
     if (checkBoard) {
         if (!checkPossibilityToMove()) {
             if (black > 0 && white > 0) {
-                currentPlayer > 0 ? white = 0 : black = 0
+                currentPlayer > 0 ? white = 0 : black = 0;
             };
             modalOpen(black);
-            document.getElementById("game_over").innerHTML = "Game over"
-            const resultDiv = document.getElementById("result")
-            resultDiv.setAttribute("class", "counter mt-2")
-            let showResult = white ? 'White' : 'Black'
+            document.getElementById("game_over").innerHTML = "Game over";
+            const resultDiv = document.getElementById("result");
+            resultDiv.setAttribute("class", "counter mt-2");
+            let showResult = white ? 'White' : 'Black';
             resultDiv.innerHTML =
                 showResult
                 + ' wins! <a href="http://'
@@ -419,6 +419,26 @@ function buildBoard(checkBoard=false) {
             }));
         };
     };
+};
+
+function gameOverDraw() {
+    modalOpen(null);
+    document.getElementById("game_over").innerHTML = "Game over"
+    const resultDiv = document.getElementById("result");
+    resultDiv.setAttribute("class", "counter mt-2");
+    resultDiv.innerHTML =
+        'Draw! <a href="http://'
+        + window.location.host
+        + '/start/">Go and see result!</a>';
+    startSocket.send(JSON.stringify({
+        "type": "game_over",
+        "message": {
+        "user_id": userId,
+        "rival_id": receiver,
+        "result": -1,
+        "white": currentUser > 0 ? true : false,
+        }
+    }));
 };
 
 function displayCurrentPlayer() {

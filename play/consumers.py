@@ -76,6 +76,9 @@ class PlayConsumer(AsyncWebsocketConsumer):
                 "ask_rival",
                 "answer_rival",
                 "user_message",
+                "propose_draw",
+                "agree_draw",
+                "refuse_draw",
             }:
                 return
             message: Union[str, Dict] = text_data_json.get("message", dict())
@@ -112,6 +115,18 @@ class PlayConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(event))
 
     async def user_play_leave_message(self, event: bytes) -> None:
+        """Send message."""
+        await self.send(text_data=json.dumps(event))
+
+    async def propose_draw(self, event: bytes) -> None:
+        """Send message."""
+        await self.send(text_data=json.dumps(event))
+
+    async def agree_draw(self, event: bytes) -> None:
+        """Send message."""
+        await self.send(text_data=json.dumps(event))
+
+    async def refuse_draw(self, event: bytes) -> None:
         """Send message."""
         await self.send(text_data=json.dumps(event))
 

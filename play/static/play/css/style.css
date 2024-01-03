@@ -235,3 +235,7 @@ body {
 .custom-input-height {
     height: 48px; border-radius:12px;
 }
+
+.custom-font-size{
+    font-size: min(calc(10px + 0.9vw), 20px);
+}

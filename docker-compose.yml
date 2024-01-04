@@ -1,0 +1,58 @@
+vesion: '3.7'
+
+services:
+  postgres:
+    image: 'postgres:16-alpine3.19'
+    container_name: 'postgres'
+    env_file:
+      - .env
+    volumes:
+      - database_data:/var/lib/postgresql/data/
+    ports:
+      - '8778:5432'
+  redis:
+    image: redis:5
+    volumes:
+      - redis_data:/data
+    ports:
+      - '6379:6379'
+  web:
+    build:
+      context: .
+    volumes:
+      - ./:/usr/src/app
+      - gunicorn_socket:/gunicorn_socket
+      - daphne_socket:/daphne_socket
+    ports:
+      - '8000:8000'
+      - '8001:8001'
+    expose:
+      - 8000
+      - 8001
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+  nginx:
+    build:
+      context: ./nginx/
+    restart: always
+    ports:
+      - '80:80'
+      - '443:443'
+    expose:
+      - 80
+      - 443
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d/
+      - ./static:/usr/src/app/static
+      - gunicorn_socket:/gunicorn_socket
+      - daphne_socket:/daphne_socket
+    depends_on:
+      - web
+
+volumes:
+  database_data:
+  gunicorn_socket:
+  daphne_socket:
+  redis_data:

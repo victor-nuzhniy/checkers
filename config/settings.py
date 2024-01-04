@@ -90,8 +90,12 @@ CACHES = {
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": str(os.getenv("POSTGRES_DB")),
+        "USER": str(os.getenv("POSTGRES_USER")),
+        "PASSWORD": str(os.getenv("POSTGRES_PASSWORD")),
+        "HOST": str(os.getenv("POSTGRES_HOST")),
+        "PORT": str(os.getenv("POSTGRES_PORT")),
     }
 }
 

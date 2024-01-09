@@ -10,32 +10,53 @@ services:
       - database_data:/var/lib/postgresql/data/
     ports:
       - '8778:5432'
+#    expose:
+#      - 5432
+# uncommnet 'expose' and comment 'port' in production
   redis:
     image: redis:5
+    container_name: 'redis'
     volumes:
       - redis_data:/data
     ports:
       - '6379:6379'
+#    expose:
+#      - 6379
+# uncommnet 'expose' and comment 'port' in production
   web:
     build:
       context: .
+    command: gunicorn config.wsgi:application --workers 3 --bind 0.0.0.0:8000
+    container_name: 'web'
+    restart: always
     volumes:
       - ./:/usr/src/app
-      - gunicorn_socket:/gunicorn_socket
-      - daphne_socket:/daphne_socket
-    ports:
-      - '8000:8000'
-      - '8001:8001'
     expose:
       - 8000
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+  daphne:
+    build:
+      context: .
+      dockerfile: Dockerfile.daphne
+    command: daphne -b 0.0.0.0 -p 8001 config.asgi:application
+    container_name: 'daphne'
+    restart: always
+    volumes:
+      - ./:/usr/src/app
+    expose:
       - 8001
     env_file:
       - .env
     depends_on:
       - postgres
+      - web
   nginx:
     build:
       context: ./nginx/
+    container_name: 'nginx'
     restart: always
     ports:
       - '80:80'
@@ -50,9 +71,8 @@ services:
       - daphne_socket:/daphne_socket
     depends_on:
       - web
+      - daphne
 
 volumes:
   database_data:
-  gunicorn_socket:
-  daphne_socket:
   redis_data:

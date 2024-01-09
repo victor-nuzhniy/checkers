@@ -1,5 +1,5 @@
 """
-ASGI config for docker_config project.
+ASGI config for deploy_config project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -14,10 +14,10 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.security.websocket import AllowedHostsOriginValidator
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "docker_config.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "deploy_config.settings")
 django_asgi_app = get_asgi_application()
 
-import play.routing
+import play.routing  # noqa: E402
 
 application = ProtocolTypeRouter(
     {

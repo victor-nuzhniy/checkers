@@ -41,6 +41,7 @@ repos:
         - psycopg2-binary
         - asyncpg
         - pydantic
+        - types-six
       name: mypy
       entry: mypy
       language: python

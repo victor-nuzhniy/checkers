@@ -8,20 +8,19 @@ from play.models import Result
 class ResultAdmin(admin.ModelAdmin):
     """Result admin site settings."""
 
-    list_display = ("id", "player", "rival", "count")
-    list_display_links = ("id", "player")
+    list_display = ('id', 'player', 'rival', 'count')
+    list_display_links = ('id', 'player')
 
 
 class SessionAdmin(admin.ModelAdmin):
     """Session admin site settings."""
 
-    @staticmethod
-    def _session_data(obj):
+    def _session_data(self, session_object: Session) -> dict:
         """Return decoded data."""
-        return obj.get_decoded()
+        return session_object.get_decoded()
 
-    list_display = ["session_key", "_session_data", "expire_date"]
-    list_display_links = ["session_key"]
+    list_display = ['session_key', '_session_data', 'expire_date']
+    list_display_links = ['session_key']
 
 
 admin.site.register(Result, ResultAdmin)

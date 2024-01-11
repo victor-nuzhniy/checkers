@@ -34,11 +34,13 @@ repos:
         - python-dotenv
         - django-utils-six
         - channels
+        - channels-redis
         - daphne==4.0.0
         - mypy==1.8
         - django-stubs
         - psycopg2-binary
         - asyncpg
+        - pydantic
       name: mypy
       entry: mypy
       language: python

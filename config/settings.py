@@ -18,137 +18,140 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = bool(os.getenv("DEBUG"))
+DEBUG = bool(os.getenv('DEBUG'))
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(" ")
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(' ')
 
-INSTALLED_APPS = [
-    "daphne",
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-    "play.apps.PlayConfig",
-]
+INSTALLED_APPS = (
+    'daphne',
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'play.apps.PlayConfig',
+)
 
-MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
-]
+MIDDLEWARE = (
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+)
 
-ROOT_URLCONF = "config.urls"
+ROOT_URLCONF = 'config.urls'
 
-TEMPLATES = [
+TEMPLATES = (
     {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
-        "APP_DIRS": True,
-        "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
             ],
         },
     },
-]
+)
 
-WSGI_APPLICATION = "config.wsgi.application"
+WSGI_APPLICATION = 'config.wsgi.application'
 
-ASGI_APPLICATION = "config.asgi.application"
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [
-                (str(os.getenv("CHANNELS_HOST")), int(os.getenv("CHANNELS_PORT")))
+ASGI_APPLICATION = 'config.asgi.application'
+CHANNEL_LAYERS = {  # noqa WPS407
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [
+                (
+                    str(os.getenv('CHANNELS_HOST', 'localhost')),
+                    int(os.getenv('CHANNELS_PORT', '6379')),
+                ),
             ],
         },
     },
 }
 
-CACHE_TTL = 60 * 50000
+CACHE_TTL = 60 * int('50000')
 
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": os.getenv("REDIS_LOCATION"),
-        "KEY_PREFIX": "checkers",
-        "TIMEOUT": CACHE_TTL,
-    }
+CACHES = {  # noqa WPS407
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': os.getenv('REDIS_LOCATION'),
+        'KEY_PREFIX': 'checkers',
+        'TIMEOUT': CACHE_TTL,
+    },
 }
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": str(os.getenv("POSTGRES_DB")),
-        "USER": str(os.getenv("POSTGRES_USER")),
-        "PASSWORD": str(os.getenv("POSTGRES_PASSWORD")),
-        "HOST": str(os.getenv("POSTGRES_HOST")),
-        "PORT": str(os.getenv("POSTGRES_PORT")),
-    }
+DATABASES = {  # noqa WPS407
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': str(os.getenv('POSTGRES_DB')),
+        'USER': str(os.getenv('POSTGRES_USER')),
+        'PASSWORD': str(os.getenv('POSTGRES_PASSWORD')),
+        'HOST': str(os.getenv('POSTGRES_HOST')),
+        'PORT': str(os.getenv('POSTGRES_PORT')),
+    },
 }
 
-AUTH_PASSWORD_VALIDATORS = [
+AUTH_PASSWORD_VALIDATORS = (
     {
-        "NAME": "django.contrib.auth.password_validation"
-        ".UserAttributeSimilarityValidator",
+        'NAME': 'django.contrib.auth.password_validation'
+        '.UserAttributeSimilarityValidator',  # noqa WPS326
     },
     {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
-]
+)
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = "UTC"
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = "static/"
+STATIC_URL = 'static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-MEDIA_URL = "/media/"
+MEDIA_URL = '/media/'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = "/start/"
+LOGIN_REDIRECT_URL = '/start/'
 
-LOGOUT_REDIRECT_URL = "/start/"
+LOGOUT_REDIRECT_URL = '/start/'
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-EMAIL_HOST = os.getenv("MAIL_SERVER")
+EMAIL_HOST = os.getenv('MAIL_SERVER')
 
-EMAIL_HOST_USER = os.getenv("MAIL_USERNAME")
+EMAIL_HOST_USER = os.getenv('MAIL_USERNAME')
 
-EMAIL_HOST_PASSWORD = os.getenv("MAIL_PASSWORD")
+EMAIL_HOST_PASSWORD = os.getenv('MAIL_PASSWORD')
 
-EMAIL_PORT = os.getenv("MAIL_PORT")
+EMAIL_PORT = os.getenv('MAIL_PORT')
 
-DEFAULT_FROM_MAIL = os.getenv("MAIL_FROM")
+DEFAULT_FROM_MAIL = os.getenv('MAIL_FROM')
 
-EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS")
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True

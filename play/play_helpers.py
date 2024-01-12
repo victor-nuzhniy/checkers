@@ -1,6 +1,5 @@
 """Utility class and function for 'play' app."""
 from django.contrib.auth.models import User
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.sessions.models import Session
 from django.db.models import Count, Q, QuerySet, Sum  # noqa WPS437
 from django.utils import timezone
@@ -33,6 +32,3 @@ def get_all_users_data() -> QuerySet:
         .annotate(wins=Count('result', filter=Q(result__count__gt=0)))
         .annotate(points=Sum('result__count', filter=Q(result__count__gt=0)))
     )
-
-
-account_activation_token = PasswordResetTokenGenerator()

@@ -15,20 +15,20 @@ def get_all_logged_in_users() -> QuerySet:
     }
     return (
         User.objects.filter(id__in=uid_set)
-        .annotate(plays_number=Count('result'))
-        .annotate(loses=Count('result', filter=Q(result__count=0)))
-        .annotate(draws=Count('result', filter=Q(result__count=-1)))
-        .annotate(wins=Count('result', filter=Q(result__count__gt=0)))
-        .annotate(points=Sum('result__count', filter=Q(result__count__gt=0)))
+        .annotate(plays_number=Count('result_data'))
+        .annotate(loses=Count('result_data', filter=Q(result_data__count=0)))
+        .annotate(draws=Count('result_data', filter=Q(result_data__count=-1)))
+        .annotate(wins=Count('result_data', filter=Q(result_data__count__gt=0)))
+        .annotate(points=Sum('result_data__count', filter=Q(result_data__count__gt=0)))
     )
 
 
 def get_all_users_data() -> QuerySet:
     """Get all users data."""
     return (
-        User.objects.annotate(plays_number=Count('result'))
-        .annotate(loses=Count('result', filter=Q(result__count=0)))
-        .annotate(draws=Count('result', filter=Q(result__count=-1)))
-        .annotate(wins=Count('result', filter=Q(result__count__gt=0)))
-        .annotate(points=Sum('result__count', filter=Q(result__count__gt=0)))
+        User.objects.annotate(plays_number=Count('result_data'))
+        .annotate(loses=Count('result_data', filter=Q(result_data__count=0)))
+        .annotate(draws=Count('result_data', filter=Q(result_data__count=-1)))
+        .annotate(wins=Count('result_data', filter=Q(result_data__count__gt=0)))
+        .annotate(points=Sum('result_data__count', filter=Q(result_data__count__gt=0)))
     )

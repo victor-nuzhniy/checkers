@@ -11,7 +11,7 @@ from django.views import generic
 
 from play import forms
 from play import play_helpers as helpers
-from play.models import Result
+from play.models import ResultData
 
 
 class EntryView(generic.TemplateView):
@@ -100,7 +100,7 @@ class ProfileView(UserPassesTestMixin, generic.TemplateView):
         statistics: typing.Any | None = (
             helpers.get_all_logged_in_users().filter(id=self.kwargs['pk']).first()
         )
-        results_data: QuerySet = Result.objects.filter(
+        results_data: QuerySet = ResultData.objects.filter(
             player=self.kwargs['pk'],
         ).reverse()
         context.update(
@@ -165,7 +165,7 @@ class ResultDeleteView(UserPassesTestMixin, generic.FormView, ABC):
         """
         result_id: typing.Optional[int] = form.cleaned_data.get('id')
         if result_id is not None:
-            Result.objects.get(id=result_id).delete()
+            ResultData.objects.get(id=result_id).delete()
         return super().form_valid(form)
 
     def get(

@@ -13,7 +13,7 @@ from play.constants import (
     play_consumers_message_types_set,
     start_consumers_message_types_set,
 )
-from play.models import Result
+from play.models import ResultData
 from play.play_helpers import get_all_users_data
 
 
@@ -257,7 +257,7 @@ class StartConsumer(StartConsumerMethods, AsyncWebsocketConsumer, ABC):
                             user_id=user_id,
                         ),
                     )
-                await Result.objects.acreate(
+                await ResultData.objects.acreate(
                     player_id=user_id,
                     rival_id=rival_id,
                     count=message.get('result'),

@@ -2,10 +2,10 @@
 from django.contrib import admin
 from django.contrib.sessions.models import Session
 
-from play.models import Result
+from play.models import ResultData
 
 
-class ResultAdmin(admin.ModelAdmin):
+class ResultAdminData(admin.ModelAdmin):
     """Result admin site settings."""
 
     list_display = ('id', 'player', 'rival', 'count')
@@ -23,5 +23,5 @@ class SessionAdmin(admin.ModelAdmin):
     list_display_links = ['session_key']
 
 
-admin.site.register(Result, ResultAdmin)
+admin.site.register(ResultData, ResultAdminData)
 admin.site.register(Session, SessionAdmin)

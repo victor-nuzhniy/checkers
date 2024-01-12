@@ -1,6 +1,5 @@
 """Consumers for 'play' app."""
 import json
-from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -17,39 +16,7 @@ from play.models import ResultData
 from play.play_helpers import get_all_users_data
 
 
-class PlayConsumerMethods(object):
-    """Class with PlayConsumer methods."""
-
-    @abstractmethod
-    async def send(self, *args: Any, **kwargs: Any) -> Any:
-        """Implement method."""
-
-    async def answer_rival(self, event_val: bytes) -> None:
-        """Send message."""
-        await self.send(text_data=json.dumps(event_val))
-
-    async def user_play_join_message(self, event_val: bytes) -> None:
-        """Send message."""
-        await self.send(text_data=json.dumps(event_val))
-
-    async def user_play_leave_message(self, event_val: bytes) -> None:
-        """Send message."""
-        await self.send(text_data=json.dumps(event_val))
-
-    async def propose_draw(self, event_val: bytes) -> None:
-        """Send message."""
-        await self.send(text_data=json.dumps(event_val))
-
-    async def agree_draw(self, event_val: bytes) -> None:
-        """Send message."""
-        await self.send(text_data=json.dumps(event_val))
-
-    async def refuse_draw(self, event_val: bytes) -> None:
-        """Send message."""
-        await self.send(text_data=json.dumps(event_val))
-
-
-class PlayConsumer(PlayConsumerMethods, AsyncWebsocketConsumer, ABC):
+class BasePlayConsumer(AsyncWebsocketConsumer):
     """Class socket server for playing page."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -143,39 +110,35 @@ class PlayConsumer(PlayConsumerMethods, AsyncWebsocketConsumer, ABC):
         await self.send(text_data=json.dumps(event))
 
 
-class StartConsumerMethods(object):
-    """Class with StartConsumer methods."""
+class PlayConsumer(BasePlayConsumer):
+    """Class with PlayConsumer methods."""
 
-    @abstractmethod
-    async def send(self, *args: Any, **kwargs: Any) -> Any:
-        """Implement method."""
-
-    async def refresh(self, event_value: bytes) -> None:
+    async def answer_rival(self, event_val: bytes) -> None:
         """Send message."""
-        await self.send(text_data=json.dumps(event_value))
+        await self.send(text_data=json.dumps(event_val))
 
-    async def user_message(self, event_value: bytes) -> None:
+    async def user_play_join_message(self, event_val: bytes) -> None:
         """Send message."""
-        await self.send(text_data=json.dumps(event_value))
+        await self.send(text_data=json.dumps(event_val))
 
-    async def user_join_message(self, event_value: bytes) -> None:
+    async def user_play_leave_message(self, event_val: bytes) -> None:
         """Send message."""
-        await self.send(text_data=json.dumps(event_value))
+        await self.send(text_data=json.dumps(event_val))
 
-    async def user_leave_message(self, event_value: bytes) -> None:
+    async def propose_draw(self, event_val: bytes) -> None:
         """Send message."""
-        await self.send(text_data=json.dumps(event_value))
+        await self.send(text_data=json.dumps(event_val))
 
-    async def propose(self, event_value: bytes) -> None:
+    async def agree_draw(self, event_val: bytes) -> None:
         """Send message."""
-        await self.send(text_data=json.dumps(event_value))
+        await self.send(text_data=json.dumps(event_val))
 
-    async def agree(self, event_value: bytes) -> None:
+    async def refuse_draw(self, event_val: bytes) -> None:
         """Send message."""
-        await self.send(text_data=json.dumps(event_value))
+        await self.send(text_data=json.dumps(event_val))
 
 
-class StartConsumer(StartConsumerMethods, AsyncWebsocketConsumer, ABC):
+class BaseStartConsumer(AsyncWebsocketConsumer):
     """Class socket server for start page."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -276,3 +239,31 @@ class StartConsumer(StartConsumerMethods, AsyncWebsocketConsumer, ABC):
     async def start_playing(self, event: bytes) -> None:
         """Send message."""
         await self.send(text_data=json.dumps(event))
+
+
+class StartConsumer(BaseStartConsumer):
+    """Class with StartConsumer methods."""
+
+    async def refresh(self, event_value: bytes) -> None:
+        """Send message."""
+        await self.send(text_data=json.dumps(event_value))
+
+    async def user_message(self, event_value: bytes) -> None:
+        """Send message."""
+        await self.send(text_data=json.dumps(event_value))
+
+    async def user_join_message(self, event_value: bytes) -> None:
+        """Send message."""
+        await self.send(text_data=json.dumps(event_value))
+
+    async def user_leave_message(self, event_value: bytes) -> None:
+        """Send message."""
+        await self.send(text_data=json.dumps(event_value))
+
+    async def propose(self, event_value: bytes) -> None:
+        """Send message."""
+        await self.send(text_data=json.dumps(event_value))
+
+    async def agree(self, event_value: bytes) -> None:
+        """Send message."""
+        await self.send(text_data=json.dumps(event_value))

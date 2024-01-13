@@ -44,6 +44,12 @@
     Add ssl django settings in deploy_config.settings module, leave config.settings for
     local running with python manage.py runserver
 
+### Deployment
+
+    You should change directives in docker-compose postgres and redis services ports to 
+    expose or restrict access to pointed ports with third party libraries, for example,
+    ufw-docker.
+
 ### Admin site
 
     After project starting with docker-compose an admin user will automatically be created

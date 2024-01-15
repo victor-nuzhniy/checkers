@@ -3,7 +3,7 @@
 
 {% block content %}
     <h3>{{ user.username }}</h3>
-    <form action="post">
+    <form method="post">
         {% csrf_token %}
         <div class="d-flex flex-column" style="max-width: 350px;">
            {% if form.error %}

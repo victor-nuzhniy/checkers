@@ -4,10 +4,21 @@
 {% block content %}
     <h2>Sign up</h2>
 
-    <form class="d-flex flex-column" style="max-width:360px" method="post">
+    <form method="post">
         {% csrf_token %}
-        {{ form }}
-        <button class="my-1" type="submit">Register</button>
+        <div class="d-flex flex-column" style="max-width: 350px;">
+           {% if form.error %}
+                <div>{{ form.error }}</div>
+            {% endif %}
+            {% for f in form %}
+                <div class="my-2">{{ f.label }}</div>
+                <div class="w-100">{{ f }}</div>
+                {% if f.errors %}
+                    <div>{{ f.errors }}</div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <button class="my-3 btn btn-dark" type="submit">Register</button>
     </form>
 
 {% endblock content %}

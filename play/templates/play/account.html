@@ -19,7 +19,7 @@
         </div>
         <button class="my-3 btn btn-dark" type="submit">Save changes</button>
     </form>
-    <div><a href="{% url 'play:password_change' %}">Change password</a></div>
-    <div><a href="{% url 'play:password_reset' %}">Forgot password?</a></div>
+    <div><a href="{% url 'auth_app:password_change' %}">Change password</a></div>
+    <div><a href="{% url 'auth_app:password_reset' %}">Forgot password?</a></div>
 
 {% endblock content %}

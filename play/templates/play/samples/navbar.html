@@ -36,11 +36,14 @@
         </li>
         <li class="nav-item">
           {% if user.is_authenticated %}
-            <a
-                    class="nav-link"
-                    href="{% url 'auth_app:logout' %}"
-                    tabindex="-1"
-            >Logout</a>
+            <form class="h-100 d-flex flex-row align-items-center" action="{% url 'auth_app:logout' %}" method="post">
+                {% csrf_token %}
+                <input
+                        class="border border-0 bg-transparent"
+                        type="submit"
+                        value="Logout"
+                >
+            </form>
           {% else %}
           <a
                   class="nav-link"

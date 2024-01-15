@@ -5,6 +5,7 @@ from abc import ABC
 
 from django import http
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth.models import User
 from django.db.models import QuerySet
 from django.urls import reverse_lazy
 from django.views import generic
@@ -112,9 +113,10 @@ class ProfileView(UserPassesTestMixin, generic.TemplateView):
         return context
 
 
-class AccountUpdateView(UserPassesTestMixin, generic.FormView, ABC):
+class AccountUpdateView(UserPassesTestMixin, generic.UpdateView, ABC):
     """Class view for change account data."""
 
+    model = User
     form_class = forms.UserProfileForm
     template_name = 'play/account.html'
     success_url = reverse_lazy('play:start')
@@ -125,18 +127,6 @@ class AccountUpdateView(UserPassesTestMixin, generic.FormView, ABC):
         if self.request.user.is_anonymous:
             return False
         return self.request.user.id == self.kwargs.get('pk')
-
-    def get_initial(self) -> dict:  # noqa WPS615
-        """Return the initial data to use for forms on this view."""
-        initial: dict = super().get_initial()
-        if self.request.user.is_authenticated:
-            initial.update(
-                {
-                    'username': self.request.user.username,
-                    'email': self.request.user.email,
-                },
-            )
-        return initial
 
 
 class ResultDeleteView(UserPassesTestMixin, generic.FormView, ABC):

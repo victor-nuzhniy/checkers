@@ -6,92 +6,137 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Game board" />
+    <meta name="keywords" content="checkers" />
     <title>Game</title>
-    <link href="{% static 'play/images/favicon.ico' %}" rel="shortcut icon" type="image/png" />
+    <link href="{% static 'play/images/favicon.ico' %}"
+          rel="shortcut icon"
+          type="image/png" />
     <link rel="stylesheet" href="{% static 'play/css/style.css' %}" />
-    <link
-      rel="stylesheet"
-      href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"
-      integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm"
-      crossorigin="anonymous"
-    />
-    <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-            integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
-            crossorigin="anonymous"
-    >
-    <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    <link rel="stylesheet"
+          href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"
+          integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm"
+          crossorigin="anonymous" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+          crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-            crossorigin="anonymous"
-    ></script>
+            crossorigin="anonymous"></script>
   </head>
   <body class="bg-light w-100">
-    {% include 'play/samples/navbar.html' %}
+
+    {% include "play/samples/navbar.html" %}
+
     <div class="container">
       <div class="row">
         <div class="col-12 col-lg-6">
           <div class="d-flex flex-row justify-content-center align-items-center">
             <div class="d-flex flex-column">
-              <div class="counter my-2" id="black_player">Black haven't joined yet.</div>
+              <div class="counter my-2" id="black_player">
+                Black haven't joined yet.
+              </div>
               <div class="next-player counter my-2">
-                <div class="occupied whitePiece" id="next-player"></div>
-                <div class="custom-font-size">Player</div>
-                <div id="game_over"></div>
+                <div class="occupied whitePiece" id="next-player">
                 </div>
-              <div class="game" id="game"></div>
+                <div class="custom-font-size">
+                  Player
+                </div>
+                <div id="game_over">
+                </div>
+              </div>
+              <div class="game" id="game">
+              </div>
               <div class="counter mt-2">
                 <div>
-                  <div class="occupied whitePiece"></div>
+                  <div class="occupied whitePiece">
+                  </div>
                   <span id="white-player-count-pieces">10</span>
                 </div>
                 <div>
-                  <div class="occupied blackPiece"></div>
+                  <div class="occupied blackPiece">
+                  </div>
                   <span id="black-player-count-pieces">10</span>
                 </div>
                 <div>
-                  <button class="btn btn-secondary btn-sm" id="proposeDraw">Propose a draw</button>
-                  <button class="btn btn-secondary btn-sm" id="answerDraw" style="display: none">Waiting for an answer</button>
-                  <button class="btn btn-secondary btn-sm" id="agreeDraw" style="display: none">Agree to draw</button>
-                  <button class="btn btn-secondary btn-sm" id="refuseDraw" style="display: none">Refuse</button>
-                </div>
-              </div>
-              <div class="counter my-2" id="white_player">White haven't joined yet.</div>
-              <div id="result"></div>
-            </div>
+                  <button class="btn btn-secondary btn-sm" id="proposeDraw">
+                    Propose a draw
+                  </button>
+                  {# djlint:off #}
+                  <button class="btn btn-secondary btn-sm"
+                          id="answerDraw"
+                  style="display: none">{# djlint:on #}
+                  Waiting for an answer
+                </button>
+                {# djlint:off #}
+                  <button class="btn btn-secondary btn-sm" id="agreeDraw" style="display: none">
+                {# djlint:on #}
+                Agree to draw
+              </button>
+              {# djlint:off #}
+                  <button class="btn btn-secondary btn-sm"
+                          id="refuseDraw"
+              style="display: none">{# djlint:on #}
+              Refuse
+            </button>
           </div>
         </div>
-        <div class="col-12 col-lg-6 ps-lg-4 d-flex flex-column align-items-center">
-            <div>Chat</div>
-            <textarea rows="4" class="w-100 mb-3 custom-input" id="chat"></textarea>
-            <input id="chat-message-input" class="w-100 mb-3 custom-input custom-input-height" type="text"><br>
-            <button id="chat-message-submit" type="button" class="btn btn-dark">Send</button>
-            <div class="d-lg-none" style="height: 100px;"></div>
+        <div class="counter my-2" id="white_player">
+          White haven't joined yet.
+        </div>
+        <div id="result">
         </div>
       </div>
     </div>
-
-    <div id="easyModal" class="modal mb-2">
-      <div class="modal-content">
-          <div class="modal-body">
-              <p>The <strong id="winner"></strong> player won the game !!</p>
-              <p> <span id="loser"></span>, whould you take your revenge ???</p>
-
-              <div class="btn-container">
-                <button class="btn" onclick="location.reload()">Yes </button>
-                <button class="btn" onclick="modalClose()">No</button>
-              </div>
-          </div>
+  </div>
+  <div class="col-12 col-lg-6 ps-lg-4 d-flex flex-column align-items-center">
+    <div>
+      Chat
+    </div>
+    <textarea rows="4" class="w-100 mb-3 custom-input" id="chat"></textarea>
+    <input id="chat-message-input"
+           class="w-100 mb-3 custom-input custom-input-height"
+           type="text">
+    <br>
+    <button id="chat-message-submit" type="button" class="btn btn-dark">
+      Send
+    </button>
+    {# djlint:off #}
+    <div class="d-lg-none" style="height: 100px;">
+    {# djlint:on #}
+  </div>
+</div>
+</div>
+</div>
+<div id="easyModal" class="modal mb-2">
+  <div class="modal-content">
+    <div class="modal-body">
+      <p>
+        The <strong id="winner"></strong> player won the game !!
+      </p>
+      <p>
+        <span id="loser"></span>, whould you take your revenge ???
+      </p>
+      <div class="btn-container">
+        <button class="btn" onclick="location.reload()">
+          Yes
+        </button>
+        <button class="btn" onclick="modalClose()">
+          No
+        </button>
       </div>
     </div>
-    {% include 'play/samples/footer.html' %}
-    {{ player_pk|json_script:"player_pk" }}
-    {{ rival_pk|json_script:"rival_pk" }}
-    {{ current_user|json_script:"current_user" }}
-    {{ receiver|json_script:"receiver" }}
-    {{ user.id|json_script:"user_id" }}
-    <script src="{% static 'play/js/function.js' %}"></script>
-    <script src="{% static 'play/js/script.js' %}"></script>
-  </body>
+  </div>
+</div>
+
+{% include "play/samples/footer.html" %}
+
+{{ player_pk|json_script:"player_pk" }}
+{{ rival_pk|json_script:"rival_pk" }}
+{{ current_user|json_script:"current_user" }}
+{{ receiver|json_script:"receiver" }}
+{{ user.id|json_script:"user_id" }}
+<script src="{% static 'play/js/function.js' %}"></script>
+</body>
 </html>

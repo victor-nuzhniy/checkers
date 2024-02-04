@@ -70,8 +70,8 @@ repos:
     - id: djlint-reformat-django
       files: "\\.html"
       types_or: [ 'html' ]
-      args: [ --configuration front_config/.djlintrc ]
+      args: [ --configuration=front_config/.djlintrc.json ]
     - id: djlint-django
       files: "\\.html"
       types_or: [ 'html' ]
-      args: [ --configuration front_config/.djlintrc ]
+      args: [ --configuration=front_config/.djlintrc.json ]

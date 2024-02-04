@@ -6,6 +6,10 @@
   font-size: 10px;
 }
 
+.form-max-width {
+  max-width: 350px;
+}
+
 @media (min-width: 576px) {
   .table {
     font-size: 18px;

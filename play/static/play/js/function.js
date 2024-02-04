@@ -91,7 +91,6 @@ socket.onopen = function () {
     const data = JSON.parse(e.data);
     if (data.type === 'user_play_join_message') {
       const joinedUserId = data.message.user_id.toString();
-      playerBoard = null;
       if (joinedUserId === playerPk) {
         playerBoard = document.getElementById('white_player');
       } else {
@@ -107,7 +106,6 @@ socket.onopen = function () {
       playerBoard.setAttribute('style', 'color:blue');
     } else if (data.type === 'user_play_leave_message') {
       const joinedUserId = data.message.user_id.toString();
-      let playerBoard = null;
       if (joinedUserId === playerPk) {
         playerBoard = document.getElementById('white_player');
       } else {
@@ -125,9 +123,9 @@ socket.onopen = function () {
     } else if (data.type === 'ask_rival') {
       if (
         userId !== data.message.user_id &&
-        ((data.message.user_id === playerPk &&
+        ((data.message.user_id.toString() === playerPk &&
           document.getElementById('black_player').innerHTML === 'Active') ||
-          (data.message.user_id === rivalPk &&
+          (data.message.user_id.toString() === rivalPk &&
             document.getElementById('black_player').innerHTML === 'Active'))
       ) {
         socket.send(
@@ -173,8 +171,10 @@ socket.onopen = function () {
     }
   };
   if (
-    (userId === playerPk && document.getElementById('black_player').innerHTML !== 'Active') ||
-    (userId === rivalPk && document.getElementById('white_player').innerHTML !== 'Active')
+    (userId.toString() === playerPk &&
+      document.getElementById('black_player').innerHTML !== 'Active') ||
+    (userId.toString() === rivalPk &&
+      document.getElementById('white_player').innerHTML !== 'Active')
   ) {
     socket.send(
       JSON.stringify({

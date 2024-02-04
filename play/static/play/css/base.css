@@ -1,41 +1,41 @@
-.messages{
-    max-height: 200px;
-    overflow-y: auto;
+.messages {
+  max-height: 200px;
+  overflow-y: auto;
 }
 .table {
-    font-size: 10px;
+  font-size: 10px;
 }
 
-@media(min-width: 576px) {
-    .table {
-        font-size: 18px;
-    }
-
+@media (min-width: 576px) {
+  .table {
+    font-size: 18px;
+  }
 }
 
 .custom-input {
-    border: 0;
-    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.3);
-    width: 100%;
-    border-radius: 12px;
+  border: 0;
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.3);
+  width: 100%;
+  border-radius: 12px;
 }
 .custom-input-height {
-    height: 48px; border-radius:12px;
+  height: 48px;
+  border-radius: 12px;
 }
 
 .limited-container {
-    min-height: 70px;
-    overflow-y: auto;
-    max-height: 250px;
+  min-height: 70px;
+  overflow-y: auto;
+  max-height: 250px;
 }
 
 .limited-table {
-    overflow-y: auto;
-    max-height: 400px;
+  overflow-y: auto;
+  max-height: 400px;
 }
 
-@media(min-width: 1200px){
-    .limited-container {
-        max-height: 400px;
-    }
+@media (min-width: 1200px) {
+  .limited-container {
+    max-height: 400px;
+  }
 }

@@ -46,3 +46,32 @@ repos:
       language: python
       types: [python]
       args: [--config-file=setup.cfg]
+    - id: lint-staged
+      name: lint-staged
+      additional_dependencies:
+        - lint-staged@15.0.0
+        - eslint@9.0.0-alpha.2
+        - eslint-config-standard@latest
+        - eslint-plugin-import@^2.25.2
+        - eslint-plugin-n@^15.0.0
+        - prettier@4.0.0-alpha.8
+        - eslint-plugin-prettier
+        - eslint-config-prettier
+      description: ''
+      entry: lint-staged --allow-empty --concurrent false
+      language: node
+      types_or: [ javascript, jsx, ts, tsx, css ]
+      args: [ --config=front_config/lint-staged.config.js ]
+      require_serial: false
+      minimum_pre_commit_version: '0'
+- repo: https://github.com/djlint/djLint
+  rev: v1.34.1
+  hooks:
+    - id: djlint-reformat-django
+      files: "\\.html"
+      types_or: [ 'html' ]
+      args: [ --configuration front_config/.djlintrc ]
+    - id: djlint-django
+      files: "\\.html"
+      types_or: [ 'html' ]
+      args: [ --configuration front_config/.djlintrc ]

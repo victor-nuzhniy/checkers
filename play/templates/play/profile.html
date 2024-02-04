@@ -1,41 +1,69 @@
-{% extends 'play/base.html' %}
+{% extends "play/base.html" %}
+
 {% load static %}
 
 {% block content %}
-    <h4>Player {{ statistics.username }}</h4>
-        <div class="d-flex flex-row">
-            <div class="m-3">Plays number: {{ statistics.plays_number }}</div>
-            <div class="m-3">Loses: {{ statistics.loses }}</div>
-            <div class="m-3">Draws: {{ statistics.draws }}</div>
-            <div class="m-3">Wins: {{ statistics.wins }}</div>
-            <div class="m-3">Points: {{ statistics.points }}</div>
-        </div>
-        <h5>Results</h5>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Rival</th>
-                    <th scope="col">Count</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">Delete</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for result in results %}
-                    <tr>
-                        <th scope="row">{{ result.rival }}</th>
-                        <th>{{ result.count }}</th>
-                        <th>{{ result.created_at }}</th>
-                        <th>
-                            <form method="post" action="{% url 'play:delete_result' user.id %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="id" value="{{ result.id }}"/>
-                                <input type="submit" value="Delete result"/>
-                            </form>
-                        </th>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
+  <h4>
+    Player {{ statistics.username }}
+  </h4>
+  <div class="d-flex flex-row">
+    <div class="m-3">
+      Plays number: {{ statistics.plays_number }}
+    </div>
+    <div class="m-3">
+      Loses: {{ statistics.loses }}
+    </div>
+    <div class="m-3">
+      Draws: {{ statistics.draws }}
+    </div>
+    <div class="m-3">
+      Wins: {{ statistics.wins }}
+    </div>
+    <div class="m-3">
+      Points: {{ statistics.points }}
+    </div>
+  </div>
+  <h5>
+    Results
+  </h5>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">
+          Rival
+        </th>
+        <th scope="col">
+          Count
+        </th>
+        <th scope="col">
+          Date
+        </th>
+        <th scope="col">
+          Delete
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for result in results %}
+        <tr>
+          <th scope="row">
+            {{ result.rival }}
+          </th>
+          <th>
+            {{ result.count }}
+          </th>
+          <th>
+            {{ result.created_at }}
+          </th>
+          <th>
+            <form method="post" action="{% url 'play:delete_result' user.id %}">
+              {% csrf_token %}
+              <input type="hidden" name="id" value="{{ result.id }}" />
+              <input type="submit" value="Delete result" />
+            </form>
+          </th>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 {% endblock content %}

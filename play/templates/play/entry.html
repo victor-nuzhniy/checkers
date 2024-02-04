@@ -1,31 +1,41 @@
-{% extends 'play/base.html' %}
+{% extends "play/base.html" %}
+
 {% load static %}
 
 {% block content %}
-    <h2>Welcome to play checkers!</h2>
-
-    <div style="max-width:900px">
-        <p>Here you can challenge the game of checkers.</p>
-        <p>Below some points how to manage on site.</p>
-        <p>To have the ability to play you should <a href="{% url 'auth_app:registration' %}">register</a>
-            and <a href="{% url 'auth_app:login' %}">login</a>. <a href="{% url 'play:start' %}">This</a> is a link to board page, where you can see
-        active players, their current rating, invite them and join the game.
-            <a href="{% url 'play:rating' %}">Here</a> you can see all players rating, and
-            {% if user.is_authenticated %}
-            <a href="{% url 'play:profile' user.id %}">here</a>
-            {% else %}
-            <a href="{% url 'auth_app:login' %}">here</a>
-            {% endif %}
-            - personal rating info. You account data - on this
-            {% if user.is_authenticated %}
-            <a href="{% url 'play:account' user.id %}">link</a>
-            {% else %}
-            <a href="{% url 'auth_app:login' %}">link</a>
-            {% endif %}.</p>
-        <p>On board you can invite somebody to play checkers. There is a list of active players on the page.
-        Status 'Yes' means, that player is not playing now, and you can invite him by clicking on his
-        status. A link with invitation will appear by you record on players board page. If player agrees to
-            play with you, you'll see the link in front of his entry on your page.</p>
-    </div>
-
+  <h2>
+    Welcome to play checkers!
+  </h2>
+  <div class="entry-max-width">
+    <p>
+      Here you can challenge the game of checkers.
+    </p>
+    <p>
+      Below some points how to manage on site.
+    </p>
+    <p>
+      To have the ability to play you should <a href="{% url 'auth_app:registration' %}">register</a>
+      and <a href="{% url 'auth_app:login' %}">login</a>. <a href="{% url 'play:start' %}">This</a> is a link to board page, where you can see
+      active players, their current rating, invite them and join the game.
+      <a href="{% url 'play:rating' %}">Here</a> you can see all players rating, and
+      {% if user.is_authenticated %}
+        <a href="{% url 'play:profile' user.id %}">here</a>
+      {% else %}
+        <a href="{% url 'auth_app:login' %}">here</a>
+      {% endif %}
+      - personal rating info. You account data - on this
+      {% if user.is_authenticated %}
+        <a href="{% url 'play:account' user.id %}">link</a>
+      {% else %}
+        <a href="{% url 'auth_app:login' %}">link</a>
+      {% endif %}
+      .
+    </p>
+    <p>
+      On board you can invite somebody to play checkers. There is a list of active players on the page.
+      Status 'Yes' means, that player is not playing now, and you can invite him by clicking on his
+      status. A link with invitation will appear by you record on players board page. If player agrees to
+      play with you, you'll see the link in front of his entry on your page.
+    </p>
+  </div>
 {% endblock content %}
